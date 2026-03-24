@@ -26,7 +26,7 @@ namespace Passport_Prototype.Server.Controllers
 
             var entity = new ContactInformation
             {
-                //UserId = dto.UserId,
+                UserId = dto.UserId,
                 CurrentRegion = dto.CurrentRegion,
                 CurrentProvince = dto.CurrentProvince,
                 CurrentCityMunicipality = dto.CurrentCityMunicipality,
@@ -48,7 +48,7 @@ namespace Passport_Prototype.Server.Controllers
         public async Task<IActionResult> GetAll()
         {
             var data = await _context.ContactInformation
-                .Include(c => c.UserId)
+                //.Include(c => c.Users)
                 .ToListAsync();
 
             return Ok(data);
