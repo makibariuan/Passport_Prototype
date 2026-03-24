@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using OnlineRegistration.Server.Data;
+using OnlineRegistration.Server.Models;
 using Passport_Prototype.Server.DTOs;
 using Passport_Prototype.Server.Models;
 
@@ -26,7 +27,7 @@ namespace Passport_Prototype.Server.Controllers
 
             var entity = new WorkInformation
             {
-                //UserId = dto.UserId,
+                UserId = dto.UserId,
                 Occupation = dto.Occupation,
                 OfficeAddress = dto.OfficeAddress,
                 OfficeCountry = dto.OfficeCountry,
@@ -49,19 +50,19 @@ namespace Passport_Prototype.Server.Controllers
         public async Task<IActionResult> GetAll()
         {
             var data = await _context.WorkInformation
-                .Include(w => w.UserId)
+                //.Include(w => w.UserId)
                 .ToListAsync();
 
             return Ok(data);
         }
 
         // READ BY ID
-        [HttpGet("{id}")]
-        public async Task<IActionResult> GetById(int id)
+        [HttpGet("{userId}")]
+        public async Task<IActionResult> GetById(int userId)
         {
             var data = await _context.WorkInformation
-                .Include(w => w.UserId)
-                .FirstOrDefaultAsync(w => w.Id == id);
+                //.Include(w => w.Users)
+                .FirstOrDefaultAsync(w => w.UserId == userId);
 
             if (data == null)
                 return NotFound();
@@ -70,11 +71,11 @@ namespace Passport_Prototype.Server.Controllers
         }
 
         // UPDATE
-        [HttpPatch("{id}")]
-        public async Task<IActionResult> Update(int id, WorkInformationDto dto)
+        [HttpPatch("{userId}")]
+        public async Task<IActionResult> Update(int userId, WorkInformationDto dto)
         {
             var entity = await _context.WorkInformation
-                .FirstOrDefaultAsync(w => w.Id == id);
+                .FirstOrDefaultAsync(w => w.UserId == userId);
 
             if (entity == null)
                 return NotFound();
@@ -96,11 +97,11 @@ namespace Passport_Prototype.Server.Controllers
         }
 
         // DELETE
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> Delete(int id)
+        [HttpDelete("{userId}")]
+        public async Task<IActionResult> Delete(int userId)
         {
             var entity = await _context.WorkInformation
-                .FirstOrDefaultAsync(w => w.Id == id);
+                .FirstOrDefaultAsync(w => w.UserId == userId);
 
             if (entity == null)
                 return NotFound();
