@@ -4,7 +4,7 @@ using OnlineRegistration.Server.Models;
 
 namespace Passport_Prototype.Server.Models
 {
-    [Table("PassportPersonalInformation")] // Updated to match schema
+    [Table("PassportPersonalInformation")]
     public class PassportPersonalInformation
     {
         [Key]
@@ -12,28 +12,29 @@ namespace Passport_Prototype.Server.Models
         public int PassportPersonalInformationId { get; set; }
 
         [Required]
-        public int UserId { get; set; } // Foreign Key to Users Table
+        public int UserId { get; set; }
 
         [ForeignKey("UserId")]
-        public virtual Users? User { get; set; } // Navigation property
+        public virtual Users? User { get; set; }
 
         [Required]
         [MaxLength(255)]
-        public string FirstName { get; set; } = string.Empty;
+        public string? FirstName { get; set; }
 
         [MaxLength(255)]
         public string? MiddleName { get; set; }
 
         [Required]
         [MaxLength(255)]
-        public string LastName { get; set; } = string.Empty;
+        public string? LastName { get; set; }
 
         [MaxLength(50)]
         public string? Suffix { get; set; }
 
         [Required]
-        public DateTime Birthdate { get; set; }
+        public DateTime? Birthdate { get; set; }
 
+        [Required]
         [MaxLength(50)]
         public string? Gender { get; set; }
 
@@ -43,22 +44,29 @@ namespace Passport_Prototype.Server.Models
         [Column("CivilStatus")] // This tells EF the DB column is named "CivilStatus"
         public string? CivilStatusId { get; set; }
 
+        [Required]
         public bool hasPSABirthcert { get; set; }
 
+        [Required]
         public bool isBirthLegitimate { get; set; }
 
+        [Required]
         [MaxLength(100)]
         public string? BirthCountry { get; set; }
 
+        [Required]
         [MaxLength(100)]
         public string? BirthRegion { get; set; }
 
+        [Required]
         [MaxLength(100)]
         public string? BirthProvince { get; set; }
 
+        [Required]
         [MaxLength(100)]
         public string? BirthCity { get; set; }
 
+        [Required]
         [MaxLength(100)]
         public string? BirthBarangay { get; set; }
     }
