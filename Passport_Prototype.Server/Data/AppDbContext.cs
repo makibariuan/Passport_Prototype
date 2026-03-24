@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using OnlineRegistration.Server.DTOs;
 using OnlineRegistration.Server.Models;
+using Passport_Prototype.Server.Models;
 using SeniorCitizen.Server.DTOs;
 using SeniorCitizen.Server.Models;
 
@@ -44,5 +45,9 @@ namespace OnlineRegistration.Server.Data
 
             base.OnModelCreating(modelBuilder);
         }
+
+        // Passport
+        public DbSet<PassportPersonalInformation> PassportPersonalInformation { get; set; }
+        public DbSet<Family> Family { get; set; }
     }
 }
