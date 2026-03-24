@@ -1,0 +1,246 @@
+/* |--------------------------------------------------------------------------
+| 1. MODERN APP LAYOUT (GRID SYSTEM)
+|--------------------------------------------------------------------------
+*/
+.app-layout {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  grid-template-rows: auto 1fr;
+  min-height: 100vh;
+  background-color: #f4f7f9;
+}
+
+.leftMenu {
+  grid-column: 1;
+  grid-row: 1 / span 2;
+  z-index: 100;
+}
+
+.header {
+  grid-column: 2;
+  grid-row: 1;
+  z-index: 90;
+}
+
+.dashboard-content {
+  grid-column: 2;
+  grid-row: 2;
+  padding: 40px;
+  box-sizing: border-box;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+/* |--------------------------------------------------------------------------
+| 2. HEADINGS & TITLES
+|--------------------------------------------------------------------------
+*/
+.welcome-title, .page-title {
+  font-size: 2.25rem;
+  color: #06195e;
+  margin-bottom: 8px;
+  font-weight: 800;
+  letter-spacing: -0.025em;
+}
+
+.role-info {
+  margin-bottom: 40px;
+  color: #718096;
+  font-size: 1.1rem;
+}
+
+/* |--------------------------------------------------------------------------
+| 3. TABS SYSTEM (PDS / Employee IDs)
+|--------------------------------------------------------------------------
+*/
+.tab-container {
+  display: flex;
+  gap: 8px;
+  margin-bottom: -1px;
+}
+
+.tab-btn {
+  padding: 12px 24px;
+  border: none;
+  background: #e2e8f0;
+  color: #4a5568;
+  font-weight: 600;
+  border-radius: 10px 10px 0 0;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+  .tab-btn.active {
+    background: white;
+    color: #06195e;
+    border-top: 3px solid #06195e;
+    padding-top: 9px;
+  }
+
+.tab-wrapper {
+  background: white;
+  border-radius: 0 12px 12px 12px;
+  padding: 20px;
+  height: calc(100vh - 280px); /* Keeps buttons visible */
+  overflow-y: auto;
+  position: relative;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+}
+
+/* |--------------------------------------------------------------------------
+| 4. REUSABLE CARDS & STATS
+|--------------------------------------------------------------------------
+*/
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 24px;
+  margin-bottom: 40px;
+}
+
+.stat-card {
+  background: white;
+  padding: 24px;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+  border-left: 6px solid #e2e8f0;
+  transition: transform 0.3s ease;
+}
+
+  .stat-card:hover {
+    transform: translateY(-5px);
+  }
+
+.stat-icon-wrapper {
+  font-size: 2.2rem;
+  width: 64px;
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f8fafc;
+  border-radius: 14px;
+}
+
+.stat-content {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  text-align: right;
+}
+
+.stat-value {
+  font-size: 2.5rem;
+  font-weight: 800;
+  color: #06195e;
+  line-height: 1;
+}
+
+.stat-label {
+  font-size: 0.85rem;
+  color: #4a5568;
+  margin-top: 8px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* Status Color Overrides */
+.stat-yellow {
+  border-left-color: #ecc94b;
+}
+
+.stat-blue {
+  border-left-color: #4299e1;
+}
+
+.stat-indigo {
+  border-left-color: #667eea;
+}
+
+.stat-green {
+  border-left-color: #48bb78;
+}
+
+.stat-teal {
+  border-left-color: #38b2ac;
+}
+
+.stat-purple {
+  border-left-color: #9f7aea;
+}
+
+.stat-red {
+  border-left-color: #f56565;
+}
+
+.stat-orange {
+  border-left-color: #ed8936;
+}
+/* New: Good for "Pending" */
+.stat-navy {
+  border-left-color: #06195e;
+}
+/* New: Brand color for "All" */
+
+.clickable {
+  cursor: pointer;
+}
+
+/* |--------------------------------------------------------------------------
+| 5. FORM INPUTS & UTILITIES
+|--------------------------------------------------------------------------
+*/
+.auth-input {
+  width: 100%;
+  padding: 10px 15px;
+  border: 1px solid #ced4da;
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: all 0.2s;
+}
+
+  .auth-input:focus {
+    outline: none;
+    border-color: #06195e;
+    box-shadow: 0 0 0 3px rgba(6, 25, 94, 0.1);
+  }
+
+.btn-primary {
+  background: #06195e;
+  color: white;
+  padding: 12px 25px;
+  border-radius: 8px;
+  font-weight: 700;
+  border: none;
+  cursor: pointer;
+}
+
+/* |--------------------------------------------------------------------------
+| 6. RESPONSIVENESS
+|--------------------------------------------------------------------------
+*/
+@media (max-width: 1024px) {
+  .app-layout {
+    grid-template-columns: 80px 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .app-layout {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto auto 1fr;
+  }
+
+  .leftMenu {
+    grid-row: 3;
+  }
+
+  .dashboard-content {
+    padding: 20px;
+  }
+}

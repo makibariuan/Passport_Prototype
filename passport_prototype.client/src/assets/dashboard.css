@@ -1,0 +1,126 @@
+/* |--------------------------------------------------------------------------
+| DASHBOARD.CSS - ADMIN DASHBOARD THEME
+| Consistent with AuthPage Deep Blue (#004085) and Navy (#002a57) theme.
+|--------------------------------------------------------------------------*/
+
+/* --- THEME COLORS ---
+ * Primary/Branding: #004085 (Deep Blue)
+ * Dark Accent/Titles: #002a57 (Navy)
+*/
+
+.dashboard-content {
+  /* Applying a very light blue/gray background, consistent with a clean workspace */
+  @apply p-8 sm:p-10 min-h-screen;
+  background-color: #f8fafc; /* Light blue/gray tint */
+}
+
+/* Titles and Information */
+.welcome-title {
+  /* Using Navy for the main title color */
+  @apply text-3xl sm:text-4xl font-extrabold mb-2;
+  color: #002a57;
+}
+
+.role-info {
+  /* Subdued text for role info */
+  @apply mb-10 text-lg text-gray-600 italic;
+}
+
+/* Summary Grid (Metrics) */
+.summary-grid {
+  /* Responsive grid layout */
+  @apply grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6;
+}
+
+/* Individual Summary Card (Router Link) */
+.summary-card {
+  /* Base card styling */
+  @apply block p-6 rounded-xl shadow-lg transition-all duration-300 relative overflow-hidden no-underline;
+  @apply hover:shadow-xl hover:transform hover:-translate-y-1;
+  background-color: #ffffff; /* White card background */
+  border: 1px solid #e2e8f0; /* Light border */
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* Card Accents: Deep Blue theme */
+.kit-user-card {
+  @apply border-l-4;
+  border-left-color: #004085; /* Deep Blue accent */
+}
+
+.system-user-card {
+  @apply border-l-4;
+  border-left-color: #002a57; /* Navy accent */
+}
+
+.citizen-card {
+  @apply border-l-4;
+  border-left-color: #1a73e8; /* Another blue variant for distinction */
+}
+
+
+.card-label {
+  @apply text-sm font-medium uppercase tracking-wider text-gray-500 mb-1;
+}
+
+.metric-number {
+  /* Deep Blue/Navy for the key metrics */
+  @apply text-5xl font-extrabold mt-1 mb-2;
+  color: #002a57;
+}
+
+.card-detail {
+  @apply text-sm text-gray-500 mt-2;
+}
+
+.card-icon {
+  /* Large, Deep Blue icons */
+  @apply text-5xl opacity-20 ml-4;
+  color: #004085;
+}
+
+/* --- Table Styles (General Consistency) --- */
+
+.user-table th {
+  background-color: #004085; /* Deep Blue header */
+  color: white;
+  @apply text-sm uppercase tracking-wider font-semibold;
+}
+
+.user-table {
+  @apply w-full border-collapse shadow-md bg-white rounded-lg overflow-hidden;
+}
+
+  .user-table th, .user-table td {
+    @apply border border-gray-200 p-3;
+  }
+
+  .user-table tr:nth-child(even) {
+    background-color: #f7f9fb;
+  }
+
+/* Buttons (Using Deep Blue as Primary Action Color) */
+.add-btn, .save-btn, .reset-btn {
+  background-color: #004085;
+  @apply text-white border-none py-2 px-4 rounded-lg cursor-pointer transition-colors duration-200 font-semibold shadow-md;
+}
+
+  .add-btn:hover, .save-btn:hover, .reset-btn:hover {
+    background-color: #002a57; /* Navy hover */
+  }
+
+/* Loading and Error Messages */
+.loading-overlay, .error-box {
+  @apply fixed bottom-5 right-5 p-4 rounded-lg shadow-xl font-semibold z-50;
+}
+
+.loading-overlay {
+  background-color: #e3f2fd; /* Light blue notification */
+  color: #0d47a1;
+}
+
+.error-box {
+  @apply bg-red-100 text-red-700;
+}

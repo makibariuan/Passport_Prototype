@@ -1,0 +1,148 @@
+/* |--------------------------------------------------------------------------
+| HEADER.CSS - Deep Blue Theme
+|--------------------------------------------------------------------------*/
+
+/* --- THEME COLORS ---
+ * Primary/Branding: #004085 (Deep Blue)
+ * Dark Accent/Titles: #002a57 (Navy)
+*/
+
+.header {
+  /* Applying fixed position, height, and layout */
+  @apply fixed top-0 right-0 z-10 grid grid-cols-[1fr_auto] items-center h-20 shadow-md;
+  /* The width calculation must be applied outside of @apply for clean Tailwind processing. */
+  width: calc(100vw - 24vw); /* Assuming LeftMenu is 24vw wide initially */
+  padding: 0 32px;
+  background: #ffffff;
+  box-shadow: 0 4px 10px rgba(0, 42, 87, 0.1);
+}
+
+/* Ensure standard media query format */
+@media (max-width: 1024px) {
+  .header {
+    /* Adjust width for fixed 240px sidebar on tablet/desktop */
+    width: calc(100vw - 240px);
+  }
+}
+
+.title {
+  @apply text-xl font-extrabold;
+  color: #002a57;
+  font-family: 'Inter', sans-serif;
+}
+
+.right-section {
+  @apply flex items-center gap-5;
+}
+
+.profile-container {
+  @apply flex items-center gap-3;
+}
+
+.user-info {
+  @apply flex flex-col items-end text-right;
+}
+
+.username {
+  @apply text-base font-semibold m-0;
+  color: #002a57;
+  font-family: 'Inter', sans-serif;
+}
+
+.pst-time {
+  @apply text-sm m-0;
+  color: #004085;
+  font-family: 'Courier New', monospace;
+}
+
+.icon {
+  @apply w-10 h-10 rounded-full;
+  background-color: #004085;
+}
+
+```eof
+
+### 2. Corrected Left Menu Styles (`leftmenu.css`)
+
+I will check the font property assignments and ensure all complex selectors are standard CSS.
+
+```css:Themed Left Menu Styles (Corrected):leftmenu.css
+/* |--------------------------------------------------------------------------
+| LEFTMENU.CSS - Deep Blue Theme
+|--------------------------------------------------------------------------*/
+/* --- THEME COLORS ---
+ * Primary/Branding: #004085 (Deep Blue)
+ * Dark Accent/Titles: #002a57 (Navy)
+*/
+.left-menu {
+  /* Fixed positioning and Deep Blue background */
+  @apply fixed top-0 left-0 h-screen w-[24vw] flex flex-col text-white z-20;
+  background: #004085; /* Deep Blue */
+  border-right: 1px solid #002a57; /* Navy border for contrast */
+}
+
+/* Ensure standard media query format */
+@media (max-width: 1024px) {
+  .left-menu {
+    width: 240px;
+  }
+}
+
+
+.logo {
+  @apply self-center my-6 py-4 px-2 cursor-pointer; /* Combine cursor here */
+  font-family: 'Inter', sans-serif;
+}
+  /* Removed redundant .logo:hover block */
+
+  .logo img {
+    @apply w-14 h-auto;
+  }
+
+  .logo > div {
+    /* Style for the grid container inside logo */
+    @apply grid grid-cols-[auto_1fr] items-center gap-3;
+  }
+
+  /* Targetting nested elements with standard descendant selectors */
+  .logo div div {
+    @apply text-left;
+  }
+
+    .logo div div div {
+      /* REPUBLIC OF THE PHILIPPINES */
+      @apply pt-2 m-0 text-xs font-light uppercase tracking-wider underline underline-offset-4;
+      text-decoration-color: rgba(255, 255, 255, 0.4);
+    }
+
+    .logo div div p {
+      /* City of Makati */
+      @apply mt-[-8px] text-3xl tracking-wide font-extralight;
+    }
+
+.left-menu ul {
+  @apply list-none p-0 m-0 flex flex-col flex-1;
+}
+
+.left-menu li {
+  @apply py-4 px-8 cursor-pointer text-left transition-colors duration-200 text-sm font-medium;
+  font-family: 'Inter', sans-serif;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+  /* Using standard :hover pseudo-class */
+  .left-menu li:hover {
+    background: #002a57; /* Navy hover */
+  }
+
+  /* Using standard :active pseudo-class */
+  .left-menu li.active {
+    background: #002a57;
+    @apply font-bold border-l-4 border-yellow-400;
+  }
+
+  .left-menu li.logout {
+    @apply mt-auto;
+    border-top: 1px solid rgba(255, 255, 255, 0.2);
+    border-bottom: none;
+  }
