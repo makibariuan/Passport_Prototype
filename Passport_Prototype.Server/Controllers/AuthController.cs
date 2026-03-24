@@ -1,23 +1,24 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using MailKit.Net.Smtp;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using MimeKit;
 using OnlineRegistration.Server.Data;
 using OnlineRegistration.Server.DTOs;
 using OnlineRegistration.Server.Models;
 using OnlineRegistration.Server.Services.Interfaces;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Text;
-using MimeKit;
-using MailKit.Net.Smtp;
-using System.Text.RegularExpressions;
-using System.Runtime.ConstrainedExecution;
-using System.Security.Cryptography;
-using System.Text.Json;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.Data.SqlClient;
+using Passport_Prototype.Server.Models;
 using System.Data;
+using System.IdentityModel.Tokens.Jwt;
+using System.Runtime.ConstrainedExecution;
+using System.Security.Claims;
+using System.Security.Cryptography;
+using System.Text;
+using System.Text.Json;
+using System.Text.RegularExpressions;
 
 
 namespace OnlineRegistration.Server.Controllers
@@ -77,131 +78,188 @@ namespace OnlineRegistration.Server.Controllers
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
 
-
-        //        USER TYPE                 USER ROLE
-        //        1 - System                1 - Super Admin
-        //        2 - Kit                   2 - System User
-        //                                  3 - Kit User
-        //                                  4 - Employee
-        //                                  5 - Citizen
-        //                                  6 - HR
-
-
-        /// <summary>
-        /// Registers a new user and queues a verification email.
-        /// </summary>
-        [HttpPost("register")]
-        public async Task<IActionResult> Register([FromBody] RegisterDto dto)
+        [HttpPost("initiate-registration")]
+        public async Task<IActionResult> InitiateRegistration([FromBody] string email)
         {
-            // 1. Basic Model Validation
-            if (!ModelState.IsValid) return BadRequest(ModelState);
+            if (string.IsNullOrWhiteSpace(email)) return BadRequest(new { message = "Email is required." });
 
-            // 2. Generate security tokens and hash password
-            var emailToken = Guid.NewGuid().ToString("N");
-            var passHash = BCrypt.Net.BCrypt.HashPassword(dto.Password);
+            var emailLower = email.Trim().ToLower();
 
             try
             {
-                // 3. Prepare the Output Parameter to capture the new User ID from the SP
-                var userIdParam = new Microsoft.Data.SqlClient.SqlParameter
+                // 1. Fetch ONLY the user record (Ignore navigation properties for now)
+                // Ensure you are not using .Include(u => u.PassportInfo) here
+                var existingUser = await _context.Users
+                    .FirstOrDefaultAsync(u => u.Email == emailLower);
+
+                // 2. Check if they are already fully registered
+                if (existingUser != null && !string.IsNullOrEmpty(existingUser.PasswordHash))
                 {
-                    ParameterName = "@NewUserId",
-                    SqlDbType = System.Data.SqlDbType.Int,
-                    Direction = System.Data.ParameterDirection.Output
+                    return BadRequest(new { message = "This email is already registered." });
+                }
+
+                var otp = RandomNumberGenerator.GetInt32(100000, 999999).ToString();
+
+                if (existingUser == null)
+                {
+                    existingUser = new Users
+                    {
+                        Email = emailLower,
+                        Username = emailLower,
+                        IsActive = false,
+                        IsEmailConfirmed = false,
+                        CreatedAt = DateTime.UtcNow,
+                        UserType = 1, // Defaulting as you did in previous steps
+                        UserRole = 2
+                    };
+                    _context.Users.Add(existingUser);
+                }
+
+                // 3. Update OTP fields
+                existingUser.LoginOtp = otp;
+                existingUser.LoginOtpExpiry = DateTime.UtcNow.AddMinutes(10);
+
+                // 4. Save changes
+                await _context.SaveChangesAsync();
+
+                // 5. Queue Email
+                _emailQueue.QueueEmail(new EmailMessage
+                {
+                    To = emailLower,
+                    Subject = "Registration Verification Code",
+                    Body = $"<p>Your verification code is: <strong>{otp}</strong></p>"
+                });
+
+                return Ok(new { message = "Verification code sent to your email." });
+            }
+            catch (Exception ex)
+            {
+                // Log the full stack trace for debugging
+                Console.WriteLine(ex.ToString());
+                return StatusCode(500, new { message = "Error initiating registration.", details = ex.InnerException?.Message ?? ex.Message });
+            }
+        }
+
+        [HttpPut("complete-registration")]
+        public async Task<IActionResult> CompleteRegistration([FromBody] RegisterDto dto)
+        {
+            var emailLower = dto.Email.Trim().ToLower();
+
+            // 1. Find the skeleton record
+            var userRecord = await _context.Users
+                .FirstOrDefaultAsync(u => u.Email == emailLower);
+
+            // 2. Security Gate: Ensure the email was verified first
+            if (userRecord == null)
+            {
+                return BadRequest(new { message = "Email verification required before completing registration." });
+            }
+
+            using var transaction = await _context.Database.BeginTransactionAsync();
+            try
+            {
+                // 3. Hash password using BCrypt
+                userRecord.PasswordHash = BCrypt.Net.BCrypt.HashPassword(dto.Password);
+
+                // 4. Finalize Profile
+                userRecord.FirstName = dto.FirstName;
+                userRecord.LastName = dto.LastName;
+                userRecord.IsActive = true;
+                userRecord.UserType = 1;
+                userRecord.UserRole = 2;
+                userRecord.LoginOtp = null;
+                userRecord.LoginOtpExpiry = null;
+
+                // 5. Populate Passport Details
+                userRecord.PassportInfo = new PassportPersonalInformation
+                {
+                    FirstName = dto.FirstName,
+                    MiddleName = dto.MiddleName,
+                    LastName = dto.LastName,
+                    Suffix = dto.Suffix,
+                    Birthdate = dto.Birthdate,
+                    Gender = dto.Gender,
+                    Nationality = dto.Nationality,
+                    CivilStatusId = dto.CivilStatusId,
+                    hasPSABirthcert = dto.HasPSABirthcert,
+                    isBirthLegitimate = dto.IsBirthLegitimate,
+                    BirthCountry = dto.BirthCountry,
+                    BirthRegion = dto.BirthRegion,
+                    BirthProvince = dto.BirthProvince,
+                    BirthCity = dto.BirthCity,
+                    BirthBarangay = dto.BirthBarangay
                 };
 
-                // 4. Execute the updated Stored Procedure
-                // This now inserts into [Users] and [EnrollmentRegistryID] in one transaction
-                await _context.Database.ExecuteSqlInterpolatedAsync($@"
-                EXEC [dbo].[sp_RegisterUser]
-                @Username = {dto.Username.Trim()},
-                @Email = {dto.Email.Trim().ToLower()},
-                @PasswordHash = {passHash},
-                @FirstName = {dto.FirstName.Trim()},
-                @LastName = {dto.LastName.Trim()},
-                @MiddleName = {dto.MiddleName?.Trim()},
-                @BirthDate = {dto.BirthDate},
-                @EmployeeID = {dto.EmployeeID?.Trim()},
-                @GovIDType = {dto.GovIDType},
-                @GovIDNumber = {dto.GovIDNumber},
-                @GovIDImage = {dto.IDImageBase64},
-                @GovIDExtension = {dto.IDFileExtension},
-                @EmailToken = {emailToken},
-                @NewUserId = {userIdParam} OUTPUT");
+                _context.Users.Update(userRecord);
+                await _context.SaveChangesAsync();
+                await transaction.CommitAsync();
 
-                // Capture the ID returned by the database
-                var newUserId = (int)userIdParam.Value;
+                return Ok(new { message = "Registration completed successfully!" });
+            }
+            catch (Exception ex)
+            {
+                await transaction.RollbackAsync();
+                return StatusCode(500, new { message = "Failed to complete registration.", details = ex.Message });
+            }
+        }
 
-                // 5. Post-Registration: Email Queueing
-                try
+        [HttpPost("verify-registration-otp")]
+        public async Task<IActionResult> VerifyRegistrationOtp([FromBody] VerifyOtpDto dto)
+        {
+            // 1. Basic Validation
+            if (dto == null || string.IsNullOrWhiteSpace(dto.Email) || string.IsNullOrWhiteSpace(dto.VerificationCode))
+            {
+                return BadRequest(new { message = "Email and Verification Code are required." });
+            }
+
+            try
+            {
+                // 2. Find the "Pre-registered" user record using the Email
+                var user = await _context.Users
+                    .FirstOrDefaultAsync(u => u.Email == dto.Email.Trim().ToLower());
+
+                if (user == null)
                 {
-                    var confirmUrl = $"{_config["FrontendUrl"]}/confirm-email?token={emailToken}&email={dto.Email}";
-                    _emailQueue.QueueEmail(new EmailMessage
-                    {
-                        To = dto.Email,
-                        Subject = "Action Required: Confirm Your Makatizen Account",
-                        Body = $"<h1>Welcome!</h1><p>Please <a href='{confirmUrl}'>click here</a> to verify your email.</p>"
-                    });
+                    return BadRequest(new { message = "Registration record not found for this email." });
                 }
-                catch (Exception emailEx)
+
+                // 3. 🔥 THE MATCH CHECK: Compare the provided code with the DB value
+                // Using .Trim() on the input to prevent hidden space mismatches
+                if (user.LoginOtp == null || user.LoginOtp != dto.VerificationCode.Trim())
                 {
-                    // Logging the error but not failing the request
-                    Console.WriteLine($"Email service error for User {newUserId}: {emailEx.Message}");
+                    return BadRequest(new { message = "Invalid verification code. Please check your email and try again." });
                 }
+
+                // 4. Check Expiry
+                if (user.LoginOtpExpiry == null || user.LoginOtpExpiry < DateTime.UtcNow)
+                {
+                    return BadRequest(new { message = "Verification code has expired. Please request a new one." });
+                }
+
+                // 5. Success Logic: Mark Email as Confirmed and NULLIFY the OTP fields
+                // This ensures the same code cannot be used twice.
+                user.IsEmailConfirmed = true;
+                user.LoginOtp = null;
+                user.LoginOtpExpiry = null;
+
+                // Note: We keep IsActive = false until they finish the PUT (CompleteRegistration) step.
+                _context.Users.Update(user);
+                await _context.SaveChangesAsync();
 
                 return Ok(new
                 {
-                    message = "Registration successful!",
-                    userId = newUserId,
-                    details = "A confirmation email has been sent to your registered address."
+                    message = "Email verified successfully!",
+                    email = user.Email // Returning email helps the frontend navigate to the next step
                 });
             }
-            catch (Microsoft.Data.SqlClient.SqlException ex)
-            {
-                // Catches THROWs from the SP (e.g., Email exists)
-                return BadRequest(new { message = ex.Message });
-            }
             catch (Exception ex)
             {
-                return StatusCode(500, new { message = "An unexpected error occurred.", error = ex.Message });
+                // Capture inner exception details for database-level issues
+                var errorMsg = ex.InnerException?.Message ?? ex.Message;
+                return StatusCode(500, new { message = "An error occurred during verification.", details = errorMsg });
             }
         }
 
-        /// <summary>
-        /// Validates a user's email address using a unique security token.
-        /// </summary>
-        [HttpGet("confirm-email")]
-        public async Task<IActionResult> ConfirmEmail([FromQuery] string token, [FromQuery] string email)
-        {
-            if (string.IsNullOrEmpty(token) || string.IsNullOrEmpty(email))
-            {
-                return BadRequest(new { message = "Token and Email are required." });
-            }
-
-            try
-            {
-                // Execute the stored procedure
-                await _context.Database.ExecuteSqlInterpolatedAsync($@"
-                EXEC [dbo].[sp_ConfirmUserEmail] 
-                @Email = {email}, 
-                @Token = {token}");
-
-                return Ok(new { message = "Email confirmed successfully. You can now log in." });
-            }
-            catch (Microsoft.Data.SqlClient.SqlException ex)
-            {
-                // Catch the custom THROW 50012 or 50013 from SQL
-                return BadRequest(new { message = ex.Message });
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, new { message = "An error occurred during email confirmation.", error = ex.Message });
-            }
-        }
-
-        /// <summary>
-        /// Initiates the login process by verifying credentials and generating a One-Time Password (OTP).
-        /// </summary>
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginRequest request)
         {
@@ -210,349 +268,97 @@ namespace OnlineRegistration.Server.Controllers
                 return BadRequest(new { message = "Email and Password are required." });
             }
 
-            var otp = RandomNumberGenerator.GetInt32(100000, 999999).ToString();
-
             try
             {
-                // Output parameters
-                var userIdParam = new SqlParameter("@UserId", SqlDbType.Int) { Direction = ParameterDirection.Output };
-                var usernameParam = new SqlParameter("@Username", SqlDbType.NVarChar, 100) { Direction = ParameterDirection.Output };
-                var emailParam = new SqlParameter("@Email", SqlDbType.NVarChar, 100) { Direction = ParameterDirection.Output };
-                var passHashParam = new SqlParameter("@PasswordHash", SqlDbType.NVarChar, -1) { Direction = ParameterDirection.Output };
-                var mustResetParam = new SqlParameter("@MustResetPassword", SqlDbType.Bit) { Direction = ParameterDirection.Output };
-                var isConfirmedParam = new SqlParameter("@IsEmailConfirmed", SqlDbType.Bit) { Direction = ParameterDirection.Output };
-                var empIdParam = new SqlParameter("@EmployeeID", SqlDbType.NVarChar, 50) { Direction = ParameterDirection.Output };
-                var personIdParam = new SqlParameter("@PersonID", SqlDbType.Int) { Direction = ParameterDirection.Output };
+                // 1. Find the user (supports Email or Username login)
+                var user = await _context.Users
+                    .FirstOrDefaultAsync(u => u.Email == request.Email.Trim() || u.Username == request.Email.Trim());
 
-                // Execute the stored procedure
-                await _context.Database.ExecuteSqlRawAsync(
-                    "EXEC [dbo].[sp_HandleLoginSecurity] @EmailOrUsername, @GeneratedOtp, 2, " +
-                    "@UserId OUTPUT, @Username OUTPUT, @Email OUTPUT, @PasswordHash OUTPUT, @MustResetPassword OUTPUT, @IsEmailConfirmed OUTPUT, " +
-                    "@EmployeeID OUTPUT, @PersonID OUTPUT",
-                    new SqlParameter("@EmailOrUsername", request.Email.Trim()),
-                    new SqlParameter("@GeneratedOtp", otp),
-                    userIdParam, usernameParam, emailParam, passHashParam, mustResetParam, isConfirmedParam, empIdParam, personIdParam
-                );
-
-                // Null-safety: ensure password hash exists
-                var dbPasswordHash = passHashParam.Value != DBNull.Value ? passHashParam.Value?.ToString() : null;
-                if (string.IsNullOrEmpty(dbPasswordHash) || !BCrypt.Net.BCrypt.Verify(request.Password, dbPasswordHash))
+                if (user == null)
                 {
-                    var userId = userIdParam.Value != DBNull.Value ? (int)userIdParam.Value : 0;
-                    await LogManualEntry(userId, "LOGIN_FAILURE_INVALID_PASSWORD", $"Password mismatch for {request.Email}");
                     return Unauthorized(new { message = "Invalid credentials." });
                 }
 
-                // Check if password reset is required
-                if (mustResetParam.Value != DBNull.Value && (bool)mustResetParam.Value)
+
+
+
+                // 3. Verify Password (using BCrypt)
+                try
                 {
-                    return Ok(new { message = "Password reset required.", mustReset = true });
+                    if (!BCrypt.Net.BCrypt.Verify(request.Password, user.PasswordHash))
+                    {
+                        return Unauthorized(new { message = "Invalid credentials." });
+                    }
+                }
+                catch (BCrypt.Net.SaltParseException)
+                {
+                    // This catches the "Invalid salt version" error
+                    // It means the database has a non-bcrypt hash
+                    return Unauthorized(new { message = "Your account requires a password reset due to security updates." });
                 }
 
-                // Email null-safety
-                var dbEmail = emailParam.Value != DBNull.Value ? emailParam.Value?.ToString() : null;
-                var dbUsername = usernameParam.Value != DBNull.Value ? usernameParam.Value?.ToString() : "User";
 
-                if (string.IsNullOrEmpty(dbEmail))
-                {
-                    return BadRequest(new { message = "User email not found. Cannot send OTP." });
-                }
 
-                // Queue OTP email
+                // 5. Generate 6-digit OTP and Expiry (10 minutes)
+                var otp = RandomNumberGenerator.GetInt32(100000, 999999).ToString();
+                user.LoginOtp = otp;
+                user.LoginOtpExpiry = DateTime.UtcNow.AddMinutes(10);
+
+                // 6. Save to Database
+                _context.Users.Update(user);
+                await _context.SaveChangesAsync();
+
+                // 7. Queue OTP email
                 _emailQueue.QueueEmail(new EmailMessage
                 {
-                    To = dbEmail,
+                    To = user.Email,
                     Subject = "Your Login OTP",
-                    Body = $"<p>Hello {dbUsername},</p><p>Your OTP is: <strong>{otp}</strong></p>"
+                    Body = $@"<p>Hello {user.FirstName},</p>
+                              <p>Your verification code is: <strong>{otp}</strong></p>
+                              <p>This code will expire in 10 minutes.</p>"
                 });
 
-                return Ok(new { message = "OTP sent to your email. Please enter it to complete login." });
-            }
-            catch (SqlException ex)
-            {
-                // SP errors
-                return Unauthorized(new { message = ex.Message });
+                return Ok(new
+                {
+                    message = "OTP sent to your email. Please enter it to complete login.",
+                    email = user.Email // Helpful for the frontend to know where it was sent
+                });
             }
             catch (Exception ex)
             {
-                // Catch-all
                 return StatusCode(500, new { message = "An unexpected error occurred.", details = ex.Message });
             }
         }
 
-        private async Task LogManualEntry(int userId, string desc, string note)
-        {
-            _context.ApplicationLogs.Add(new ApplicationLog
-            {
-                LogId = Guid.NewGuid().ToString("N"),
-                UserId = userId,
-                LogDescription = desc,
-                LogDate = DateTime.Now.ToString("yyyy-MM-dd"),
-                LogTime = DateTime.Now.ToString("HH:mm:ss"),
-                Notes = note
-            });
-            await _context.SaveChangesAsync();
-        }
-
-        /// <summary>
-        /// Validates the OTP and issues a JWT bearer token for session management.
-        /// </summary>
         [HttpPost("verify-otp")]
         public async Task<IActionResult> VerifyOtp([FromBody] VerifyOtpDto dto)
         {
             try
             {
-                // 1. Fetch the user initially to check if OTP exists/expired
-                var dbUser = await _context.Users.FirstOrDefaultAsync(u => u.Email == dto.Email);
+                // 1. Fetch user and validate OTP details
+                var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == dto.Email);
 
-                if (dbUser == null) return Unauthorized(new { message = "Email is not registered" });
-                if (string.IsNullOrEmpty(dbUser.LoginOtp)) return Unauthorized(new { message = "No OTP generated" });
-                if (dbUser.LoginOtpExpiry < DateTime.UtcNow) return Unauthorized(new { message = "OTP has expired" });
-                if (dbUser.LoginOtp != dto.Otp) return Unauthorized(new { message = "Invalid OTP" });
+                if (user == null) return Unauthorized(new { message = "User not found." });
+                if (string.IsNullOrEmpty(user.LoginOtp)) return Unauthorized(new { message = "No OTP session found." });
+                if (user.LoginOtpExpiry < DateTime.UtcNow) return Unauthorized(new { message = "OTP has expired." });
+                if (user.LoginOtp != dto.VerificationCode) return Unauthorized(new { message = "Invalid OTP." });
 
-                // 2. Prepare Output Parameters for the Stored Procedure
-                var userIdParam = new SqlParameter("@UserId", SqlDbType.Int) { Direction = ParameterDirection.Output };
-                var usernameParam = new SqlParameter("@Username", SqlDbType.NVarChar, 100) { Direction = ParameterDirection.Output };
-                var roleParam = new SqlParameter("@UserRole", SqlDbType.Int) { Direction = ParameterDirection.Output };
-                var empIdParam = new SqlParameter("@EmployeeID", SqlDbType.NVarChar, 50) { Direction = ParameterDirection.Output };
-                var personIdParam = new SqlParameter("@PersonID", SqlDbType.Int) { Direction = ParameterDirection.Output };
-
-                // --- NEW PARAMETERS FOR JWT ---
-                var fnameParam = new SqlParameter("@FirstName", SqlDbType.NVarChar, 100) { Direction = ParameterDirection.Output };
-                var lnameParam = new SqlParameter("@LastName", SqlDbType.NVarChar, 100) { Direction = ParameterDirection.Output };
-                var emailParam = new SqlParameter("@UserEmail", SqlDbType.NVarChar, 100) { Direction = ParameterDirection.Output };
-                var typeParam = new SqlParameter("@UserType", SqlDbType.Int) { Direction = ParameterDirection.Output };
-
-                // 3. Execute the updated Stored Procedure
-                await _context.Database.ExecuteSqlRawAsync(
-                    "EXEC [dbo].[sp_VerifyLoginOtp] @Email, @SubmittedOtp, @UserId OUTPUT, @Username OUTPUT, @UserRole OUTPUT, @EmployeeID OUTPUT, @PersonID OUTPUT, @FirstName OUTPUT, @LastName OUTPUT, @UserEmail OUTPUT, @UserType OUTPUT",
-                    new SqlParameter("@Email", dto.Email),
-                    new SqlParameter("@SubmittedOtp", dto.Otp),
-                    userIdParam, usernameParam, roleParam, empIdParam, personIdParam, fnameParam, lnameParam, emailParam, typeParam
-                );
-
-                // 4. Validate procedure output
-                if (userIdParam.Value == DBNull.Value) return Unauthorized(new { message = "Verification failed." });
-
-                // 5. Map the results into a User object for the JWT Generator
-                var user = new Users
-                {
-                    Id = (int)userIdParam.Value,
-                    Username = usernameParam.Value?.ToString() ?? "",
-                    UserRole = (int)roleParam.Value,
-                    UserType = (int)typeParam.Value,
-                    FirstName = fnameParam.Value?.ToString() ?? "User", // Prevents ArgumentNullException
-                    LastName = lnameParam.Value?.ToString() ?? "",      // Prevents ArgumentNullException
-                    Email = emailParam.Value?.ToString() ?? dto.Email,
-                    EmployeeID = empIdParam.Value != DBNull.Value ? empIdParam.Value.ToString() : null,
-                    PersonID = personIdParam.Value as int?
-                };
-
-                // 6. Generate JWT token (This will now have all claims)
+                // 2. Generate JWT token
                 var token = GenerateJwtToken(user);
 
-                // 7. Save active token to database
-                dbUser.ActiveToken = token;
+                // 3. Security Cleanup: Clear OTP and save the active token
+                user.LoginOtp = null;
+                user.LoginOtpExpiry = null;
+                user.ActiveToken = token;
+
+                _context.Users.Update(user);
                 await _context.SaveChangesAsync();
 
-                return Ok(new { token });
-            }
-            catch (SqlException ex)
-            {
-                return Unauthorized(new { message = ex.Message });
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, new { message = "Security error.", details = ex.Message });
-            }
-        }
-
-        /// <summary>
-        /// Initiates the Resend OTP to email credentials and generating a One-Time Password (OTP).
-        /// </summary>
-        /// 
-        [HttpPost("resend-otp")]
-        public async Task<IActionResult> ResendOtp([FromBody] ResendOtpDto request)
-        {
-            try
-            {
-                if (string.IsNullOrWhiteSpace(request?.Email))
-                    return BadRequest(new { message = "Email or username is required." });
-
-                // 1. Generate new OTP
-                var newOtp = RandomNumberGenerator.GetInt32(100000, 999999).ToString();
-
-                // 2. Prepare output parameters
-                var userIdParam = new SqlParameter("@UserId", SqlDbType.Int) { Direction = ParameterDirection.Output };
-                var usernameParam = new SqlParameter("@Username", SqlDbType.NVarChar, 100) { Direction = ParameterDirection.Output };
-                var emailParam = new SqlParameter("@Email", SqlDbType.NVarChar, 100) { Direction = ParameterDirection.Output };
-                var empIdParam = new SqlParameter("@EmployeeID", SqlDbType.NVarChar, 50) { Direction = ParameterDirection.Output };
-                var personIdParam = new SqlParameter("@PersonID", SqlDbType.Int) { Direction = ParameterDirection.Output };
-
-                // 3. Execute the new stored procedure
-                await _context.Database.ExecuteSqlRawAsync(
-                       @"EXEC [dbo].[sp_ResendOtp]
-                       @EmailOrUsername = @EmailOrUsername,
-                       @GeneratedOtp = @GeneratedOtp,
-                       @UserId = @UserId OUTPUT,
-                       @Username = @Username OUTPUT,
-                       @Email = @Email OUTPUT,
-                       @EmployeeID = @EmployeeID OUTPUT,
-                       @PersonID = @PersonID OUTPUT",
-                    new SqlParameter("@EmailOrUsername", request.Email.Trim()),
-                    new SqlParameter("@GeneratedOtp", newOtp),
-                    userIdParam, usernameParam, emailParam, empIdParam, personIdParam
-                );
-
-                // 4. Validate output values
-                if (emailParam.Value == DBNull.Value || usernameParam.Value == DBNull.Value)
-                    return NotFound(new { message = "User not found." });
-
-                var email = emailParam.Value.ToString();
-                var username = usernameParam.Value.ToString();
-
-                // 5. Send the new OTP via email
-                _emailQueue.QueueEmail(new EmailMessage
-                {
-                    To = email,
-                    Subject = "Your New Login OTP",
-                    Body = $"<p>Hello {username},</p><p>Your new OTP is: <strong>{newOtp}</strong></p>"
-                });
-
-                return Ok(new { message = "A new OTP has been sent to your email." });
-            }
-            catch (SqlException ex)
-            {
-                return StatusCode(500, new { message = "Database error occurred.", details = ex.Message });
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, new { message = "Unexpected error occurred.", details = ex.Message });
-            }
-        }
-
-        /// <summary>
-        /// Validates the Kit credentials and issues a JWT bearer token for session management.
-        /// </summary>
-        [HttpPost("kit-login")]
-        public async Task<IActionResult> KitLogin([FromBody] KitLoginRequest request)
-        {
-            var user = await _context.Users
-                .Include(u => u.Role)
-                .FirstOrDefaultAsync(u => u.Username.ToLower() == request.username.ToLower());
-
-            // Local function for logging attempts (omitted for brevity)
-            void LogLoginAttempt(string description, int? userId = null, string specificNote = null)
-            { /* ... */ }
-
-            if (user == null)
-            {
-                Console.WriteLine("DEBUG: User not found in database.");
-                return Unauthorized(new { message = "Invalid Kit credentials." });
-            }
-
-            bool isPasswordValid = BCrypt.Net.BCrypt.Verify(request.Password, user.PasswordHash);
-            Console.WriteLine($"DEBUG: Password Match: {isPasswordValid}");
-            Console.WriteLine($"DEBUG: UserType: {user.UserType}, IsActive: {user.IsActive}");
-
-            // 1. Basic Validation (User Found/Active)
-            if (user == null || !user.IsActive)
-            {
-                LogLoginAttempt("KIT_LOGIN_FAILURE_INVALID_USER", specificNote: "User not found or account inactive.");
-                await _context.SaveChangesAsync();
-                return Unauthorized(new { message = "Invalid Kit credentials." });
-            }
-
-            // 2. Password Verification
-            if (!BCrypt.Net.BCrypt.Verify(request.Password, user.PasswordHash))
-            {
-                LogLoginAttempt("KIT_LOGIN_FAILURE_INVALID_PASSWORD", user.Id, specificNote: "Password mismatch.");
-                await _context.SaveChangesAsync();
-                return Unauthorized(new { message = "Invalid Kit credentials." });
-            }
-
-            // 🔥 CRITICAL CHECK: Enforce Kit User Type
-            // Only UserType 2 (Kit User) is allowed to log in here.
-            if (user.UserType != 2)
-            {
-                LogLoginAttempt("KIT_LOGIN_FAILURE_PORTAL_USER_BLOCKED", user.Id, specificNote: "Portal user attempted Kit login.");
-                await _context.SaveChangesAsync();
-                return Unauthorized(new { message = "This account is restricted to kit access." });
-            }
-
-            // 3. Must Reset Password (if applicable)
-            if (user.MustResetPassword)
-            {
-                // Still requires password reset, even on the Kit
-                return Ok(new LoginResponse
-                {
-                    Message = "Password reset required.",
-                    Token = "",
-                });
-            }
-
-            // 4. Generate Token (Kit Token)
-            // Note: You might use a shorter expiration time for Kit tokens for security.
-            var token = GenerateJwtToken(user);
-            user.ActiveToken = token;
-
-            LogLoginAttempt("KIT_LOGIN_SUCCESS", user.Id, specificNote: "Kit user successfully authenticated.");
-            await _context.SaveChangesAsync();
-
-            // 5. Return Token
-            return Ok(new LoginResponse
-            {
-                Message = "Kit login successful.",
-                Token = token,
-            });
-        }
-
-        [HttpGet("kit-credentials")]
-        public async Task<IActionResult> GetKitCredentials([FromQuery] string token)
-        {
-            if (string.IsNullOrEmpty(token))
-            {
-                return BadRequest(new { message = "Token parameter is required." });
-            }
-
-            try
-            {
-                // 1. Manually parse the token to get the UserId
-                // Note: This assumes the token is a valid JWT you've already issued
-                var handler = new System.IdentityModel.Tokens.Jwt.JwtSecurityTokenHandler();
-                var jwtToken = handler.ReadJwtToken(token);
-
-                var userIdClaim = jwtToken.Claims.FirstOrDefault(c => c.Type == "nameid")?.Value
-                                  ?? jwtToken.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
-
-                if (!int.TryParse(userIdClaim, out int userId))
-                {
-                    return Unauthorized(new { message = "Token does not contain a valid User ID." });
-                }
-
-                // 2. Fetch the specific user
-                var user = await _context.Users.FindAsync(userId);
-
-                if (user == null || string.IsNullOrEmpty(user.KitEncryptedPgpData))
-                {
-                    return NotFound(new { message = "No encrypted configuration found for this user." });
-                }
-
-                // 3. Decrypt the PGP block
-                string decryptedJson = await _pgpService.DecryptAsync(user.KitEncryptedPgpData);
-
-                if (string.IsNullOrEmpty(decryptedJson))
-                {
-                    return BadRequest(new { message = "Failed to unlock credentials. PGP decryption returned empty." });
-                }
-
-                // 4. Return the decrypted data
-                var credentialKit = JsonSerializer.Deserialize<object>(decryptedJson);
 
                 return Ok(new
                 {
-                    message = "Credentials retrieved successfully.",
-                    data = credentialKit
+                    token,
+                    message = "Login successful"
                 });
             }
             catch (Exception ex)
@@ -561,7 +367,71 @@ namespace OnlineRegistration.Server.Controllers
             }
         }
 
+        [HttpPost("kit-login")]
+        public async Task<IActionResult> KitLogin([FromBody] KitLoginRequest request)
+        {
+            if (request == null || string.IsNullOrWhiteSpace(request.username) || string.IsNullOrWhiteSpace(request.Password))
+            {
+                return BadRequest(new { message = "Username and Password are required." });
+            }
 
+            try
+            {
+                // 1. Fetch the user including Role if needed for claims
+                var user = await _context.Users
+                    .Include(u => u.UserRole)
+                    .FirstOrDefaultAsync(u => u.Username.ToLower() == request.username.ToLower());
+
+                // 2. Basic Validation (User Found/Active)
+                if (user == null)
+                {
+                    return Unauthorized(new { message = "Invalid Kit credentials." });
+                }
+
+                // 3. Password Verification
+                if (!BCrypt.Net.BCrypt.Verify(request.Password, user.PasswordHash))
+                {
+
+                    return Unauthorized(new { message = "Invalid Kit credentials." });
+                }
+
+                // 4. 🔥 CRITICAL CHECK: Enforce Kit User Type (Type 2)
+                if (user.UserType != 2)
+                {
+
+                    return Unauthorized(new { message = "This account is restricted to portal access only." });
+                }
+
+                //// 5. Must Reset Password Check
+                //if (user.MustResetPassword)
+                //{
+                //    return Ok(new LoginResponse
+                //    {
+                //        Message = "Password reset required.",
+                //        Token = "",
+                //    });
+                //}
+
+                // 6. Generate Token and update ActiveToken
+                var token = GenerateJwtToken(user);
+                user.ActiveToken = token;
+
+                _context.Users.Update(user);
+                await _context.SaveChangesAsync();
+
+
+
+                return Ok(new LoginResponse
+                {
+                    Message = "Kit login successful.",
+                    Token = token,
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "Security error.", details = ex.Message });
+            }
+        }
 
         /// <summary>
         /// Initiates the password recovery flow by sending a reset link to the user.
@@ -569,24 +439,25 @@ namespace OnlineRegistration.Server.Controllers
         [HttpPost("forgot-password")]
         public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordDto dto)
         {
+            if (string.IsNullOrWhiteSpace(dto.Email)) return BadRequest(new { message = "Email is required." });
+
             var email = dto.Email.Trim().ToLower();
             var resetToken = Guid.NewGuid().ToString("N");
 
             try
             {
-                var userIdParam = new SqlParameter("@UserId", SqlDbType.Int) { Direction = ParameterDirection.Output };
-                var usernameParam = new SqlParameter("@Username", SqlDbType.NVarChar, 100) { Direction = ParameterDirection.Output };
+                // 1. Find the user
+                var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
 
-                // 1. Execute SP (Handles validation, token saving, and logging)
-                await _context.Database.ExecuteSqlRawAsync(
-                    "EXEC [dbo].[sp_HandleForgotPassword] @Email, @GeneratedToken, @UserId OUTPUT, @Username OUTPUT",
-                    new SqlParameter("@Email", email),
-                    new SqlParameter("@GeneratedToken", resetToken),
-                    userIdParam, usernameParam);
-
-                // 2. Only send email if a valid UserId was returned (User exists)
-                if (userIdParam.Value != DBNull.Value)
+                // 2. If user exists, update token and expiry (24 hours)
+                if (user != null)
                 {
+                    user.PasswordResetToken = resetToken;
+
+                    _context.Users.Update(user);
+                    await _context.SaveChangesAsync();
+
+                    // 3. Queue the email
                     var frontendUrl = _config["FrontendUrl"];
                     var resetUrl = $"{frontendUrl}/reset-password?token={resetToken}&email={Uri.EscapeDataString(email)}";
 
@@ -594,135 +465,97 @@ namespace OnlineRegistration.Server.Controllers
                     {
                         To = email,
                         Subject = "Password Reset Request",
-                        Body = $@"<p>Hello {usernameParam.Value},</p>
-                          <p>Reset your password by clicking the link below:</p>
-                          <p><a href='{resetUrl}'>Reset Password</a></p>
-                          <p>This link will expire in 24 hours.</p>"
+                        Body = $@"<p>Hello {user.FirstName},</p>
+                              <p>Reset your password by clicking the link below:</p>
+                              <p><a href='{resetUrl}'>Reset Password</a></p>
+                              <p>This link will expire in 24 hours.</p>"
                     });
+
                 }
 
-                // 3. Always return the same message to prevent "Email Fishing"
+                // 4. Always return the same message to prevent "Email Fishing"
                 return Ok(new { message = "If this email is registered, a reset link has been sent." });
             }
             catch (Exception ex)
             {
-                // Log technical errors internally
-                return StatusCode(500, new { message = "An error occurred while processing your request." });
+                return StatusCode(500, new { message = "An error occurred while processing your request.", details = ex.Message });
             }
         }
 
         /// <summary>
-        /// Updates a user's password using a valid reset token or administrative trigger.
+        /// Updates a user's password using a valid reset token.
         /// </summary>
         [HttpPost("reset-password")]
         public async Task<IActionResult> FlexiblePasswordUpdate([FromBody] FlexiblePasswordRequest request)
         {
-            // 1. Basic Validation
+            // 1. Validation Logic
             if (string.IsNullOrEmpty(request.Email) || string.IsNullOrEmpty(request.NewPassword))
-            {
                 return BadRequest(new { message = "Email and New Password are required." });
-            }
 
-            // 2. Client-side parity check (Confirm Password)
             if (request.NewPassword != request.ConfirmPassword)
-            {
                 return BadRequest(new { message = "Passwords do not match." });
-            }
 
-            // 3. Complexity Validation
-            if (!IsPasswordValid(request.NewPassword))
-            {
-                return BadRequest(new { message = "Password does not meet the complexity requirements." });
-            }
+            
 
             try
             {
-                // 4. Hash the new password
-                string hashedPassword = BCrypt.Net.BCrypt.HashPassword(request.NewPassword);
+                // 2. Fetch User and validate token (if your request DTO includes the token)
+                var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == request.Email.Trim().ToLower());
 
-                // 5. Execute SP
-                var userIdParam = new SqlParameter("@UserId", SqlDbType.Int) { Direction = ParameterDirection.Output };
+                if (user == null) return NotFound(new { message = "User account not found." });
 
-                await _context.Database.ExecuteSqlRawAsync(
-                    "EXEC [dbo].[sp_FlexiblePasswordReset] @Email, @NewPasswordHash, @UserId OUTPUT",
-                    new SqlParameter("@Email", request.Email.Trim().ToLower()),
-                    new SqlParameter("@NewPasswordHash", hashedPassword),
-                    userIdParam);
+           
+                // 4. Update Password and Clear Token
+                user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(request.NewPassword);
+                user.PasswordResetToken = null; // Clear token after use
+                user.MustResetPassword = false; // User has now reset it
+                user.ActiveToken = null; // Force logout everywhere else
 
-                return Ok(new { message = "Password updated successfully. You can now log in with your new credentials." });
+                _context.Users.Update(user);
+                await _context.SaveChangesAsync();
+
+
+                return Ok(new { message = "Password updated successfully. You can now log in." });
             }
-            catch (SqlException ex)
+            catch (Exception ex)
             {
-                // Returns "User account not found" or other SQL custom errors
-                return NotFound(new { message = ex.Message });
+                return StatusCode(500, new { message = "An internal error occurred.", error = ex.Message });
             }
-            catch (Exception)
-            {
-                return StatusCode(500, new { message = "An internal error occurred while updating the password." });
-            }
-        }
-
-        private bool IsPasswordValid(string password)
-        {
-            if (string.IsNullOrEmpty(password) || password.Length < 8)
-            {
-                return false;
-            }
-            return Regex.IsMatch(password, PasswordRegex);
         }
 
         /// <summary>
         /// Terminates the user session and invalidates the active server-side token.
         /// </summary>
         [HttpPost("logout")]
+        [Authorize] // Ensure the user is actually authenticated to call this
         public async Task<IActionResult> Logout()
         {
-            var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value
+                            ?? User.FindFirst("id")?.Value;
 
-            // 1. Check if Claim exists
-            if (string.IsNullOrEmpty(userIdClaim))
+            if (string.IsNullOrEmpty(userIdClaim) || !int.TryParse(userIdClaim, out int parsedUserId))
             {
-                await LogManualEntry(null, "LOGOUT_FAILURE_NO_CLAIM", "N/A");
-                return Unauthorized();
-            }
-
-            // 2. Parse the Claim
-            if (!int.TryParse(userIdClaim, out int parsedUserId))
-            {
-                await LogManualEntry(null, "LOGOUT_FAILURE_INVALID_CLAIM_FORMAT", userIdClaim);
                 return Unauthorized();
             }
 
             try
             {
-                // 3. Execute SP (Invalidates token and logs success/user not found)
-                await _context.Database.ExecuteSqlRawAsync(
-                    "EXEC [dbo].[sp_HandleLogout] @UserId, @ClaimedId",
-                    new SqlParameter("@UserId", parsedUserId),
-                    new SqlParameter("@ClaimedId", userIdClaim)
-                );
+                var user = await _context.Users.FindAsync(parsedUserId);
+                if (user != null)
+                {
+                    // Invalidate the token on the server side
+                    user.ActiveToken = null;
+                    _context.Users.Update(user);
+                    await _context.SaveChangesAsync();
+                }
 
-                return Ok(new { message = "Logged out" });
+                return Ok(new { message = "Logged out successfully." });
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                return StatusCode(500, new { message = "An error occurred during logout." });
+                return StatusCode(500, new { message = "An error occurred during logout.", error = ex.Message });
             }
-        }
-
-        // Helper for C#-side logging (failures before reaching SP)
-        private async Task LogManualEntry(int? userId, string desc, string claimedId)
-        {
-            _context.ApplicationLogs.Add(new ApplicationLog
-            {
-                LogId = Guid.NewGuid().ToString("N"),
-                UserId = userId,
-                LogDescription = desc,
-                LogDate = DateTime.Now.ToString("yyyy-MM-dd"),
-                LogTime = DateTime.Now.ToString("HH:mm:ss"),
-                Notes = $"Logout attempt. Claimed ID: {claimedId}"
-            });
-            await _context.SaveChangesAsync();
         }
     }
-}
+    }
+
