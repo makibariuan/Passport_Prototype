@@ -43,7 +43,7 @@ const auth = useAuthStore();
 
 const navItems = [
   { icon: User, label: "Personal Profile", path: "/profile" },
-  { icon: Users, label: "Profiles", path: "/profiles" },
+  { icon: Users, label: "Profiles", path: "/persons-profile" },
   { icon: Calendar, label: "Start an Application", path: "/application/new" },
   { icon: FileSearch, label: "Manage Existing Application", path: "/application/manage" },
   { icon: BookText, label: "Application History", path: "/application/history" },
