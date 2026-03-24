@@ -5,8 +5,8 @@ namespace Passport_Prototype.Server.Models
     public class WorkInformation
     {
         public int Id { get; set; }
-        public int? UserID { get; set; }
-        public Users? Users { get; set; }
+        public int? UserId { get; set; }
+        //public Users? Users { get; set; }
         public string? Occupation { get; set; }
         public string? OfficeAddress { get; set; }
         public string? OfficeCountry { get; set; }

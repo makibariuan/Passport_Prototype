@@ -26,7 +26,7 @@ namespace Passport_Prototype.Server.Controllers
 
             var entity = new WorkInformation
             {
-                //UserID = dto.UserID,
+                //UserId = dto.UserId,
                 Occupation = dto.Occupation,
                 OfficeAddress = dto.OfficeAddress,
                 OfficeCountry = dto.OfficeCountry,
@@ -49,7 +49,7 @@ namespace Passport_Prototype.Server.Controllers
         public async Task<IActionResult> GetAll()
         {
             var data = await _context.WorkInformation
-                .Include(w => w.Users)
+                .Include(w => w.UserId)
                 .ToListAsync();
 
             return Ok(data);
@@ -60,7 +60,7 @@ namespace Passport_Prototype.Server.Controllers
         public async Task<IActionResult> GetById(int id)
         {
             var data = await _context.WorkInformation
-                .Include(w => w.Users)
+                .Include(w => w.UserId)
                 .FirstOrDefaultAsync(w => w.Id == id);
 
             if (data == null)
@@ -79,7 +79,7 @@ namespace Passport_Prototype.Server.Controllers
             if (entity == null)
                 return NotFound();
 
-            entity.UserID = dto.UserID;
+            entity.UserId = dto.UserId;
             entity.Occupation = dto.Occupation;
             entity.OfficeAddress = dto.OfficeAddress;
             entity.OfficeCountry = dto.OfficeCountry;

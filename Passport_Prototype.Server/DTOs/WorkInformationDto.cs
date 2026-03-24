@@ -4,7 +4,7 @@ namespace Passport_Prototype.Server.DTOs
 {
     public class WorkInformationDto
     {
-        public int? UserID { get; set; }
+        public int? UserId { get; set; }
 
         public string? Occupation { get; set; }
 
