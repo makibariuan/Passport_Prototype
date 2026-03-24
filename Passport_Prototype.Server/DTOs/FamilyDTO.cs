@@ -2,7 +2,7 @@
 
 namespace Passport_Prototype.Server.DTOs
 {
-    public class CreateFamilyDTO
+    public class FamilyMemberDTO
     {
         [Required]
         public int UserId { get; set; }
@@ -24,6 +24,11 @@ namespace Passport_Prototype.Server.DTOs
         public string? Suffix { get; set; }
 
         public string? Citizenship { get; set; }
+    }
+
+    public class CreateFamilyDTO
+    {
+        public List<FamilyMemberDTO> FamilyMember { get; set; } = new List<FamilyMemberDTO>();
     }
 
     public class UpdateFamilyDTO
