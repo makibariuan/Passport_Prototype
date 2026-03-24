@@ -70,10 +70,10 @@ public class PassportPersonalInformationsController : ControllerBase
     }
 
     // READ BY ID
-    [HttpGet("{id}")]
-    public async Task<IActionResult> GetById(int id)
+    [HttpGet("{userId}")]
+    public async Task<IActionResult> GetById(int userId)
     {
-        var passportPersonalInformation = await _context.PassportPersonalInformation.FindAsync(id);
+        var passportPersonalInformation = await _context.PassportPersonalInformation.FirstOrDefaultAsync(p => p.UserId == userId);
 
         if (passportPersonalInformation == null)
             return NotFound();

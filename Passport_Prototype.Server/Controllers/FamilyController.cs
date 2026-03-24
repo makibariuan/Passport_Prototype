@@ -55,10 +55,10 @@ namespace Passport_Prototype.Server.Controllers
         }
 
         // READ BY ID
-        [HttpGet("{id}")]
-        public async Task<IActionResult> GetById(int id)
+        [HttpGet("{userId}")]
+        public async Task<IActionResult> GetById(int userId)
         {
-            var family = await _context.Family.Where(f => f.UserId == id).ToListAsync();
+            var family = await _context.Family.Where(f => f.UserId == userId).ToListAsync();
 
             if (family == null)
                 return NotFound();
