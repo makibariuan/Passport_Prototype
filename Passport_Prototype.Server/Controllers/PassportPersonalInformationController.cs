@@ -31,7 +31,7 @@ public class PassportPersonalInformationsController : ControllerBase
             Birthdate = dto.Birthdate,
             Gender = dto.Gender,
             Nationality = dto.Nationality,
-            CivilStatus = dto.CivilStatus,
+            CivilStatusId = dto.CivilStatus,
             hasPSABirthcert = dto.HasPSABirthcert,
             isBirthLegitimate = dto.IsBirthLegitimate,
             BirthCountry = dto.BirthCountry,
@@ -98,7 +98,7 @@ public class PassportPersonalInformationsController : ControllerBase
         passportPersonalInformation.Birthdate = dto.Birthdate.Value;
         passportPersonalInformation.Gender = dto.Gender;
         passportPersonalInformation.Nationality = dto.Nationality;
-        passportPersonalInformation.CivilStatus = dto.CivilStatus;
+        passportPersonalInformation.CivilStatusId = dto.CivilStatus;
         passportPersonalInformation.hasPSABirthcert = dto.HasPSABirthcert.Value;
         passportPersonalInformation.isBirthLegitimate = dto.IsBirthLegitimate.Value;
         passportPersonalInformation.BirthCountry = dto.BirthCountry;
