@@ -58,7 +58,7 @@
                     <div class="pds-field required">
                       <label class="pds-label">Last Name<span class="required-star">*</span></label>
                       <input
-                        v-model="user.surname"
+                        v-model="user.lastName"
                         class="pds-input"
                         placeholder="e.g. Dela Cruz"
                       />
@@ -936,7 +936,7 @@
 
 <script setup>
 import LeftMenu from "@/components/LeftMenu.vue";
-import { ref, computed } from "vue";
+import { ref, computed, onMounted } from "vue";
 import axios from "axios";
 import DialogBox from "@/components/DialogBox.vue";
 import LoadingDialog from "./LoadingDialog.vue";
@@ -946,6 +946,7 @@ const dialogTitle = ref("");
 const dialogMessage = ref("");
 const isLoading = ref(false);
 const activeTab = ref("Personal");
+const userId = 5;
 
 // ------------------ State ------------------
 const user = ref({
@@ -960,18 +961,26 @@ const user = ref({
   birthLegitimacy: "",
   isAdoptee: false,
   placeOfBirth: "",
-  // father
+  // family fields live here — the template binds to these
   fatherSurname: "",
   fatherFirstName: "",
   fatherMiddleName: "",
   fatherNameExtension: "",
   fatherCitizenship: "",
-  // mother
   motherSurname: "",
   motherFirstName: "",
   motherMiddleName: "",
   motherNameExtension: "",
   motherCitizenship: "",
+});
+
+const family = ref({
+  relationship: "",
+  lastName: "",
+  firstName: "",
+  middleName: "",
+  extension: "",
+  citizenship: "",
 });
 
 const contact = ref({
@@ -1014,6 +1023,7 @@ const showValidationErrors = ref(false);
 // ── Personal tab extras ──────────────────────────────────────────
 const hasMiddleName = ref(true);
 const hasPSABirthCert = ref(false);
+const civilStatuses = ref([]);
 
 // Birth location cascading refs
 const birthCountry = ref("PH");
@@ -1175,7 +1185,77 @@ const motherCitizenshipFlag = computed(
   () => nationalities.find((n) => n.name === user.value.motherCitizenship)?.flag ?? "🌐",
 );
 
-// ------------------ API Methods ------------------
+// ------------------ GET Methods ------------------
+const fetchPersonal = async () => {
+  try {
+    isLoading.value = true;
+    const { data } = await axios.get(
+      `https://localhost:5000/api/PassportPersonalInformations/${userId}`,
+    );
+
+    user.value.lastName = data.lastName ?? "";
+    user.value.firstName = data.firstName ?? "";
+    user.value.middleName = data.middleName ?? "";
+    user.value.nameExtension = data.nameExtension ?? "";
+    user.value.dateOfBirth = data.dateOfBirth ? data.dateOfBirth.substring(0, 10) : "";
+    user.value.sex = data.sex ?? "";
+    user.value.citizenship = data.citizenship ?? "";
+    user.value.civilStatusID = data.civilStatusID ?? "";
+    user.value.birthLegitimacy = data.birthLegitimacy ?? "";
+    user.value.isAdoptee = data.isAdoptee ?? false;
+    user.value.placeOfBirth = data.placeOfBirth ?? "";
+
+    hasMiddleName.value = !!data.middleName;
+    hasPSABirthCert.value = data.hasPSABirthCert ?? false;
+
+    birthCountry.value = data.birthCountry ?? "PH";
+    birthRegion.value = data.birthRegion ?? "";
+    birthProvince.value = data.birthProvince ?? "";
+    birthCity.value = data.birthCity ?? "";
+    birthBarangay.value = data.birthBarangay ?? "";
+  } catch (err) {
+    console.log("fetchPersonal error:", err);
+  } finally {
+    isLoading.value = false;
+  }
+};
+
+const fetchFamily = async () => {
+  try {
+    isLoading.value = true;
+    const { data } = await axios.get(`https://localhost:5000/api/Families/${userId}`);
+
+    // father — API returns nested { father: {...}, mother: {...} }
+    user.value.fatherSurname = data.relationship === "Father" ? data.lastName : "";
+    user.value.fatherFirstName = data.relationship === "Father" ? data.firstName : "";
+    user.value.fatherMiddleName = data.relationship === "Father" ? data.middleName : "";
+    user.value.fatherNameExtension = data.relationship === "Father" ? data.suffix : "";
+    user.value.fatherCitizenship = data.relationship === "Father" ? data.citizenship : "";
+    fatherLifeStatus.value =
+      data.relationship === "Father" ? (data.isAlive ? "alive" : "deceased") : "alive";
+    fatherHasMiddleName.value = data.relationship === "Father" ? data.middleName : "";
+
+    // mother
+    user.value.motherSurname = data.mother?.surname ?? "";
+    user.value.motherFirstName = data.mother?.firstName ?? "";
+    user.value.motherMiddleName = data.mother?.middleName ?? "";
+    user.value.motherNameExtension = data.mother?.nameExtension ?? "";
+    user.value.motherCitizenship = data.mother?.citizenship ?? "";
+    motherLifeStatus.value = data.mother?.lifeStatus ?? "alive";
+    motherHasMiddleName.value = !!data.mother?.middleName;
+  } catch (err) {
+    console.log("fetchFamily error:", err);
+  } finally {
+    isLoading.value = false;
+  }
+};
+
+onMounted(async () => {
+  await fetchPersonal();
+  await fetchFamily();
+});
+
+// ------------------ PATCH Methods ------------------
 const updatePersonal = async () => {
   try {
     isLoading.value = true;
@@ -1198,7 +1278,7 @@ const updatePersonal = async () => {
       birthBarangay: birthBarangay.value,
       placeOfBirth: birthCountry.value !== "PH" ? user.value.placeOfBirth : null,
     };
-    await axios.patch("/user/personal", payload);
+    await axios.patch(`https://localhost:5000/api/PassportPersonalInformations/${userId}`, payload);
     dialogTitle.value = "Success";
     dialogMessage.value = "Personal info saved.";
     showDialog.value = true;
@@ -1233,7 +1313,7 @@ const updateFamily = async () => {
         lifeStatus: motherLifeStatus.value,
       },
     };
-    await axios.patch("/user/family", payload);
+    await axios.patch(`https://localhost:5000/api/Families/${userId}`, payload);
     dialogTitle.value = "Success";
     dialogMessage.value = "Family info saved.";
     showDialog.value = true;
@@ -1250,7 +1330,7 @@ const updateFamily = async () => {
 const updateContact = async () => {
   try {
     isLoading.value = true;
-    await axios.patch("/user/contact", {
+    await axios.patch("https://localhost:5000/user/contact", {
       mobile: `${contact.value.mobileCountry}${contact.value.mobilePrefix}${contact.value.mobileNumber}`,
       landline: `${contact.value.landlineCountry}${contact.value.landlineNumber}`,
       address: address.value,
@@ -1271,7 +1351,7 @@ const updateContact = async () => {
 const updateWork = async () => {
   try {
     isLoading.value = true;
-    await axios.patch("/user/work", { ...work.value });
+    await axios.patch("https://localhost:5000/user/work", { ...work.value });
     dialogTitle.value = "Success";
     dialogMessage.value = "Work info saved.";
     showDialog.value = true;

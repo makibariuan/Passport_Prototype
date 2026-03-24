@@ -4,7 +4,6 @@ import AuthPage from "@/components/Auth/AuthPage.vue";
 import Dashboard from "@/components/Dashboard.vue";
 import PersonalDataSheet from "@/components/PersonalDataSheet.vue";
 import PersonsDataSheet from "@/components/PersonsDataSheet.vue";
-import Timesheet from "@/components/Timesheet.vue";
 import EmailConfirm from "@/components/EmailConfirm.vue";
 import ResetPassword from "@/components/ResetPassword.vue";
 import DetailsPage from "@/components/EmployeeID.vue";
@@ -18,6 +17,7 @@ import AdjudicationDetailsPage from "@/components/HR/AdjudicationDetailsPage.vue
 import BiometricTest from "@/components/BiometricTest.vue";
 import AttendanceManagement from "@/components/HR/AttendanceManagement.vue";
 import IDDetails from "@/components/Employee/IDDetails.vue";
+import CreateApplication from "@/components/CreateApplication.vue";
 
 /*
   DEV MODE — auth guard disabled, navigate freely to any route.
@@ -49,7 +49,7 @@ const routes = [
   // ── Employee / PDS ─────────────────────────────────────────────
   { path: "/profile", name: "PersonalDataSheet", component: PersonalDataSheet },
   { path: "/persons-profile", name: "PersonsDataSheet", component: PersonsDataSheet },
-  { path: "/timesheet", name: "Timesheet", component: Timesheet },
+  { path: "/application/new", name: "Application", component: CreateApplication },
   { path: "/id-details", name: "IDDetails", component: IDDetails },
 
   // ── Management ─────────────────────────────────────────────────
