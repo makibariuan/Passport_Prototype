@@ -1,5 +1,5 @@
 <template>
-  <!-- Hidden Input for File Selection (place this anywhere in your template) -->
+  <!-- Hidden Input for File Selection -->
   <input
     type="file"
     ref="requiredDocFile"
@@ -37,14 +37,15 @@
         </div>
       </div>
 
-      <!-- Folder-like Content Area -->
       <div class="tab-wrapper">
         <div class="tab-content">
           <transition name="fade-slide" mode="out-in">
             <div :key="activeTab" class="form-wrapper">
-              <!-- Personal Data Sheet 1 — PERSONAL TAB -->
+              <!-- ═══════════════════════════════════════════ -->
+              <!-- PERSONAL TAB                               -->
+              <!-- ═══════════════════════════════════════════ -->
               <div v-if="activeTab === 'Personal'">
-                <!-- ── SECTION: Identity ── -->
+                <!-- SECTION: Personal Information -->
                 <div class="pds-section">
                   <div class="pds-section-header">
                     <div>
@@ -154,7 +155,9 @@
                     </div>
                   </div>
                 </div>
+                <!-- /SECTION: Personal Information -->
 
+                <!-- SECTION: Civil Status & Documents -->
                 <div class="pds-section">
                   <div class="pds-section-header">
                     <div>
@@ -204,7 +207,7 @@
                       </select>
                     </div>
 
-                    <!-- PSA Birth Certificate Toggle -->
+                    <!-- PSA Birth Certificate -->
                     <div class="pds-field required">
                       <label class="pds-label"
                         >PSA Birth Certificate<span class="required-star">*</span></label
@@ -246,7 +249,7 @@
                       </select>
                     </div>
 
-                    <!-- Adoptee Toggle -->
+                    <!-- Adoptee -->
                     <div class="pds-field required">
                       <label class="pds-label">Adoptee?<span class="required-star">*</span></label>
                       <div class="pds-yn-group">
@@ -268,8 +271,9 @@
                     </div>
                   </div>
                 </div>
+                <!-- /SECTION: Civil Status & Documents -->
 
-                <!-- ── SECTION: Place of Birth ── -->
+                <!-- SECTION: Place of Birth -->
                 <div class="pds-section">
                   <div class="pds-section-header">
                     <div>
@@ -317,7 +321,7 @@
 
                     <!-- Birth Province -->
                     <div class="pds-field required" v-if="birthCountry === 'PH' && birthRegion">
-                      <label class="pds-label">Province</label>
+                      <label class="pds-label">Province<span class="required-star">*</span></label>
                       <select
                         v-model="birthProvince"
                         class="pds-input"
@@ -371,11 +375,12 @@
                     </div>
                   </div>
 
-                  <!-- Cascading breadcrumb pill -->
+                  <!-- Location breadcrumb -->
                   <div v-if="birthLocationSummary" class="pds-location-crumb">
                     📍 {{ birthLocationSummary }}
                   </div>
                 </div>
+                <!-- /SECTION: Place of Birth -->
 
                 <!-- Save -->
                 <div class="button-group-row">
@@ -384,10 +389,14 @@
                   </button>
                 </div>
               </div>
+              <!-- /PERSONAL TAB -->
 
+              <!-- ═══════════════════════════════════════════ -->
+              <!-- FAMILY TAB                                 -->
+              <!-- ═══════════════════════════════════════════ -->
               <div v-else-if="activeTab === 'Family'">
                 <div class="form-wrapper">
-                  <!-- ── SECTION: Father Information ── -->
+                  <!-- SECTION: Father's Information -->
                   <div class="pds-section">
                     <div class="pds-section-header">
                       <div>
@@ -452,7 +461,7 @@
                         />
                       </div>
 
-                      <!-- Middle Name with toggle -->
+                      <!-- Middle Name -->
                       <div class="pds-field required">
                         <label class="pds-label">
                           Middle Name
@@ -533,8 +542,9 @@
                       >
                     </div>
                   </div>
+                  <!-- /SECTION: Father -->
 
-                  <!-- ── SECTION: Mother Information ── -->
+                  <!-- SECTION: Mother's Information -->
                   <div class="pds-section">
                     <div class="pds-section-header">
                       <div>
@@ -601,7 +611,7 @@
                         />
                       </div>
 
-                      <!-- Middle Name with toggle -->
+                      <!-- Middle Name -->
                       <div class="pds-field required">
                         <label class="pds-label">
                           Middle Name
@@ -682,6 +692,7 @@
                       >
                     </div>
                   </div>
+                  <!-- /SECTION: Mother -->
 
                   <!-- Save -->
                   <div class="button-group-row">
@@ -691,11 +702,219 @@
                   </div>
                 </div>
               </div>
+              <!-- /FAMILY TAB -->
 
-              <!-- Personal Data Sheet 3 -->
-              <div v-else-if="activeTab === 'Contact'"></div>
+              <!-- ═══════════════════════════════════════════ -->
+              <!-- CONTACT TAB                                -->
+              <!-- ═══════════════════════════════════════════ -->
+              <div v-else-if="activeTab === 'Contact'">
+                <div style="margin-bottom: 30px">
+                  <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 20px">
+                    <p style="margin: 0; font-weight: bold; white-space: nowrap">
+                      Personal Contact & Address
+                    </p>
+                  </div>
 
-              <div v-else-if="activeTab === 'Work'"></div>
+                  <div style="display: flex; flex-direction: column; gap: 12px">
+                    <label class="form-row">
+                      <span>Current Address</span>
+                      <input class="auth-input" v-model="address.street" />
+                    </label>
+                    <label class="form-row">
+                      <span>Address Abroad</span>
+                      <input class="auth-input" v-model="address.abroad" />
+                    </label>
+                    <label class="form-row">
+                      <span>Current Country</span>
+                      <select class="auth-select" v-model="address.country">
+                        <option value="">Select Country</option>
+                      </select>
+                    </label>
+                    <label class="form-row">
+                      <span>Current Region</span>
+                      <select class="auth-select" v-model="address.region">
+                        <option value="">Select Region</option>
+                      </select>
+                    </label>
+                    <label class="form-row">
+                      <span>Current Province</span>
+                      <select class="auth-select" v-model="address.province">
+                        <option value="">Select Province</option>
+                      </select>
+                    </label>
+                    <label class="form-row">
+                      <span>Current Municipality</span>
+                      <select class="auth-select" v-model="address.municipality">
+                        <option value="">Select Municipality</option>
+                      </select>
+                    </label>
+                    <label class="form-row">
+                      <span>Current Barangay</span>
+                      <select class="auth-select" v-model="address.barangay">
+                        <option value="">Select Barangay</option>
+                      </select>
+                    </label>
+                    <label class="form-row">
+                      <span>Current Postal Code</span>
+                      <input class="auth-input" v-model="address.postal" />
+                    </label>
+                  </div>
+
+                  <!-- Personal Mobile -->
+                  <label class="form-row" style="margin-top: 24px">
+                    <span>Personal Mobile</span>
+                    <div class="phone-input-group">
+                      <select class="phone-flag" v-model="contact.mobileCountry">
+                        <option value="+63">🇵🇭 +63</option>
+                        <option value="+1">🇺🇸 +1</option>
+                        <option value="+44">🇬🇧 +44</option>
+                      </select>
+                      <input
+                        class="auth-input phone-prefix"
+                        placeholder="906"
+                        v-model="contact.mobilePrefix"
+                        maxlength="4"
+                      />
+                      <input
+                        class="auth-input phone-number"
+                        placeholder="1234567"
+                        v-model="contact.mobileNumber"
+                      />
+                    </div>
+                  </label>
+
+                  <!-- Personal Landline -->
+                  <label class="form-row" style="margin-top: 16px">
+                    <span>Personal Landline</span>
+                    <div class="phone-input-group">
+                      <select class="phone-flag" v-model="contact.landlineCountry">
+                        <option value="+63">🇵🇭 +63</option>
+                        <option value="+1">🇺🇸 +1</option>
+                        <option value="+44">🇬🇧 +44</option>
+                      </select>
+                      <input
+                        class="auth-input phone-number"
+                        placeholder="02-123-4567"
+                        v-model="contact.landlineNumber"
+                      />
+                    </div>
+                  </label>
+
+                  <div class="button-group-row">
+                    <button @click="save" class="btn" style="margin-left: auto; width: 200px">
+                      Save Progress
+                    </button>
+                  </div>
+                </div>
+              </div>
+              <!-- /CONTACT TAB -->
+
+              <!-- ═══════════════════════════════════════════ -->
+              <!-- WORK TAB                                   -->
+              <!-- ═══════════════════════════════════════════ -->
+              <div v-else-if="activeTab === 'Work'">
+                <div class="form-wrapper">
+                  <div style="margin-bottom: 30px">
+                    <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 20px">
+                      <p style="margin: 0; font-weight: bold; white-space: nowrap">
+                        Work Information
+                      </p>
+                    </div>
+
+                    <div style="display: flex; flex-direction: column; gap: 12px">
+                      <label class="form-row">
+                        <span>Occupation</span>
+                        <input class="auth-input" v-model="work.occupation" />
+                      </label>
+                      <label class="form-row">
+                        <span>Office Address</span>
+                        <input class="auth-input" v-model="work.officeAddress" />
+                      </label>
+                      <label class="form-row">
+                        <span>Office Country</span>
+                        <select class="auth-select" v-model="work.officeCountry">
+                          <option value="">Select Country</option>
+                        </select>
+                      </label>
+                      <label class="form-row">
+                        <span>Office Region</span>
+                        <select class="auth-select" v-model="work.officeRegion">
+                          <option value="">Select Region</option>
+                        </select>
+                      </label>
+                      <label class="form-row">
+                        <span>Office Province</span>
+                        <select class="auth-select" v-model="work.officeProvince">
+                          <option value="">Select Province</option>
+                        </select>
+                      </label>
+                      <label class="form-row">
+                        <span>Office Municipality</span>
+                        <select class="auth-select" v-model="work.officeMunicipality">
+                          <option value="">Select Municipality</option>
+                        </select>
+                      </label>
+                      <label class="form-row">
+                        <span>Office Barangay</span>
+                        <select class="auth-select" v-model="work.officeBarangay">
+                          <option value="">Select Barangay</option>
+                        </select>
+                      </label>
+                      <label class="form-row">
+                        <span>Office Postal Code</span>
+                        <input class="auth-input" v-model="work.postalCode" />
+                      </label>
+                    </div>
+
+                    <!-- Work Mobile -->
+                    <label class="form-row" style="margin-top: 24px">
+                      <span>Work Mobile</span>
+                      <div class="phone-input-group">
+                        <select class="phone-flag" v-model="contact.mobileCountry">
+                          <option value="+63">🇵🇭 +63</option>
+                          <option value="+1">🇺🇸 +1</option>
+                          <option value="+44">🇬🇧 +44</option>
+                        </select>
+                        <input
+                          class="auth-input phone-prefix"
+                          placeholder="906"
+                          v-model="contact.mobilePrefix"
+                          maxlength="4"
+                        />
+                        <input
+                          class="auth-input phone-number"
+                          placeholder="1234567"
+                          v-model="contact.mobileNumber"
+                        />
+                      </div>
+                    </label>
+
+                    <!-- Work Landline -->
+                    <label class="form-row" style="margin-top: 16px">
+                      <span>Work Landline</span>
+                      <div class="phone-input-group">
+                        <select class="phone-flag" v-model="contact.landlineCountry">
+                          <option value="+63">🇵🇭 +63</option>
+                          <option value="+1">🇺🇸 +1</option>
+                          <option value="+44">🇬🇧 +44</option>
+                        </select>
+                        <input
+                          class="auth-input phone-number"
+                          placeholder="02-123-4567"
+                          v-model="contact.landlineNumber"
+                        />
+                      </div>
+                    </label>
+
+                    <div class="button-group-row">
+                      <button @click="save" class="btn" style="margin-left: auto; width: 200px">
+                        Save Progress
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!-- /WORK TAB -->
             </div>
           </transition>
         </div>
@@ -711,13 +930,12 @@
     @close="handleCloseDialog"
   />
 
-  <!-- Loading Dialog (always on top of everything) -->
+  <!-- Loading Dialog -->
   <LoadingDialog :visible="isLoading" />
 </template>
 
 <script setup>
 import LeftMenu from "@/components/LeftMenu.vue";
-// import Header from "./Header.vue";
 import { ref, computed } from "vue";
 import axios from "axios";
 import DialogBox from "@/components/DialogBox.vue";
@@ -727,7 +945,6 @@ const showDialog = ref(false);
 const dialogTitle = ref("");
 const dialogMessage = ref("");
 const isLoading = ref(false);
-
 const activeTab = ref("Personal");
 
 // ------------------ State ------------------
@@ -742,34 +959,61 @@ const user = ref({
   civilStatusID: "",
   birthLegitimacy: "",
   isAdoptee: false,
-
+  placeOfBirth: "",
   // father
   fatherSurname: "",
   fatherFirstName: "",
   fatherMiddleName: "",
+  fatherNameExtension: "",
   fatherCitizenship: "",
-
   // mother
   motherSurname: "",
   motherFirstName: "",
   motherMiddleName: "",
+  motherNameExtension: "",
   motherCitizenship: "",
+});
+
+const contact = ref({
+  mobile: "",
+  landline: "",
+  email: "",
+  mobileCountry: "+63",
+  mobilePrefix: "",
+  mobileNumber: "",
+  landlineCountry: "+63",
+  landlineNumber: "",
+});
+
+const work = ref({
+  occupation: "",
+  officeAddress: "",
+  officeCountry: "",
+  officeRegion: "",
+  officeProvince: "",
+  officeMunicipality: "",
+  officeBarangay: "",
+  postalCode: "",
+});
+
+const address = ref({
+  street: "",
+  abroad: "",
+  city: "",
+  province: "",
+  region: "",
+  municipality: "",
+  barangay: "",
+  postal: "",
+  postalCode: "",
+  country: "",
 });
 
 const showValidationErrors = ref(false);
 
-const onBirthCountryChange = () => {};
-const onBirthRegionChange = () => {};
-const onBirthProvinceChange = () => {};
-const onBirthCityChange = () => {};
-
 // ── Personal tab extras ──────────────────────────────────────────
 const hasMiddleName = ref(true);
 const hasPSABirthCert = ref(false);
-
-// Extend user.value defaults
-user.value.birthLegitimacy = user.value.birthLegitimacy ?? "";
-user.value.isAdoptee = user.value.isAdoptee ?? false;
 
 // Birth location cascading refs
 const birthCountry = ref("PH");
@@ -778,7 +1022,26 @@ const birthProvince = ref("");
 const birthCity = ref("");
 const birthBarangay = ref("");
 
-// ── Nationality list (common + PH first) ────────────────────────
+const onBirthCountryChange = () => {
+  birthRegion.value = "";
+  birthProvince.value = "";
+  birthCity.value = "";
+  birthBarangay.value = "";
+};
+const onBirthRegionChange = () => {
+  birthProvince.value = "";
+  birthCity.value = "";
+  birthBarangay.value = "";
+};
+const onBirthProvinceChange = () => {
+  birthCity.value = "";
+  birthBarangay.value = "";
+};
+const onBirthCityChange = () => {
+  birthBarangay.value = "";
+};
+
+// ── Nationality list ────────────────────────
 const nationalities = [
   { code: "PH", name: "Filipino", flag: "🇵🇭" },
   { code: "US", name: "American", flag: "🇺🇸" },
@@ -804,7 +1067,6 @@ const birthCountries = [
   { code: "OTHER", name: "Other", flag: "🌐" },
 ];
 
-// ── Philippine PSGC data (trimmed for brevity — extend as needed) ─
 const phRegions = [
   { code: "NCR", name: "NCR — National Capital Region" },
   { code: "CAR", name: "CAR — Cordillera Administrative Region" },
@@ -820,7 +1082,6 @@ const phRegions = [
   { code: "R09", name: "Region IX — Zamboanga Peninsula" },
   { code: "R10", name: "Region X — Northern Mindanao" },
   { code: "R11", name: "Region XI — Davao Region" },
-  { code: "R12", name: "Region XII — SOCCSKSARGEN" },
   { code: "R13", name: "Region XIII — Caraga" },
   { code: "BARMM", name: "BARMM — Bangsamoro" },
 ];
@@ -840,7 +1101,6 @@ const phProvinces = [
   { code: "BATANGAS", regionCode: "R04A", name: "Batangas" },
   { code: "CEBU", regionCode: "R07", name: "Cebu" },
   { code: "DAVAO_DEL_SUR", regionCode: "R11", name: "Davao del Sur" },
-  // extend with full PSGC list or load from API
 ];
 
 const phCities = [
@@ -856,7 +1116,6 @@ const phCities = [
   { code: "DASMARIÑAS", provinceCode: "CAVITE", name: "Dasmariñas" },
   { code: "CEBU_CITY", provinceCode: "CEBU", name: "Cebu City" },
   { code: "DAVAO_CITY", provinceCode: "DAVAO_DEL_SUR", name: "Davao City" },
-  // extend with full PSGC list or load from API
 ];
 
 const phBarangays = [
@@ -864,7 +1123,6 @@ const phBarangays = [
   { code: "MKT-BGY1", cityCode: "MKT", name: "Bel-Air" },
   { code: "MKT-BGY2", cityCode: "MKT", name: "Forbes Park" },
   { code: "MKT-BGY3", cityCode: "MKT", name: "San Lorenzo" },
-  // extend per city — or load from PSGC API
 ];
 
 // Cascading computed
@@ -903,10 +1161,24 @@ const birthLocationSummary = computed(() => {
   return parts.filter(Boolean).join(" › ");
 });
 
+// ── Family tab extras ────────────────────────────
+const fatherLifeStatus = ref("alive");
+const motherLifeStatus = ref("alive");
+const fatherHasMiddleName = ref(true);
+const motherHasMiddleName = ref(true);
+
+// Flag computed helpers for parent citizenship selects
+const fatherCitizenshipFlag = computed(
+  () => nationalities.find((n) => n.name === user.value.fatherCitizenship)?.flag ?? "🌐",
+);
+const motherCitizenshipFlag = computed(
+  () => nationalities.find((n) => n.name === user.value.motherCitizenship)?.flag ?? "🌐",
+);
+
+// ------------------ API Methods ------------------
 const updatePersonal = async () => {
   try {
     isLoading.value = true;
-
     const payload = {
       surname: user.value.surname,
       firstName: user.value.firstName,
@@ -919,8 +1191,6 @@ const updatePersonal = async () => {
       birthLegitimacy: user.value.birthLegitimacy,
       isAdoptee: user.value.isAdoptee,
       hasPSABirthCert: hasPSABirthCert.value,
-
-      // birth location
       birthCountry: birthCountry.value,
       birthRegion: birthRegion.value,
       birthProvince: birthProvince.value,
@@ -928,9 +1198,7 @@ const updatePersonal = async () => {
       birthBarangay: birthBarangay.value,
       placeOfBirth: birthCountry.value !== "PH" ? user.value.placeOfBirth : null,
     };
-
     await axios.patch("/user/personal", payload);
-
     dialogTitle.value = "Success";
     dialogMessage.value = "Personal info saved.";
     showDialog.value = true;
@@ -944,12 +1212,9 @@ const updatePersonal = async () => {
   }
 };
 
-// API FETCH
-
 const updateFamily = async () => {
   try {
     isLoading.value = true;
-
     const payload = {
       father: {
         surname: user.value.fatherSurname,
@@ -959,7 +1224,6 @@ const updateFamily = async () => {
         citizenship: user.value.fatherCitizenship,
         lifeStatus: fatherLifeStatus.value,
       },
-
       mother: {
         surname: user.value.motherSurname,
         firstName: user.value.motherFirstName,
@@ -969,9 +1233,7 @@ const updateFamily = async () => {
         lifeStatus: motherLifeStatus.value,
       },
     };
-
     await axios.patch("/user/family", payload);
-
     dialogTitle.value = "Success";
     dialogMessage.value = "Family info saved.";
     showDialog.value = true;
@@ -985,52 +1247,65 @@ const updateFamily = async () => {
   }
 };
 
-const save = () => {
-  showValidationErrors.value = true;
-
-  if (activeTab.value === "Personal") {
-    updatePersonal();
-  } else if (activeTab.value === "Family") {
-    updateFamily();
+const updateContact = async () => {
+  try {
+    isLoading.value = true;
+    await axios.patch("/user/contact", {
+      mobile: `${contact.value.mobileCountry}${contact.value.mobilePrefix}${contact.value.mobileNumber}`,
+      landline: `${contact.value.landlineCountry}${contact.value.landlineNumber}`,
+      address: address.value,
+    });
+    dialogTitle.value = "Success";
+    dialogMessage.value = "Contact info saved.";
+    showDialog.value = true;
+  } catch (err) {
+    console.log("error: ", err);
+    dialogTitle.value = "Error";
+    dialogMessage.value = "Failed to save contact info.";
+    showDialog.value = true;
+  } finally {
+    isLoading.value = false;
   }
 };
 
-// ── Family tab extras ────────────────────────────
+const updateWork = async () => {
+  try {
+    isLoading.value = true;
+    await axios.patch("/user/work", { ...work.value });
+    dialogTitle.value = "Success";
+    dialogMessage.value = "Work info saved.";
+    showDialog.value = true;
+  } catch (err) {
+    console.log("error: ", err);
+    dialogTitle.value = "Error";
+    dialogMessage.value = "Failed to save work info.";
+    showDialog.value = true;
+  } finally {
+    isLoading.value = false;
+  }
+};
 
-const fatherLifeStatus = ref("alive"); // 'alive' | 'deceased'
-const motherLifeStatus = ref("alive");
+const save = () => {
+  showValidationErrors.value = true;
+  if (activeTab.value === "Personal") updatePersonal();
+  else if (activeTab.value === "Family") updateFamily();
+  else if (activeTab.value === "Contact") updateContact();
+  else if (activeTab.value === "Work") updateWork();
+};
 
-const fatherHasMiddleName = ref(true);
-const motherHasMiddleName = ref(true);
-
-// Extend user.value defaults for new fields
-user.value.fatherCitizenship = user.value.fatherCitizenship ?? "";
-user.value.motherCitizenship = user.value.motherCitizenship ?? "";
-
-// Flag computed helpers for parent citizenship selects
-const fatherCitizenshipFlag = computed(
-  () => nationalities.find((n) => n.name === user.value.fatherCitizenship)?.flag ?? "🌐",
-);
-const motherCitizenshipFlag = computed(
-  () => nationalities.find((n) => n.name === user.value.motherCitizenship)?.flag ?? "🌐",
-);
-
-// ------------------ Save Methods ------------------
+const handleCloseDialog = () => {
+  showDialog.value = false;
+};
 </script>
 
 <style>
-/* ************************************************************************** */
-/* 1. DASHBOARD GRID LAYOUT STYLES (MATCHING EmployeeID.vue) */
-/* ************************************************************************** */
-/* Renamed .app-grid-layout to .app-layout and updated style */
 .app-layout {
   display: grid;
   grid-template-columns: 280px 1fr;
-  /* Change this to ensure the header doesn't push the content down */
   grid-template-rows: auto 1fr;
   height: 100vh;
   background-color: #f4f7f9;
-  overflow: hidden; /* Prevent double scrollbars on the body */
+  overflow: hidden;
 }
 
 .leftMenu {
@@ -1045,23 +1320,18 @@ const motherCitizenshipFlag = computed(
   z-index: 90;
 }
 
-/* Renamed .content-area to .dashboard-content and updated style */
 .dashboard-content {
   grid-column: 2;
   grid-row: 2;
   width: 100%;
-  height: 100%; /* Fill the remaining grid space */
+  height: 100%;
   padding: 30px;
   box-sizing: border-box;
-  overflow-y: auto; /* This allows the dashboard to scroll if needed */
+  overflow-y: auto;
   display: flex;
   flex-direction: column;
   overflow: hidden;
 }
-
-/* ************************************************************************** */
-/* 2. PAGE CONTENT & TABS STYLES (MATCHING EmployeeID.vue) */
-/* ************************************************************************** */
 
 .page-title {
   font-size: 1.8rem;
@@ -1070,7 +1340,6 @@ const motherCitizenshipFlag = computed(
   margin-bottom: 25px;
 }
 
-/* Sub-title style updated to match EmployeeID.vue */
 .sub-title {
   font-size: 1.5rem;
   color: #06195e;
@@ -1079,12 +1348,11 @@ const motherCitizenshipFlag = computed(
   font-weight: 700;
 }
 
-/* Adopted the boxed tab style from EmployeeID.vue */
 .tab-container {
   display: flex;
   gap: 2px;
   margin-bottom: 0;
-  z-index: 2; /* Keep tabs above the content wrapper border */
+  z-index: 2;
 }
 
 .tab-btn {
@@ -1098,10 +1366,6 @@ const motherCitizenshipFlag = computed(
   transition: all 0.2s ease;
 }
 
-.tab-btn:last-child {
-  border-right: none;
-}
-
 .tab-btn:hover:not(.active) {
   background: #e0e0e0;
   color: #004085;
@@ -1111,203 +1375,24 @@ const motherCitizenshipFlag = computed(
   background: white;
   color: #06195e;
   border-top: 3px solid #06195e;
-  padding-top: 9px; /* Adjust for border */
+  padding-top: 9px;
 }
 
-/* Updated .tab-wrapper to look like .data-section-card */
 .tab-wrapper {
   background: white;
   border-radius: 0 12px 12px 12px;
   padding: 25px;
   border: 1px solid #e2e8f0;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-  /* Dynamic height fix */
-  flex: 1; /* Automatically takes up all remaining space below the tabs */
-  overflow-y: auto; /* This is where the scrollbar should live */
+  flex: 1;
+  overflow-y: auto;
   display: flex;
   flex-direction: column;
-}
-
-/* Added data-section-card for consistency */
-.data-section-card {
-  background: white;
-  border-radius: 12px;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
-  padding: 20px;
-  overflow: hidden;
-}
-
-.tab-content {
-  /* No specific styles needed here */
 }
 
 .form-wrapper {
   padding: 10px;
 }
-
-/* Tailwind-like classes (retained) */
-.w-\[90\%\] {
-  width: 90%;
-}
-
-.mx-auto {
-  margin-left: auto;
-  margin-right: auto;
-}
-
-/* ************************************************************************** */
-/* 3. PDS Table Layout (UPDATED COLORS) */
-/* ************************************************************************** */
-.pds-table-wrapper {
-  width: 100%;
-  overflow-x: auto; /* Allows horizontal scrolling if columns are too wide */
-  margin-bottom: 20px;
-  /*    border: 1px solid #ccc;*/
-  border-radius: 8px;
-}
-
-.pds-table thead th {
-  background-color: #f8f9fa;
-  color: #333;
-  font-weight: 600;
-  text-align: center;
-  white-space: nowrap;
-}
-
-.pds-table {
-  width: 100%;
-  min-width: 1100px; /* Ensures the table doesn't collapse too much */
-  border-collapse: collapse;
-  font-size: 0.85rem;
-}
-
-.pds-table th,
-.pds-table td {
-  padding: 8px 5px;
-  /*      border: 1px solid #e0e0e0;*/
-  vertical-align: middle;
-}
-
-/* Only targets tables with the 'table-compact' class */
-.table-compact td:last-child {
-  width: 1%;
-  white-space: nowrap;
-  text-align: center;
-  padding: 5px 15px;
-}
-
-/* Ensures the input (first column) takes the rest of the space */
-.table-compact td:first-child {
-  width: auto;
-}
-
-/* Ensures the input inside this specific table stays full width */
-.table-compact .auth-input {
-  width: 100%;
-}
-
-/* Add this to override the min-width for Other Info tables */
-.pds-table.table-compact {
-  min-width: 0 !important;
-  /* This allows the table to be smaller than 1100px */
-}
-
-/* Optional: Give the first column a fixed-ish width
-    so the delete buttons align vertically across all three Other Info tables */
-.table-compact td:first-child {
-  width: 80%; /* Adjust this percentage to control where the delete button starts */
-}
-
-/* Specific Column Widths */
-.col-level {
-  width: 120px;
-}
-
-.col-school {
-  width: 220px;
-}
-
-.col-degree {
-  width: 200px;
-}
-
-.col-year {
-  width: 80px;
-}
-/* Narrower for YYYY inputs */
-.col-units {
-  width: 150px;
-}
-
-.col-honors {
-  width: 150px;
-}
-
-.col-action {
-  width: 80px;
-}
-
-.pds-table .auth-input {
-  width: 100%;
-  padding: 6px;
-  margin: 0;
-  box-sizing: border-box;
-  border: 1px solid #dcdfe6;
-  border-radius: 4px;
-}
-
-.text-lg {
-  font-size: 1rem;
-  line-height: 1.6;
-  color: #1a202c;
-}
-
-.spacer-row {
-  background: transparent !important;
-}
-
-.flex.items-center.space-x-6 {
-  display: flex;
-  gap: 24px;
-  align-items: center;
-}
-
-.flex.justify-between.items-start.gap-8 {
-  display: flex;
-  gap: 32px;
-  margin-top: 20px;
-}
-
-.flex-grow {
-  flex: 1;
-}
-
-input[type="radio"],
-input[type="checkbox"] {
-  accent-color: #06195e; /* Colors the radio/checkbox Makati Blue */
-  width: 18px;
-  height: 18px;
-  cursor: pointer;
-}
-
-/* This makes the rows slide to their new positions smoothly */
-.list-move {
-  transition: transform 0.4s cubic-bezier(0.55, 0, 0.1, 1);
-}
-
-/* Optional: add a slight fade when rows move */
-.list-enter-active,
-.list-leave-active {
-  transition: all 0.4s ease;
-}
-
-.pds-table-wrapper {
-  overflow: hidden; /* Prevents scrollbar flickering during animation */
-}
-
-/* ══════════════════════════════════════════════════
-    PDS REDESIGN — Section Cards & New Controls
-  ══════════════════════════════════════════════════ */
 
 .pds-section {
   background: #fff;
@@ -1318,6 +1403,7 @@ input[type="checkbox"] {
   box-shadow: 0 2px 8px rgba(6, 25, 94, 0.05);
   transition: box-shadow 0.2s;
 }
+
 .pds-section:hover {
   box-shadow: 0 4px 16px rgba(6, 25, 94, 0.09);
 }
@@ -1330,50 +1416,25 @@ input[type="checkbox"] {
   padding-bottom: 14px;
   border-bottom: 2px solid #f0f4f9;
 }
-.pds-section-icon {
-  font-size: 1.5rem;
-  width: 44px;
-  height: 44px;
-  background: #eef2fb;
-  border-radius: 10px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-}
+
 .pds-section-title {
   font-size: 1rem;
   font-weight: 700;
   color: #06195e;
   margin: 0 0 2px;
 }
-.pds-section-subtitle {
-  font-size: 0.78rem;
-  color: #8796aa;
-  margin: 0;
-}
 
-/* Field grid */
 .pds-field-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
   gap: 18px 20px;
 }
+
 .pds-field {
   display: flex;
   flex-direction: column;
   gap: 5px;
   position: relative;
-}
-.pds-field.pds-field-wide {
-  grid-column: span 3;
-}
-.pds-field.pds-field-narrow {
-  grid-column: span 1;
-  min-width: 100px;
-}
-.pds-field.pds-field-half {
-  grid-column: span 2;
 }
 
 .pds-label {
@@ -1386,6 +1447,7 @@ input[type="checkbox"] {
   align-items: center;
   gap: 8px;
 }
+
 .pds-optional {
   font-weight: 400;
   text-transform: none;
@@ -1406,16 +1468,19 @@ input[type="checkbox"] {
     border-color 0.18s,
     box-shadow 0.18s;
 }
+
 .pds-input:focus {
   outline: none;
   border-color: #06195e;
   box-shadow: 0 0 0 3px rgba(6, 25, 94, 0.1);
 }
+
 .pds-input:disabled {
   background: #f1f5f9;
   color: #718096;
   cursor: not-allowed;
 }
+
 .pds-input-error {
   border-color: #e53e3e !important;
   background: #fff5f5 !important;
@@ -1430,13 +1495,13 @@ input[type="checkbox"] {
   right: 2px;
 }
 
-/* Gender toggle */
 .pds-gender-toggle {
   display: flex;
   border: 1.5px solid #d1d9e6;
   border-radius: 8px;
   overflow: hidden;
 }
+
 .pds-gender-btn {
   flex: 1;
   padding: 9px;
@@ -1452,22 +1517,25 @@ input[type="checkbox"] {
   gap: 6px;
   transition: all 0.18s;
 }
+
 .pds-gender-btn:first-child {
   border-right: 1px solid #d1d9e6;
 }
+
 .pds-gender-btn.male.active {
   background: #dbeafe;
   color: #1d4ed8;
 }
+
 .pds-gender-btn.female.active {
   background: #fce7f3;
   color: #be185d;
 }
+
 .gender-icon {
   font-size: 1.1rem;
 }
 
-/* Yes/No inline toggle (for labels) */
 .pds-toggle-wrap {
   display: inline-flex;
   border: 1px solid #d1d9e6;
@@ -1475,6 +1543,7 @@ input[type="checkbox"] {
   overflow: hidden;
   margin-left: auto;
 }
+
 .pds-yn-btn {
   padding: 2px 10px;
   font-size: 0.7rem;
@@ -1485,16 +1554,17 @@ input[type="checkbox"] {
   cursor: pointer;
   transition: all 0.15s;
 }
+
 .pds-yn-btn.active {
   background: #06195e;
   color: #fff;
 }
 
-/* Yes/No large group */
 .pds-yn-group {
   display: flex;
   gap: 8px;
 }
+
 .pds-yn-lg {
   flex: 1;
   padding: 9px;
@@ -1507,18 +1577,19 @@ input[type="checkbox"] {
   cursor: pointer;
   transition: all 0.18s;
 }
+
 .pds-yn-lg.active {
   background: #ebf8f0;
   color: #276749;
   border-color: #68d391;
 }
+
 .pds-yn-lg.no.active {
   background: #fff5f5;
   color: #c53030;
   border-color: #fc8181;
 }
 
-/* N/A pill */
 .pds-na-pill {
   padding: 9px 12px;
   background: #f1f5f9;
@@ -1529,7 +1600,6 @@ input[type="checkbox"] {
   font-style: italic;
 }
 
-/* Flag select */
 .pds-flag-select {
   display: flex;
   align-items: center;
@@ -1542,14 +1612,17 @@ input[type="checkbox"] {
     border-color 0.18s,
     box-shadow 0.18s;
 }
+
 .pds-flag-select:focus-within {
   border-color: #06195e;
   box-shadow: 0 0 0 3px rgba(6, 25, 94, 0.1);
 }
+
 .pds-flag-preview {
   font-size: 1.4rem;
   flex-shrink: 0;
 }
+
 .pds-flag-input {
   border: none !important;
   box-shadow: none !important;
@@ -1558,90 +1631,6 @@ input[type="checkbox"] {
   background: transparent;
 }
 
-/* Upload slot */
-.pds-upload-slot {
-  margin-top: 8px;
-}
-.pds-upload-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 8px 14px;
-  background: #f0f4ff;
-  color: #06195e;
-  border: 1.5px dashed #93a8d4;
-  border-radius: 8px;
-  font-weight: 700;
-  font-size: 0.82rem;
-  cursor: pointer;
-  transition: all 0.18s;
-}
-.pds-upload-btn:hover {
-  background: #e0e9ff;
-  border-color: #06195e;
-}
-
-.pds-file-chip {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  background: #f0fff4;
-  border: 1px solid #68d391;
-  border-radius: 20px;
-  padding: 5px 12px;
-  font-size: 0.82rem;
-  max-width: 100%;
-}
-.pds-file-name {
-  color: #276749;
-  font-weight: 600;
-  cursor: pointer;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  max-width: 200px;
-}
-.pds-file-name:hover {
-  text-decoration: underline;
-}
-.pds-file-del {
-  background: none;
-  border: none;
-  color: #e53e3e;
-  font-size: 1rem;
-  cursor: pointer;
-  padding: 0;
-  line-height: 1;
-  flex-shrink: 0;
-}
-
-/* Marriage doc notice */
-.pds-marriage-doc-row {
-  margin-top: 16px;
-  padding: 14px 18px;
-  background: #fffbeb;
-  border-left: 4px solid #f59e0b;
-  border-radius: 0 8px 8px 0;
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  flex-wrap: wrap;
-}
-.pds-doc-notice {
-  display: flex;
-  align-items: flex-start;
-  gap: 8px;
-  flex: 1;
-  font-size: 0.83rem;
-  color: #78350f;
-  line-height: 1.5;
-}
-.pds-doc-notice-icon {
-  font-size: 1.1rem;
-  flex-shrink: 0;
-}
-
-/* Location breadcrumb */
 .pds-location-crumb {
   margin-top: 14px;
   padding: 10px 16px;
@@ -1653,15 +1642,6 @@ input[type="checkbox"] {
   font-weight: 600;
 }
 
-/* Address layout */
-.pds-address-row {
-  display: grid;
-  grid-template-columns: 1fr 120px;
-  gap: 12px;
-  margin-bottom: 14px;
-}
-
-/* ── Life Status Toggle ─────────────────────────────── */
 .pds-life-status-toggle {
   display: flex;
   gap: 10px;
@@ -1694,7 +1674,6 @@ input[type="checkbox"] {
   border-color: #a0aec0;
 }
 
-/* ── Deceased / Status Notice ───────────────────────── */
 .pds-status-notice {
   display: flex;
   align-items: center;
@@ -1712,7 +1691,6 @@ input[type="checkbox"] {
   color: #4a5568;
 }
 
-/* ── Maiden name tag ─────────────────────────────────── */
 .pds-maiden-tag {
   font-size: 0.65rem;
   font-weight: 700;
@@ -1723,101 +1701,6 @@ input[type="checkbox"] {
   padding: 2px 7px;
   border-radius: 10px;
   margin-left: 4px;
-}
-
-/* Gov IDs grid */
-.pds-ids-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-  gap: 14px;
-  margin-top: 18px;
-  padding-top: 16px;
-  border-top: 1px solid #f0f4f9;
-}
-.pds-id-field {
-  display: flex;
-  flex-direction: column;
-  gap: 5px;
-}
-
-/* Subsection label */
-.pds-subsection-label {
-  font-size: 0.78rem;
-  font-weight: 800;
-  text-transform: uppercase;
-  letter-spacing: 0.6px;
-  color: #06195e;
-  margin: 0 0 12px;
-  padding-bottom: 6px;
-  border-bottom: 1px dashed #d1d9e6;
-}
-
-/* Children list */
-.pds-children-list {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  margin-bottom: 10px;
-}
-.pds-child-row {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  background: #f8fafc;
-  border-radius: 8px;
-  padding: 8px 10px;
-}
-.pds-child-num {
-  width: 24px;
-  height: 24px;
-  background: #06195e;
-  color: white;
-  border-radius: 50%;
-  font-size: 0.72rem;
-  font-weight: 800;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-}
-.pds-empty-list {
-  text-align: center;
-  padding: 16px;
-  color: #a0aec0;
-  font-style: italic;
-  font-size: 0.85rem;
-  background: #f8fafc;
-  border-radius: 8px;
-  border: 1px dashed #d1d9e6;
-}
-.pds-remove-btn {
-  background: none;
-  border: 1px solid #fc8181;
-  color: #e53e3e;
-  border-radius: 6px;
-  padding: 4px 8px;
-  cursor: pointer;
-  font-size: 0.82rem;
-  transition: all 0.15s;
-}
-.pds-remove-btn:hover {
-  background: #e53e3e;
-  color: white;
-}
-
-.pds-add-row-btn {
-  padding: 9px 18px;
-  background: white;
-  border: 1.5px dashed #06195e;
-  color: #06195e;
-  border-radius: 8px;
-  font-weight: 700;
-  font-size: 0.82rem;
-  cursor: pointer;
-  transition: all 0.18s;
-}
-.pds-add-row-btn:hover {
-  background: #eef2fb;
 }
 
 .important-box {
@@ -1847,16 +1730,12 @@ input[type="checkbox"] {
   line-height: 1.5;
 }
 
-/* ************************************************************************** */
-/* 5. Buttons (UPDATED TO PRIMARY/SECONDARY AESTHETIC) */
-/* ************************************************************************** */
 .btn {
-  /* Primary Button (Next) */
   background-color: #007bff;
   color: white;
   padding: 10px 15px;
   border-radius: 6px;
-  font-weight: 600; /* Slightly less bold */
+  font-weight: 600;
   cursor: pointer;
   border: 1px solid #007bff;
   transition: all 0.2s;
@@ -1867,25 +1746,11 @@ input[type="checkbox"] {
   border-color: #0056b3;
 }
 
-.btn-white {
-  padding: 10px 20px;
-  background: white;
-  border: 1px solid #06195e;
-  color: #06195e;
-  border-radius: 8px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s;
+.button-group-row {
+  display: flex;
+  margin-top: 20px;
 }
 
-.btn-white:hover {
-  background: #f0f4f8;
-  transform: translateY(-1px);
-}
-
-/* ************************************************************************** */
-/* 7. Transition Styles (Retained/Updated) */
-/* ************************************************************************** */
 .fade-slide-enter-active,
 .fade-slide-leave-active {
   transition:
@@ -1895,22 +1760,99 @@ input[type="checkbox"] {
 
 .fade-slide-enter-from {
   opacity: 0;
-  transform: translateY(10px); /* Changed from X to Y to match EmployeeID */
+  transform: translateY(10px);
 }
 
 .fade-slide-leave-to {
   opacity: 0;
-  transform: translateY(-10px); /* Changed from X to Y to match EmployeeID */
+  transform: translateY(-10px);
 }
 
 .required-star {
-  color: #e53935; /* nice red */
+  color: #e53935;
   font-weight: 800;
 }
 
-/* ************************************************************************** */
-/* 8. RESPONSIVENESS (MATCHING EmployeeID.vue & MOBILE SWAP) */
-/* ************************************************************************** */
+/* Contact / Work form styles */
+.form-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 4px;
+}
+
+.form-row span {
+  min-width: 160px;
+  font-weight: 500;
+  color: #374151;
+  font-size: 14px;
+}
+
+.auth-input,
+.auth-select,
+.phone-flag {
+  padding: 10px 14px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 14px;
+  background-color: #f9fafb;
+  transition: all 0.2s ease;
+  height: 44px;
+  box-sizing: border-box;
+}
+
+.auth-input {
+  flex: 1;
+}
+
+.auth-select {
+  flex: 1;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
+  background-position: right 12px center;
+  background-repeat: no-repeat;
+  background-size: 16px;
+  padding-right: 40px;
+  cursor: pointer;
+}
+
+.phone-input-group {
+  display: flex;
+  gap: 8px;
+  flex: 1;
+  align-items: center;
+}
+
+.phone-flag {
+  min-width: 100px;
+  padding-right: 32px;
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
+  background-position: right 8px center;
+  background-repeat: no-repeat;
+  background-size: 16px;
+  cursor: pointer;
+  appearance: none;
+}
+
+.phone-prefix {
+  max-width: 80px;
+  text-align: center;
+}
+
+.phone-number {
+  flex: 1;
+}
+
+.auth-input:focus,
+.auth-select:focus,
+.phone-flag:focus {
+  outline: none;
+  border-color: #3b82f6;
+  background-color: #eef2ff;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+/* Responsive */
 @media (max-width: 1200px) {
   .app-layout {
     grid-template-columns: 20vw 1fr;
@@ -1921,12 +1863,9 @@ input[type="checkbox"] {
   .app-layout {
     grid-template-columns: 80px 1fr;
   }
-  /* Tab buttons wrap on smaller screens */
+
   .tab-container {
     flex-wrap: wrap;
-    border: none;
-    box-shadow: none;
-    background: none;
   }
 
   .tab-btn {
@@ -1934,14 +1873,12 @@ input[type="checkbox"] {
     border: 1px solid #e0e0e0;
     border-radius: 6px;
     margin: 5px;
-    border-right: 1px solid #e0e0e0; /* Override internal border reset */
   }
 }
 
 @media (max-width: 768px) {
   .app-layout {
     grid-template-columns: 1fr;
-    /* Define 3 rows: Header, Content, Menu */
     grid-template-rows: auto auto 1fr;
   }
 
@@ -1952,20 +1889,34 @@ input[type="checkbox"] {
   }
 
   .header {
-    grid-row: 1; /* Header stays on top */
+    grid-row: 1;
   }
 
-  /* PDS Content moved to row 2 (just below the header) */
   .dashboard-content {
     grid-row: 2;
     padding: 20px 15px;
   }
 
-  /* Left Menu moved to row 3 (below the PDS Content) */
   .leftMenu {
     grid-row: 3;
     width: 100%;
     min-height: auto;
+  }
+
+  .form-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .form-row span {
+    min-width: auto;
+    font-weight: bold;
+  }
+
+  .phone-input-group {
+    flex-direction: column;
+    width: 100%;
   }
 }
 </style>
