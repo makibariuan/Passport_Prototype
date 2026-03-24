@@ -1,8 +1,10 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using OnlineRegistration.Server.Data;
 using Passport_Prototype.Server.DTOs;
 using Passport_Prototype.Server.Models;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Passport_Prototype.Server.Controllers
 {
@@ -21,46 +23,42 @@ namespace Passport_Prototype.Server.Controllers
         [HttpPost]
         public async Task<IActionResult> Create(CreateFamilyDTO dto)
         {
-            var family = new Family
+            if (dto.FamilyMember.Count <= 0)
             {
-                UserId = dto.UserId,
-                FirstName = dto.FirstName,
-                MiddleName = dto.MiddleName,
-                LastName = dto.LastName,
-                Suffix = dto.Suffix,
-                Relationship = dto.Relationship,
-                isAlive = dto.IsAlive,
-                Citizenship = dto.Citizenship
-            };
-
-            await _context.Family.AddAsync(family);
-            await _context.SaveChangesAsync();
-
-            return CreatedAtAction(nameof(GetById), new { id = family.UserId }, family);
-        }
-
-        // READ
-        [HttpGet]
-        public async Task<IActionResult> GetAll(int? pageNumber, int? pageSize)
-        {
-            var query = _context.Family.AsQueryable();
-
-            if (pageNumber.HasValue && pageSize.HasValue)
-            {
-                query = query
-                    .Skip((pageNumber.Value - 1) * pageSize.Value)
-                    .Take(pageSize.Value);
+                return BadRequest("Atleast 1 family member");
             }
 
-            var families = await query.ToListAsync();
-            return Ok(families);
+            var Members = new List<Family>();
+
+            foreach (var familyMember in dto.FamilyMember)
+            {
+                var member = new Family
+                {
+                    UserId = familyMember.UserId,
+                    FirstName = familyMember.FirstName,
+                    MiddleName = familyMember.MiddleName,
+                    LastName = familyMember.LastName,
+                    Suffix = familyMember.Suffix,
+                    Relationship = familyMember.Relationship,
+                    isAlive = familyMember.IsAlive,
+                    Citizenship = familyMember.Citizenship
+                };
+                Members.Add(member);
+            }
+
+            
+
+            await _context.Family.AddRangeAsync(Members);
+            await _context.SaveChangesAsync();
+
+            return Created();
         }
 
         // READ BY ID
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id)
         {
-            var family = await _context.Family.FindAsync(id);
+            var family = await _context.Family.Where(f => f.UserId == id).ToListAsync();
 
             if (family == null)
                 return NotFound();
