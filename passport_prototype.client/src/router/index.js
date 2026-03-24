@@ -3,6 +3,7 @@ import { createRouter, createWebHistory } from "vue-router";
 import AuthPage from "@/components/Auth/AuthPage.vue";
 import Dashboard from "@/components/Dashboard.vue";
 import PersonalDataSheet from "@/components/PersonalDataSheet.vue";
+import PersonsDataSheet from "@/components/PersonsDataSheet.vue";
 import Timesheet from "@/components/Timesheet.vue";
 import EmailConfirm from "@/components/EmailConfirm.vue";
 import ResetPassword from "@/components/ResetPassword.vue";
@@ -47,6 +48,7 @@ const routes = [
   { path: "/reset-password", name: "ResetPassword", component: ResetPassword },
   { path: "/dashboard-system", component: Dashboard, meta: { requiresAuth: true, userRole: [2] } },
   { path: "/pds", component: PersonalDataSheet, meta: { requiresAuth: true, userRole: [4, 6] } },
+  { path: "/pds", component: PersonsDataSheet, meta: { requiresAuth: true, userRole: [4, 6] } },
   {
     path: "/timesheet",
     component: Timesheet,
