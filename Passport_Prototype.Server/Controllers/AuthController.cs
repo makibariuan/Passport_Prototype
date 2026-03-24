@@ -55,11 +55,11 @@ namespace OnlineRegistration.Server.Controllers
                 new Claim("id", user.Id.ToString()),
                 new Claim("username", user.Username),
                 new Claim("email", user.Email?.ToString() ?? ""),
-                new Claim("firstname", user.FirstName),
-                new Claim("lastname", user.LastName),
-                new Claim("usertype", user.UserType.ToString()),
-                new Claim("userrole", user.UserRole.ToString()),
-                new Claim("PersonID", user.PersonID.ToString()),
+                new Claim("firstname", user.FirstName ?? ""),
+                new Claim("lastname", user.LastName ?? ""),
+                new Claim("usertype", user.UserType.ToString()?? ""),
+                new Claim("userrole", user.UserRole.ToString()?? ""),
+                new Claim("PersonID", user.PersonID.ToString()?? ""),
                 new Claim("EmployeeCode", user.EmployeeID?.ToString() ?? ""),
         };
 
@@ -79,16 +79,15 @@ namespace OnlineRegistration.Server.Controllers
         }
 
         [HttpPost("initiate-registration")]
-        public async Task<IActionResult> InitiateRegistration([FromBody] string email)
+        public async Task<IActionResult> InitiateRegistration([FromBody] InitiateRegistrationDto dto) // Changed from string email
         {
-            if (string.IsNullOrWhiteSpace(email)) return BadRequest(new { message = "Email is required." });
+            if (dto == null || string.IsNullOrWhiteSpace(dto.Email))
+                return BadRequest(new { message = "Email is required." });
 
-            var emailLower = email.Trim().ToLower();
+            var emailLower = dto.Email.Trim().ToLower(); // Access via dto.Email
 
             try
             {
-                // 1. Fetch ONLY the user record (Ignore navigation properties for now)
-                // Ensure you are not using .Include(u => u.PassportInfo) here
                 var existingUser = await _context.Users
                     .FirstOrDefaultAsync(u => u.Email == emailLower);
 
@@ -169,6 +168,7 @@ namespace OnlineRegistration.Server.Controllers
                 userRecord.UserRole = 2;
                 userRecord.LoginOtp = null;
                 userRecord.LoginOtpExpiry = null;
+                userRecord.MustResetPassword = false;
 
                 // 5. Populate Passport Details
                 userRecord.PassportInfo = new PassportPersonalInformation
@@ -176,18 +176,18 @@ namespace OnlineRegistration.Server.Controllers
                     FirstName = dto.FirstName,
                     MiddleName = dto.MiddleName,
                     LastName = dto.LastName,
-                    Suffix = dto.Suffix,
-                    Birthdate = dto.Birthdate,
-                    Gender = dto.Gender,
-                    Nationality = dto.Nationality,
-                    CivilStatusId = dto.CivilStatusId,
-                    hasPSABirthcert = dto.HasPSABirthcert,
-                    isBirthLegitimate = dto.IsBirthLegitimate,
-                    BirthCountry = dto.BirthCountry,
-                    BirthRegion = dto.BirthRegion,
-                    BirthProvince = dto.BirthProvince,
-                    BirthCity = dto.BirthCity,
-                    BirthBarangay = dto.BirthBarangay
+                    Suffix = dto.Suffix
+                    //Birthdate = dto.Birthdate,
+                    //Gender = dto.Gender,
+                    //Nationality = dto.Nationality,
+                    //CivilStatusId = dto.CivilStatusId,
+                    //hasPSABirthcert = dto.HasPSABirthcert,
+                    //isBirthLegitimate = dto.IsBirthLegitimate,
+                    //BirthCountry = dto.BirthCountry,
+                    //BirthRegion = dto.BirthRegion,
+                    //BirthProvince = dto.BirthProvince,
+                    //BirthCity = dto.BirthCity,
+                    //BirthBarangay = dto.BirthBarangay
                 };
 
                 _context.Users.Update(userRecord);

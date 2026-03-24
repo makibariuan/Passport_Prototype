@@ -4,18 +4,20 @@ import { useAuthStore } from "@/stores/auth";
 import router from "@/router";
 
 const api = axios.create({
-  //baseURL: import.meta.env.VITE_API_BASE_URL,
-  baseURL: "https://npo-pssic.ddns.net:90/api/",
+  baseURL: import.meta.env.VITE_API_BASE_URL,
+  //baseURL: "https://npo-pssic.ddns.net:90/api/",
 });
 
 // Request interceptor
 api.interceptors.request.use(
   (config) => {
     const auth = useAuthStore();
+    const url = config.url.toLowerCase();
 
-    // Skip auth endpoints
-    if (!config.url.startsWith("/auth")) {
-      // ⬅️ reject instead of throwing Cancel (avoids ERR_NETWORK)
+    // FIXED: Check for both "/auth" and "auth" at the start
+    const isAuthRoute = url.startsWith("/auth") || url.startsWith("auth");
+
+    if (!isAuthRoute) {
       if (auth.isTokenExpired()) {
         auth.idleLogoutAction();
         return Promise.reject(new Error("Session expired"));

@@ -14,16 +14,16 @@ namespace OnlineRegistration.Server.DTOs
         public string? MiddleName { get; set; }
         public string LastName { get; set; }
         public string? Suffix { get; set; }
-        public DateTime Birthdate { get; set; }
-        public string Gender { get; set; }
-        public string Nationality { get; set; }
+        public DateTime? Birthdate { get; set; }
+        public string? Gender { get; set; }
+        public string? Nationality { get; set; }
         public string? CivilStatusId { get; set; }
-        public bool HasPSABirthcert { get; set; }
-        public bool IsBirthLegitimate { get; set; }
-        public string BirthCountry { get; set; }
-        public string BirthRegion { get; set; }
-        public string BirthProvince { get; set; }
-        public string BirthCity { get; set; }
-        public string BirthBarangay { get; set; }
+        public bool? HasPSABirthcert { get; set; }
+        public bool? IsBirthLegitimate { get; set; }
+        public string? BirthCountry { get; set; }
+        public string? BirthRegion { get; set; }
+        public string? BirthProvince { get; set; }
+        public string? BirthCity { get; set; }
+        public string? BirthBarangay { get; set; }
     }
 }

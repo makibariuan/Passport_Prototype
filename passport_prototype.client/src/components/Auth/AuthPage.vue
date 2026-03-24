@@ -13,7 +13,7 @@
         <input v-model="username" type="text" placeholder="Email Address" />
 
         <div class="password-group">
-          <input v-model="password" type="password" placeholder="Password" />
+          <input v-model="loginPassword" type="password" placeholder="Password" />
           <p class="forgot-link">Forgot Password?</p>
         </div>
 
@@ -90,7 +90,7 @@
         </div>
 
         <div class="form-field">
-          <label>Verification Code</label>
+          <label style="padding-top: 30px;">Verification Code</label>
           <div class="otp-wrapper">
             <input v-model="otp"
                    type="text"
@@ -99,10 +99,22 @@
                    autocomplete="one-time-code" />
 
             <div class="otp-slots-container">
-              <div v-for="i in 6" :key="i" class="otp-slot" :class="{ 'filled': otp.length >= i }">
+              <div v-for="i in 6" :key="i" class="otp-slot" :class="{ 'filled': otp.length >= i, 'verified-slot': isEmailVerified }">
                 {{ otp[i-1] || '' }}
               </div>
             </div>
+          </div>
+
+          <div class="otp-action-bar" style="margin-top: 10px; display: flex; gap: 10px; align-items: center;">
+            <button @click="verifyOtpCode"
+                    class="action-btn verify-btn"
+                    :disabled="otp.length < 6 || isLoading || isEmailVerified">
+              {{ isEmailVerified ? 'Verified ✓' : 'Verify Code' }}
+            </button>
+
+            <span v-if="otpError" class="error-text" style="color: #d9534f; font-size: 0.85rem;">
+              {{ otpError }}
+            </span>
           </div>
         </div>
 
@@ -125,9 +137,37 @@
           <span>Read and Accept <a href="#">Terms of Service</a></span>
         </div>
 
-        <button @click="handleRegister" class="submit-register-btn">Sign Up</button>
+        <button @click="handleRegister"
+                class="submit-register-btn"
+                :disabled="!canRegister || isLoading"
+                :class="{ 'btn-disabled': !canRegister }">
+          {{ isLoading ? 'Processing...' : 'Sign Up' }}
+        </button>
       </section>
     </main>
+
+    <DialogBox :show="showOtpDialog"
+               title="Login Verification"
+               @close="showOtpDialog = false">
+      <div class="otp-dialog-content">
+        <p>A 6-digit verification code has been sent to your email.</p>
+        <div class="otp-wrapper" style="margin: 20px 0;">
+          <input v-model="otp"
+                 type="text"
+                 maxlength="6"
+                 placeholder="000000"
+                 class="otp-input-simple" />
+        </div>
+        <button @click="handleVerifyLoginOtp"
+                class="action-btn"
+                :disabled="otp.length < 6 || isLoading">
+          {{ isLoading ? 'Verifying...' : 'Verify & Sign In' }}
+        </button>
+        <p v-if="otpError" class="error-text" style="color: #d9534f; margin-top: 10px;">
+          {{ otpError }}
+        </p>
+      </div>
+    </DialogBox>
   </div>
 </template>
 
@@ -202,6 +242,7 @@
   const loginStep = ref("credentials");
   const username = ref(""); // Dont forget to leave empty
   const email = ref("");
+  const loginPassword = ref("");
   const password = ref(""); // Dont forget to leave empty
   const confirmPassword = ref("");
   const otp = ref("");
@@ -223,13 +264,8 @@
 
   let timer = null;
 
-  // Role selection
-  // const userRole = ref("Employee"); // <--- REMOVED: Replaced by isEmployee
-
-  const employeeID = ref("");
   const lastName = ref("");
   const firstName = ref("");
-  const birthday = ref("");
 
   // 🔥 NEW: Employee registration state
   const isEmployee = ref(false);
@@ -250,7 +286,7 @@
 
   // Computed
   const passwordMismatch = computed(() => confirmPassword.value && password.value !== confirmPassword.value);
-  const canLogin = computed(() => username.value && password.value);
+  const canLogin = computed(() => username.value && loginPassword.value);
 
   // 🔥 UPDATED: Checks that employeeID is filled IF isEmployee is true.
   const isEmployeeIdRequired = computed(() => !isEmployee.value || !!employeeID.value);
@@ -262,19 +298,17 @@
     const baseValid = (
       isNameOrIdValid && // Check that either employeeID or firstName is filled
       lastName.value &&
-      birthday.value &&
       email.value &&
+      isEmailVerified.value &&
       isPasswordValid.value &&
       !passwordMismatch.value &&
-      //govIDType.value &&
-      //govIDNumber.value &&
-      idImageBase64.value && // Ensure ID image is captured
       isTermsAccepted.value &&
       captchaVerified.value
     );
     return baseValid;
   });
 
+  const isEmailVerified = ref(false); // Track if OTP was accepted
 
   // password validation
   // Individual checks
@@ -322,21 +356,11 @@
     }
   };
 
-  // --- New Gov ID State ---
-  const govIDType = ref("");
-  const govIDNumber = ref("");
-  const idImageBase64 = ref("");
-  const idFileExtension = ref("");
-  const validIDOriginalName = ref(null);
-  const documentTypeToUpload = ref(""); // Needed for trigger logic
-  const requiredDocFile = ref(null);    // Needed for input ref
-
-
   watch(isLogin, (newVal) => {
     if (newVal) {
       // Switched to Login
       username.value = "";
-      password.value = "";
+      loginPassword.value = "";
       otp.value = "";
       forgotEmail.value = "";
       otpError.value = "";
@@ -634,12 +658,14 @@
     isLoading.value = true;
     try {
       // Matches [HttpPost("initiate-registration")]
-      const response = await api.post("/Auth/initiate-registration", JSON.stringify(email.value), {
-        headers: { 'Content-Type': 'application/json' }
+      const response = await api.post("Auth/initiate-registration", {
+        email: email.value
       });
       alert(response.data.message);
       // Start your countdown timer here
     } catch (err) {
+      console.error("Full Error Object:", err); // Look at this in F12 Chrome DevTools
+      console.log("Status Code:", err.response?.status);
       alert(err.response?.data?.message || "Failed to send code.");
     } finally {
       isLoading.value = false;
@@ -648,15 +674,28 @@
 
   // 2. Verify OTP (Before filling the rest of the form)
   const verifyOtpCode = async () => {
+    if (otp.value.length !== 6) {
+      otpError.value = "Please enter the 6-digit code.";
+      return;
+    }
+
+    isLoading.value = true;
+    otpError.value = "";
+
     try {
-      // Matches [HttpPost("verify-registration-otp")]
-      const response = await api.post("/Auth/verify-registration-otp", {
+      // Matches your [HttpPost("verify-registration-otp")]
+      const response = await api.post("/auth/verify-registration-otp", {
         email: email.value,
         verificationCode: otp.value
       });
-      alert("Email Verified! Please complete your details.");
+
+      isEmailVerified.value = true;
+      alert("Email Verified! You can now complete your registration.");
     } catch (err) {
-      alert(err.response?.data?.message || "Invalid Code.");
+      otpError.value = err.response?.data?.message || "Invalid or expired code.";
+      isEmailVerified.value = false;
+    } finally {
+      isLoading.value = false;
     }
   };
 
@@ -666,21 +705,25 @@
 
     isLoading.value = true;
     try {
-      // Matches [HttpPut("complete-registration")]
       const payload = {
         email: email.value,
         password: password.value,
         firstName: firstName.value,
-        middleName: hasMiddleName.value ? middleName.value : null,
+        middleName: hasMiddleName.value ? middleName.value : "",
         lastName: lastName.value,
-        suffix: "", // Add a ref for this if needed
-        // Map other fields required by your RegisterDto/PassportPersonalInformation
+        suffix: "", // Add a ref if you want to capture this
+        verificationCode: otp.value,
+        // The other fields (Gender, BirthCity, etc.) can be omitted 
+        // or sent as null since the DTO is now nullable.
       };
 
-      await api.put("/Auth/complete-registration", payload);
+      console.log("Sending Clean Payload:", payload);
+      const response = await api.put("/Auth/complete-registration", payload);
+
       alert("Registration Successful!");
       router.push("/login");
     } catch (err) {
+      console.error("Registration Error:", err.response?.data);
       alert(err.response?.data?.message || "Registration failed.");
     } finally {
       isLoading.value = false;
@@ -689,19 +732,76 @@
 
   // 4. Login Logic
   const handleLogin = async () => {
+    if (!username.value || !loginPassword.value) {
+      alert("Please enter credentials.");
+      return;
+    }
+
+    isLoading.value = true;
+    otp.value = ""; // Clear old OTP input
+    otpError.value = "";
+
     try {
-      // Matches [HttpPost("login")]
-      const response = await api.post("/Auth/login", {
+      const response = await api.post("/auth/login", {
         email: username.value,
-        password: password.value
+        password: loginPassword.value
       });
-      // The backend sends an OTP for login too! 
-      // You should show your OTP dialog now.
+
+      console.log("Login API Success, showing dialog...");
       showOtpDialog.value = true;
+      console.log("Current showOtpDialog state:", showOtpDialog.value);
     } catch (err) {
       alert(err.response?.data?.message || "Login failed.");
+    } finally {
+      isLoading.value = false;
+    }
+  };
+
+  const handleVerifyLoginOtp = async () => {
+    if (otp.value.length !== 6) return;
+
+    isLoading.value = true;
+    otpError.value = "";
+
+    try {
+      // This calls your backend endpoint that checks LoginOtp and LoginOtpExpiry
+      const response = await api.post("/auth/verify-otp", {
+        email: username.value,
+        verificationCode: otp.value
+      });
+
+      // 1. Save the token to your Pinia store
+      auth.login({
+        token: response.data.token,
+        user: response.data.user
+      });
+
+      showOtpDialog.value = false;
+      alert("Login Successful!");
+
+      // 2. Redirect based on user role (matching your store logic)
+      const role = parseInt(auth.userRole);
+      if (role === 1) {
+        router.push("/dashboard-admin");
+      } else {
+        router.push("/dashboard");
+      }
+    } catch (err) {
+      otpError.value = err.response?.data?.message || "Invalid or expired OTP.";
+    } finally {
+      isLoading.value = false;
     }
   };
 </script>
+
+<style>
+  /* Add this outside of any scoped blocks to test */
+  .otp-dialog-content,
+  [class*="dialog"],
+  [class*="modal"] {
+    z-index: 9999 !important;
+    position: relative;
+  }
+</style>
 
 

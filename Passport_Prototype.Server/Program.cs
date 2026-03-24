@@ -200,45 +200,33 @@ builder.Services.AddAuthorization();
 
 var app = builder.Build();
 
-// ------------------ Middleware Pipeline ------------------
+// 1. Core Middleware
+app.UseHttpsRedirection(); // Move this UP
+app.UseStaticFiles();
+app.UseDefaultFiles();
 
 app.UseRouting();
+
+// 2. Security
 app.UseCors("DevPolicy");
-
-app.UseDefaultFiles();
-app.UseStaticFiles();
-
 app.UseAuthentication();
 app.UseAuthorization();
 
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+// 3. Documentation (Enable for testing if needed, even in Prod)
+app.UseSwagger();
+app.UseSwaggerUI();
 
-app.UseHttpsRedirection();
-
-// Map API controllers
+// 4. Map the API
 app.MapControllers();
 
-// ------------------ Custom Fallback for SPA ------------------
-
-app.MapFallback(async context =>
-{
-    var path = context.Request.Path;
-
-    // If it's an API path, return 404 JSON instead of serving index.html
-    if (path.StartsWithSegments("/api"))
+// 5. SPA Fallback (KEEP THIS LAST)
+app.MapFallback(async context => {
+    if (context.Request.Path.StartsWithSegments("/api"))
     {
         context.Response.StatusCode = 404;
-        context.Response.ContentType = "application/json";
         await context.Response.WriteAsJsonAsync(new { message = "API endpoint not found." });
         return;
     }
-
-    // Otherwise, serve the SPA
-    context.Response.ContentType = "text/html";
     await context.Response.SendFileAsync("wwwroot/index.html");
 });
 
