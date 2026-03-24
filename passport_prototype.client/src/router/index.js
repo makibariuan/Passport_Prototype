@@ -41,7 +41,7 @@ import IDDetails from "@/components/Employee/IDDetails.vue";
 */
 
 const routes = [
-  { path: "/", component: AuthPage, name: "Login" },
+  { path: "/", component: PersonalDataSheet, name: "Login" },
   { path: "/login", redirect: "/" },
   { path: "/confirm-email", name: "ConfirmEmail", component: EmailConfirm },
   { path: "/reset-password", name: "ResetPassword", component: ResetPassword },
@@ -103,46 +103,46 @@ const router = createRouter({
   routes,
 });
 
-router.beforeEach((to, from, next) => {
-  const auth = useAuthStore();
+// router.beforeEach((to, from, next) => {
+//   const auth = useAuthStore();
 
-  // ✅ Token expired → force logout
-  if (auth.isTokenExpired()) {
-    auth.idleLogoutAction();
-    if (to.meta.requiresAuth) return next("/login");
-  }
+//   // ✅ Token expired → force logout
+//   if (auth.isTokenExpired()) {
+//     auth.idleLogoutAction();
+//     if (to.meta.requiresAuth) return next("/login");
+//   }
 
-  // ✅ Not logged in but route requires auth → redirect
-  if (to.meta.requiresAuth && !auth.isLoggedIn) {
-    return next("/login");
-  }
+//   // ✅ Not logged in but route requires auth → redirect
+//   if (to.meta.requiresAuth && !auth.isLoggedIn) {
+//     return next("/login");
+//   }
 
-  // ✅ Already logged in → block login/register routes
-  if ((to.path === "/" || to.path === "/login" || to.path === "/register") && auth.isLoggedIn) {
-    if (auth.userRole == 1) return next("/dashboard-admin");
-    else if (auth.userRole == 2) return next("/dashboard-system");
-    else if (auth.userRole == 4) return next("/dashboard");
-    else if (auth.userRole == 5) return next("/dashboard");
-    else if (auth.userRole == 6) return next("/dashboard-hr");
-    else return next("/login");
-  }
+//   // ✅ Already logged in → block login/register routes
+//   if ((to.path === "/" || to.path === "/login" || to.path === "/register") && auth.isLoggedIn) {
+//     if (auth.userRole == 1) return next("/dashboard-admin");
+//     else if (auth.userRole == 2) return next("/dashboard-system");
+//     else if (auth.userRole == 4) return next("/dashboard");
+//     else if (auth.userRole == 5) return next("/dashboard");
+//     else if (auth.userRole == 6) return next("/dashboard-hr");
+//     else return next("/login");
+//   }
 
-  // ✅ Check user type restrictions
-  if (to.meta.requiresAuth && to.meta.userRole && auth.isLoggedIn) {
-    const userRole = parseInt(auth.userRole); // ensure numeric
-    const allowedUserTypes = to.meta.userRole.map((t) => parseInt(t)); // ensure numeric
+//   // ✅ Check user type restrictions
+//   if (to.meta.requiresAuth && to.meta.userRole && auth.isLoggedIn) {
+//     const userRole = parseInt(auth.userRole); // ensure numeric
+//     const allowedUserTypes = to.meta.userRole.map((t) => parseInt(t)); // ensure numeric
 
-    if (!allowedUserTypes.includes(userRole)) {
-      console.warn(`🚫 Access denied for role ${userRole} on route ${to.path}`);
-      if (auth.userRole == 1) return next("/dashboard-admin");
-      else if (auth.userRole == 2) return next("/dashboard-system");
-      else if (auth.userRole == 5) return next("/dashboard");
-      else if (auth.userRole == 6) return next("/dashboard-hr");
-      else return next("/");
-    }
-  }
+//     if (!allowedUserTypes.includes(userRole)) {
+//       console.warn(`🚫 Access denied for role ${userRole} on route ${to.path}`);
+//       if (auth.userRole == 1) return next("/dashboard-admin");
+//       else if (auth.userRole == 2) return next("/dashboard-system");
+//       else if (auth.userRole == 5) return next("/dashboard");
+//       else if (auth.userRole == 6) return next("/dashboard-hr");
+//       else return next("/");
+//     }
+//   }
 
-  next();
-});
+//   next();
+// });
 
 export default router;
