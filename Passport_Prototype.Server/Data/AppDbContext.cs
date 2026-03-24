@@ -50,5 +50,9 @@ namespace OnlineRegistration.Server.Data
 
             base.OnModelCreating(modelBuilder);
         }
+
+        // Passport
+        public DbSet<PassportPersonalInformation> PassportPersonalInformation { get; set; }
+        public DbSet<Family> Family { get; set; }
     }
 }
