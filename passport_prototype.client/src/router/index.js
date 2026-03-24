@@ -40,28 +40,54 @@ import IDDetails from "@/components/Employee/IDDetails.vue";
     6 - HR
 */
 
+//const routes = [
+//  { path: "/", component: AuthPage, name: "Login" },
+//  { path: "/login", redirect: "/" },
+//  { path: "/confirm-email", name: "ConfirmEmail", component: EmailConfirm },
+//  { path: "/reset-password", name: "ResetPassword", component: ResetPassword },
+//  { path: "/dashboard-system", component: Dashboard, meta: { requiresAuth: true, userRole: [2] } },
+//  { path: "/pds", component: PersonalDataSheet, meta: { requiresAuth: true, userRole: [4, 6] } },
+//  { path: "/timesheet", component: Timesheet, meta: { requiresAuth: true, userRole: [1, 2, 4, 6] } },
+//  { path: "/dashboard-admin", component: DashboardAdmin, meta: { requiresAuth: true, userRole: [1] } },
+//  //{ path: "/employee-id", component: EmployeeID, meta: { requiresAuth: true, userRole: [2, 3] } },
+//  { path: "/manage-employee-ids", component: DetailsPage, meta: { requiresAuth: true, userRole: [1, 6] } },
+//  { path: "/manage-kit-users", component: ManageKitUserPage, meta: { requiresAuth: true, userRole: [1] } },
+//  { path: "/manage-system-users", component: ManageSystemUserPage, meta: { requiresAuth: true, userRole: [1] } },
+//  { path: "/manage-citizens", component: ManageCitizenPage, meta: { requiresAuth: true, userRole: [1, 2] } },
+
+//  { path: "/dashboard", component: DashboardUser, meta: { requiresAuth: true, userRole: [4, 5] } },
+//  { path: "/dashboard-hr", component: DashboardHR, meta: { requiresAuth: true, userRole: [6] } },
+//  { path: "/adjudication-details", component: AdjudicationDetailsPage, meta: { requiresAuth: true, userRole: [6] } },
+
+//  { path: "/biometric-test", component: BiometricTest, name: "BiometricTest" },
+//  { path: "/attendance-management", component: AttendanceManagement, meta: { requiresAuth: true, userRole: [6] } },
+//  { path: "/id-details", component: IDDetails, meta: { requriesAuth: true, userRole: [4, 5, 6] } },
+
+//  { path: "/:pathMatch(.*)*", redirect: "/" }
+//];
+
 const routes = [
   { path: "/", component: AuthPage, name: "Login" },
   { path: "/login", redirect: "/" },
   { path: "/confirm-email", name: "ConfirmEmail", component: EmailConfirm },
   { path: "/reset-password", name: "ResetPassword", component: ResetPassword },
-  { path: "/dashboard-system", component: Dashboard, meta: { requiresAuth: true, userRole: [2] } },
-  { path: "/pds", component: PersonalDataSheet, meta: { requiresAuth: true, userRole: [4, 6] } },
-  { path: "/timesheet", component: Timesheet, meta: { requiresAuth: true, userRole: [1, 2, 4, 6] } },
-  { path: "/dashboard-admin", component: DashboardAdmin, meta: { requiresAuth: true, userRole: [1] } },
+  { path: "/dashboard-system", component: Dashboard },
+  { path: "/pds", component: PersonalDataSheet },
+  { path: "/timesheet", component: Timesheet },
+  { path: "/dashboard-admin", component: DashboardAdmin },
   //{ path: "/employee-id", component: EmployeeID, meta: { requiresAuth: true, userRole: [2, 3] } },
-  { path: "/manage-employee-ids", component: DetailsPage, meta: { requiresAuth: true, userRole: [1, 6] } },
-  { path: "/manage-kit-users", component: ManageKitUserPage, meta: { requiresAuth: true, userRole: [1] } },
-  { path: "/manage-system-users", component: ManageSystemUserPage, meta: { requiresAuth: true, userRole: [1] } },
-  { path: "/manage-citizens", component: ManageCitizenPage, meta: { requiresAuth: true, userRole: [1, 2] } },
+  { path: "/manage-employee-ids", component: DetailsPage },
+  { path: "/manage-kit-users", component: ManageKitUserPage },
+  { path: "/manage-system-users", component: ManageSystemUserPage },
+  { path: "/manage-citizens", component: ManageCitizenPage },
 
-  { path: "/dashboard", component: DashboardUser, meta: { requiresAuth: true, userRole: [4, 5] } },
-  { path: "/dashboard-hr", component: DashboardHR, meta: { requiresAuth: true, userRole: [6] } },
-  { path: "/adjudication-details", component: AdjudicationDetailsPage, meta: { requiresAuth: true, userRole: [6] } },
+  { path: "/dashboard", component: DashboardUser },
+  { path: "/dashboard-hr", component: DashboardHR },
+  { path: "/adjudication-details", component: AdjudicationDetailsPage },
 
   { path: "/biometric-test", component: BiometricTest, name: "BiometricTest" },
-  { path: "/attendance-management", component: AttendanceManagement, meta: { requiresAuth: true, userRole: [6] } },
-  { path: "/id-details", component: IDDetails, meta: { requriesAuth: true, userRole: [4, 5, 6] } },
+  { path: "/attendance-management", component: AttendanceManagement },
+  { path: "/id-details", component: IDDetails },
 
   { path: "/:pathMatch(.*)*", redirect: "/" }
 ];
@@ -72,54 +98,54 @@ const router = createRouter({
 });
 
 router.beforeEach((to, from, next) => {
-  const auth = useAuthStore();
+  //const auth = useAuthStore();
 
-  // ✅ Token expired → force logout
-  if (auth.isTokenExpired()) {
-    auth.idleLogoutAction();
-    if (to.meta.requiresAuth) return next("/login");
-  }
+  //// ✅ Token expired → force logout
+  //if (auth.isTokenExpired()) {
+  //  auth.idleLogoutAction();
+  //  if (to.meta.requiresAuth) return next("/login");
+  //}
 
-  // ✅ Not logged in but route requires auth → redirect
-  if (to.meta.requiresAuth && !auth.isLoggedIn) {
-    return next("/login");
-  }
+  //// ✅ Not logged in but route requires auth → redirect
+  //if (to.meta.requiresAuth && !auth.isLoggedIn) {
+  //  return next("/login");
+  //}
 
-  // ✅ Already logged in → block login/register routes
-  if ((to.path === "/" || to.path === "/login" || to.path === "/register") && auth.isLoggedIn) {
-    if (auth.userRole == 1)
-      return next("/dashboard-admin");
-    else if (auth.userRole == 2)
-      return next("/dashboard-system");
-    else if (auth.userRole == 4)
-      return next("/dashboard");
-    else if (auth.userRole == 5)
-      return next("/dashboard");
-    else if (auth.userRole == 6)
-      return next("/dashboard-hr");
-    else
-      return next("/login");
-  }
+  //// ✅ Already logged in → block login/register routes
+  //if ((to.path === "/" || to.path === "/login" || to.path === "/register") && auth.isLoggedIn) {
+  //  if (auth.userRole == 1)
+  //    return next("/dashboard-admin");
+  //  else if (auth.userRole == 2)
+  //    return next("/dashboard-system");
+  //  else if (auth.userRole == 4)
+  //    return next("/dashboard");
+  //  else if (auth.userRole == 5)
+  //    return next("/dashboard");
+  //  else if (auth.userRole == 6)
+  //    return next("/dashboard-hr");
+  //  else
+  //    return next("/login");
+  //}
 
-  // ✅ Check user type restrictions
-  if (to.meta.requiresAuth && to.meta.userRole && auth.isLoggedIn) {
-    const userRole = parseInt(auth.userRole); // ensure numeric
-    const allowedUserTypes = to.meta.userRole.map((t) => parseInt(t)); // ensure numeric
+  //// ✅ Check user type restrictions
+  //if (to.meta.requiresAuth && to.meta.userRole && auth.isLoggedIn) {
+  //  const userRole = parseInt(auth.userRole); // ensure numeric
+  //  const allowedUserTypes = to.meta.userRole.map((t) => parseInt(t)); // ensure numeric
 
-    if (!allowedUserTypes.includes(userRole)) {
-      console.warn(`🚫 Access denied for role ${userRole} on route ${to.path}`);
-      if (auth.userRole == 1)
-        return next("/dashboard-admin");
-      else if (auth.userRole == 2)
-        return next("/dashboard-system");
-      else if (auth.userRole == 5)
-        return next("/dashboard");
-      else if (auth.userRole == 6)
-        return next("/dashboard-hr");
-      else
-        return next("/");
-    }
-  }
+  //  if (!allowedUserTypes.includes(userRole)) {
+  //    console.warn(`🚫 Access denied for role ${userRole} on route ${to.path}`);
+  //    if (auth.userRole == 1)
+  //      return next("/dashboard-admin");
+  //    else if (auth.userRole == 2)
+  //      return next("/dashboard-system");
+  //    else if (auth.userRole == 5)
+  //      return next("/dashboard");
+  //    else if (auth.userRole == 6)
+  //      return next("/dashboard-hr");
+  //    else
+  //      return next("/");
+  //  }
+  //}
 
   next();
 });
