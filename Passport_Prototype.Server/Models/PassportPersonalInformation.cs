@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Passport_Prototype.Server.Models
 {
-    [Table("PersonalInformation")] 
+    [Table("PassportPersonalInformation")] 
     public class PassportPersonalInformation { 
         [Key] 
         public int PassportPersonalInformationId { get; set; } 
