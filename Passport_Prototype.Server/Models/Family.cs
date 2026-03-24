@@ -13,7 +13,6 @@ namespace Passport_Prototype.Server.Models
 
         [Required]
         public int? UserId { get; set; }
-        public Users? User { get; set; }
 
         [Required]
         public string? Relationship { get; set; }
