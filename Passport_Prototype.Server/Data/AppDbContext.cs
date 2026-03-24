@@ -32,6 +32,11 @@ namespace OnlineRegistration.Server.Data
         public DbSet<UserReadDto> UserReadDtos { get; set; }
         public DbSet<ApplicantReadDto> ApplicantReadDtos { get; set; }
 
+        // Additional tables for personal information
+        public DbSet<ContactInformation> ContactInformation { get; set; }
+        public DbSet<WorkInformation> WorkInformation { get; set; }
+
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             // This is the missing piece:
