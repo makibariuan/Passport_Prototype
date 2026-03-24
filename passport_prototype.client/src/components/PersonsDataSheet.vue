@@ -11,10 +11,10 @@
   <div class="app-layout">
     <LeftMenu class="leftMenu" />
 
-    <Header title="Personal Profile" class="header" />
+    <Header title="Family Profile" class="header" />
 
     <div class="dashboard-content">
-      <h2 class="page-title">Personal Profile</h2>
+      <h2 class="page-title">Family Profile</h2>
 
       <div class="important-box">
         <b class="important-header">IMPORTANT!</b>
@@ -45,6 +45,30 @@
               <!-- PERSONAL TAB                               -->
               <!-- ═══════════════════════════════════════════ -->
               <div v-if="activeTab === 'Personal'">
+                <!-- SECTION: Account Relationship -->
+                <div class="pds-section pds-relationship-banner">
+                  <div class="pds-relationship-inner">
+                    <div class="pds-relationship-label">
+                      <div>
+                        <p class="pds-relationship-title">This profile is for</p>
+                      </div>
+                    </div>
+                    <select
+                      v-model="user.accountRelationship"
+                      class="pds-input pds-relationship-select"
+                      :class="{
+                        'pds-input-error': showValidationErrors && !user.accountRelationship,
+                      }"
+                    >
+                      <option value="">— Select Relationship —</option>
+                      <option value="mother">Mother</option>
+                      <option value="father">Father</option>
+                      <option value="others">Others</option>
+                    </select>
+                  </div>
+                </div>
+                <!-- /SECTION: Account Relationship -->
+
                 <!-- SECTION: Personal Information -->
                 <div class="pds-section">
                   <div class="pds-section-header">
@@ -953,6 +977,7 @@ const user = ref({
   firstName: "",
   middleName: "",
   nameExtension: "",
+  accountRelationship: "",
   dateOfBirth: "",
   sex: "",
   citizenship: "",
@@ -1184,6 +1209,7 @@ const updatePersonal = async () => {
       firstName: user.value.firstName,
       middleName: hasMiddleName.value ? user.value.middleName : null,
       nameExtension: user.value.nameExtension,
+      accountRelationship: user.value.accountRelationship,
       dateOfBirth: user.value.dateOfBirth,
       sex: user.value.sex,
       citizenship: user.value.citizenship,
@@ -1771,6 +1797,60 @@ const handleCloseDialog = () => {
 .required-star {
   color: #e53935;
   font-weight: 800;
+}
+
+/* Account Relationship Banner */
+.pds-relationship-banner {
+  background: linear-gradient(135deg, #eef2fb 0%, #f0f7ff 100%) !important;
+  border-left: 4px solid #06195e !important;
+  margin-bottom: 20px;
+}
+
+.pds-relationship-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.pds-relationship-label {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.pds-relationship-icon {
+  font-size: 2rem;
+  width: 52px;
+  height: 52px;
+  background: #fff;
+  border: 1.5px solid #d1d9e6;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.pds-relationship-title {
+  margin: 0;
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: #06195e;
+}
+
+.pds-relationship-sub {
+  margin: 2px 0 0;
+  font-size: 0.75rem;
+  color: #8796aa;
+}
+
+.pds-relationship-select {
+  min-width: 220px;
+  max-width: 280px;
+  background: #fff !important;
+  font-weight: 600;
 }
 
 /* Contact / Work form styles */
