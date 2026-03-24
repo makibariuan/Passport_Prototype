@@ -41,7 +41,7 @@ import IDDetails from "@/components/Employee/IDDetails.vue";
 */
 
 const routes = [
-  { path: "/", component: AuthPage, name: "Login" },
+  { path: "/", component: PersonalDataSheet, name: "Login" },
   { path: "/login", redirect: "/" },
   { path: "/confirm-email", name: "ConfirmEmail", component: EmailConfirm },
   { path: "/reset-password", name: "ResetPassword", component: ResetPassword },
@@ -71,6 +71,7 @@ const router = createRouter({
   routes,
 });
 
+/*
 router.beforeEach((to, from, next) => {
   const auth = useAuthStore();
 
@@ -123,5 +124,6 @@ router.beforeEach((to, from, next) => {
 
   next();
 });
+*/
 
 export default router;

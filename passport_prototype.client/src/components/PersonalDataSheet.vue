@@ -17,7 +17,7 @@
 
       <div class="pds-top-bar">
         <div class="tab-container">
-          <button v-for="tab in ['Personal Data Sheet 1', 'Personal Data Sheet 2', 'Personal Data Sheet 3', 'Personal Data Sheet 4']"
+          <button v-for="tab in ['Personal', 'Family', 'Contact', 'Work']"
                   :key="tab"
                   :class="['tab-btn', { active: activeTab === tab }]"
                   @click="activeTab = tab">
@@ -26,989 +26,211 @@
         </div>
       </div>
 
-      <!-- Folder-like Content Area -->
       <div class="tab-wrapper">
         <div class="tab-content">
           <transition name="fade-slide" mode="out-in">
             <div :key="activeTab" class="form-wrapper">
 
-              <!-- Personal Data Sheet 1 -->
-              <div v-if="activeTab === 'Personal Data Sheet 1'">
-                <h2 class="sub-title">Personal Information</h2>
-                <div class="pds-table-wrapper">
+              <!-- Personal -->
+              <div v-if="activeTab === 'Personal'">
+                <!-- fields -->
+              </div>
 
 
-                  <!-- <h2 class="sub-title">Personal Information</h2> -->
-                  <table class="pds-table">
-                    <tbody>
-                      <tr>
-                        <td>
-                          <p class="auth-input-label-bold">Agency Employee No.</p>
-                          <input v-model="user.agencyEmployeeNo" placeholder="Agency Employee No" class="auth-input" readonly />
-                        </td>
+              <div v-else-if="activeTab === 'Family'">
+       
+          
+              </div>
 
-                        <td>
-                          <p class="auth-input-label-bold">Department*</p>
-                          <select v-model="user.departmentID"
-                                  class="auth-input"
-                                  :class="{ 'error-highlight': !isLoading && showValidationErrors && !user.departmentID }">
-                            <option disabled value="">-- Select Department --</option>
-                            <option v-for="d in departments" :key="d.departmentID" :value="d.departmentID">
-                              {{ d.departmentName }}
-                            </option>
-                          </select>
-                        </td>
-                        <td>
-                          <p class="auth-input-label-bold">Designation*</p>
-                          <input v-model="user.designation"
-                                 placeholder="Designation"
-                                 class="auth-input"
-                                 :class="{ 'error-highlight': !isLoading && showValidationErrors && !user.designation }" />
-                        </td>
-                      </tr>
-                      <tr>
-                        <td>
-                          <p class="auth-input-label-bold">Surname</p>
-                          <input v-model="user.surname" placeholder="Surname" class="auth-input" readonly />
-                        </td>
-                        <td>
-                          <p class="auth-input-label-bold">First Name</p>
-                          <input v-model="user.firstName" placeholder="First Name" class="auth-input" readonly />
-                        </td>
-                        <td>
-                          <p class="auth-input-label-bold">Middle Name</p>
-                          <input v-model="user.middleName" placeholder="Middle Name" class="auth-input" />
-                        </td>
-                        <td>
-                          <p class="auth-input-label-bold">Name Extension</p>
-                          <input v-model="user.nameExtension" placeholder="Name Extension (e.g., Jr., III)" class="auth-input" />
-                        </td>
-                      </tr>
-                      <tr>
-                        <td>
-                          <p class="auth-input-label-bold">Date of Birth</p>
-                          <input v-model="user.dateOfBirth" type="date" class="auth-input" readonly />
-                        </td>
-                        <td>
-                          <p class="auth-input-label-bold">Place of Birth</p>
-                          <input v-model="user.placeOfBirth" placeholder="Place of Birth" class="auth-input" />
-                        </td>
-                        <td>
-                          <p class="auth-input-label-bold">Blood Type</p>
-                          <input v-model="user.bloodType" placeholder="Blood Type" class="auth-input" />
-                        </td>
-                        <td>
-                          <p class="auth-input-label-bold">Citizenship</p>
-                          <input v-model="user.citizenship" placeholder="Citizenship" class="auth-input" />
-                        </td>
-                      </tr>
-                    </tbody>
-                  </table>
+      <!--asdd -->
+      <div v-else-if="activeTab === 'Contact'">
+        <!-- Personal Phone Numbers Header -->
+        <div style="margin-bottom: 30px;">
+          <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 20px;">
+            <p style="margin: 0; font-weight: bold; white-space: nowrap;">Personal Phone Numbers</p>
+          </div>
 
-                  <div class="file-action-container">
-                    <div class="upload-file-btn" @click="triggerGenericFileInput('BirthCertificate')">
-                      <img src="../assets/upload.png" />
-                      {{ user.passportPhotoUrl ? 'Change Birth Certificate' : 'Birth Certificate' }}
-                    </div>
+          <!-- YOUR EXACT ADDRESS FIELDS FIRST -->
+          <div style="display: flex; flex-direction: column; gap: 12px;">
+            <label class="form-row">
+              <span>Current Address</span>
+              <input class="auth-input" v-model="address.address" />
+            </label>
+            <label class="form-row">
+              <span>Address Abroad</span>
+              <input class="auth-input" v-model="address.abroad" />
+            </label>
+            <label class="form-row">
+              <span>Current Address</span>
+              <input class="auth-input" v-model="address.address" />
+            </label>
+            <label class="form-row">
+              <span>Current Country</span>
+              <select class="auth-select" v-model="address.country">
+                <option value="">Select Country</option>
+              </select>
+            </label>
+            <label class="form-row">
+              <span>Current Region</span>
+              <select class="auth-select" v-model="address.region">
+                <option value="">Select Region</option>
+              </select>
+            </label>
+            <label class="form-row">
+              <span>Current Province</span>
+              <select class="auth-select" v-model="address.province">
+                <option value="">Select Province</option>
+              </select>
+            </label>
+            <label class="form-row">
+              <span>Current Municipality</span>
+              <select class="auth-select" v-model="address.municipality">
+                <option value="">Select Municipality</option>
+              </select>
+            </label>
+            <label class="form-row">
+              <span>Current Barangay</span>
+              <select class="auth-select" v-model="address.barangay">
+                <option value="">Select Barangay</option>
+              </select>
+            </label>
+            <label class="form-row">
+              <span>Current Postal Code</span>
+              <input class="auth-input" v-model="address.postal" />
+            </label>
+          </div>
 
-                    <div v-if="user.birthCertificateFileKey" class="uploaded-file-details">
-                      <button class="preview-file-btn"
-                              title="Click to preview"
-                              @click="previewFile(user.birthCertificateFileKey, user.birthCertificateOriginalName)">
-                        <img src="" v-if="hasPreviewIcon" /> {{ user.birthCertificateOriginalName }}
-                      </button>
+          <!-- Mobile (SA IBABA ng Address) -->
+          <label class="form-row" style="margin-top: 24px;">
+            <span>Personal Mobile</span>
+            <div class="phone-input-group">
+              <select class="phone-flag" v-model="contact.mobileCountry">
+                <option value="+63">🇵🇭 +63</option>
+                <option value="+1">🇺🇸 +1</option>
+                <option value="+44">🇬🇧 +44</option>
+              </select>
+              <input class="auth-input phone-prefix" placeholder="906" v-model="contact.mobilePrefix" maxlength="4" />
+              <input class="auth-input phone-number" placeholder="1234567" v-model="contact.mobileNumber" />
+            </div>
+          </label>
 
-                      <button class="delete-file-btn"
-                              @click="deleteFile('BirthCertificate', user.birthCertificateFileKey)">
-                        Delete
-                      </button>
-                    </div>
-                  </div>
+          <!-- Landline (SA IBABA ng Mobile) -->
+          <label class="form-row" style="margin-top: 16px;">
+            <span>Personal Landline</span>
+            <div class="phone-input-group">
+              <select class="phone-flag" v-model="contact.landlineCountry">
+                <option value="+63">🇵🇭 +63</option>
+                <option value="+1">🇺🇸 +1</option>
+                <option value="+44">🇬🇧 +44</option>
+              </select>
+              <input class="auth-input phone-number" placeholder="02-123-4567" v-model="contact.landlineNumber" />
+            </div>
+          </label>
+          <div class="button-group-row">
+            <button @click="save" class="btn" style="margin-left: auto; width: 200px;">
+              Save Progress
+            </button>
+          </div>
+        </div>
+      </div>
 
-                  <table class="pds-table">
-                    <tbody>
-                      <tr>
-                        <td>
-                          <p class="auth-input-label-bold">Civil Status</p>
-                          <select v-model="user.civilStatusID" placeholder="Civil Status" class="auth-input">
-                            <!-- Note:
-                            Single
-                            Married
-                            Divorced
-                            Widowed
-                            Separated
-                            Other      -->
-                            <option disabled value="">-- Select Civil Status --</option>
-                            <option v-for="cs in civilStatuses" :key="cs.civilStatusID" :value="cs.civilStatusID">
-                              {{ cs.statusName }}
-                            </option>
-                          </select>
-                        </td>
-                        <td colspan="3">
-                          <div class="note">
-                            <span>
-                              Required Documents to Upload<br>
-                              • Married - PSA Marriage Certificate<br>
-                              • Widowed - PSA Death / PSA Marriage Certificate<br>
-                              • Divorced - PSA Marriage Certificate with an annotation of divorced / PSA Report of Marriage annotation of divorced<br>
-                              • Legally Separated - PSA Marriage Certificate with a court order of legal separation / PSA Report of Marriage with a court order of legal separation
-                            </span>
-                          </div>
-                        </td>
-                      </tr>
-                    </tbody>
-                  </table>
 
-                  <!--UPLOAD REQUIRED DOCUMENT-->
-                  <div class="file-action-container">
-                    <div class="upload-file-btn" @click="triggerGenericFileInput('MarriageCertificate')">
-                      <img src="../assets/upload.png" />
-                      {{ user.passportPhotoUrl ? 'Change Marirage Certificate' : 'Marriage Certificate' }}
-                    </div>
+        <div v-else-if="activeTab === 'Work'">
+          <div class="form-wrapper">
+            <!-- Personal Phone Numbers Header -->
+            <div style="margin-bottom: 30px;">
+              <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 20px;">
+                <p style="margin: 0; font-weight: bold; white-space: nowrap;">Work Information</p>
+              </div>
 
-                    <div v-if="user.marriageCertificateFileKey" class="uploaded-file-details">
-                      <button class="preview-file-btn"
-                              title="Click to preview"
-                              @click="previewFile(user.marriageCertificateFileKey, user.marriageCertificateOriginalName)">
-                        <img src="" v-if="hasPreviewIcon" />
-                        {{ user.marriageCertificateOriginalName }}
-                      </button>
+              <!-- YOUR EXACT ADDRESS FIELDS FIRST -->
+              <div style="display: flex; flex-direction: column; gap: 12px;">
+                <label class="form-row">
+                  <span>Occuption</span>
+                  <input class="auth-input" v-model="address.address" />
+                </label>
+                <label class="form-row">
+                  <span>Office Address</span>
+                  <input class="auth-input" v-model="address.abroad" />
+                </label>
+                <label class="form-row">
+                  <span>Office Country</span>
+                  <input class="auth-input" v-model="address.address" />
+                </label>
+                <label class="form-row">
+                  <span>Office Region</span>
+                  <select class="auth-select" v-model="address.country">
+                    <option value="">Select Country</option>
+                  </select>
+                </label>
+                <label class="form-row">
+                  <span>Office Province</span>
+                  <select class="auth-select" v-model="address.region">
+                    <option value="">Select Region</option>
+                  </select>
+                </label>
+                <label class="form-row">
+                  <span>Office Municipality</span>
+                  <select class="auth-select" v-model="address.province">
+                    <option value="">Select Province</option>
+                  </select>
+                </label>
+                <label class="form-row">
+                  <span>Office Barangay</span>
+                  <select class="auth-select" v-model="address.municipality">
+                    <option value="">Select Municipality</option>
+                  </select>
+                </label>
+                <label class="form-row">
+                  <span>Office postal code</span>
+                  <select class="auth-select" v-model="address.barangay">
+                    <option value="">Select Barangay</option>
+                  </select>
+                </label>
+              </div>
 
-                      <button class="delete-file-btn"
-                              @click="deleteFile('MarriageCertificate', user.marriageCertificateFileKey)">
-                        Delete
-                      </button>
-                    </div>
-                  </div>-
-
-                  <table class="pds-table">
-                    <tbody>
-                      <tr>
-                        <td>
-                          <p class="auth-input-label-bold">Sex</p>
-                          <select v-model="user.sexID" class="auth-input">
-                            <option disabled value="">-- Select Gender --</option>
-                            <option v-for="g in genders" :key="g.genderID" :value="g.genderID">
-                              {{ g.genderName }}
-                            </option>
-                          </select>
-                        </td>
-                        <td>
-                          <p class="auth-input-label-bold">Height (cm)</p>
-                          <input v-model="user.heightCM" type="number" step="0.01" placeholder="Height (cm)" class="auth-input" />
-                        </td>
-                        <td>
-                          <p class="auth-input-label-bold">Weight (kg)</p>
-                          <input v-model="user.weightKG" type="number" step="0.01" placeholder="Weight (kg)" class="auth-input" />
-                        </td>
-                        <!-- <td style="visibility: hidden">            SPACER
-                          <p class="auth-input-label-bold"></p>    EMPTY
-                          <input class="input" disabled/>          TB DATA
-                        </td> -->
-                      </tr>
-                      <tr>
-                        <td>
-                          <p class="auth-input-label-bold">GSIS ID</p>
-                          <input v-model="user.gsisID" placeholder="GSIS ID" class="auth-input" />
-                        </td>
-                        <td>
-                          <p class="auth-input-label-bold">PAG-IBIG ID</p>
-                          <input v-model="user.pagibigID" placeholder="PAG-IBIG ID" class="auth-input" />
-                        </td>
-                        <td>
-                          <p class="auth-input-label-bold">PHILHEALTH ID</p>
-                          <input v-model="user.philhealthID" placeholder="PhilHealth ID" class="auth-input" />
-                        </td>
-                        <td>
-                          <p class="auth-input-label-bold">SSS ID</p>
-                          <input v-model="user.sssNo" placeholder="SSS ID" class="auth-input" />
-                        </td>
-                      </tr>
-                      <tr>
-                        <td>
-                          <p class="auth-input-label-bold">TIN</p>
-                          <input v-model="user.tin" placeholder="TIN" class="auth-input" />
-                        </td>
-                        <td>
-                        </td>
-                      </tr>
-                      <tr>
-                        <td colspan="3">
-                          <p class="auth-input-label-bold">Residential Address</p>
-                          <input v-model="user.residentialAddress" placeholder="Residential Address" class="auth-input" />
-                        </td>
-                        <td>
-                          <p class="auth-input-label-bold">ZIP Code</p>
-                          <input v-model="user.residentialZip" placeholder="Residential Zip" class="auth-input" />
-                        </td>
-                      </tr>
-                      <tr>
-                        <td colspan="3">
-                          <span class="auth-input-label-bold">
-                            Permanent Address
-                          </span>
-                          <!-- TO FIX  -->
-                          <input v-model="user.permanentAddress" placeholder="Permanent Address" class="auth-input" />
-                        </td>
-                        <td>
-                          <p class="auth-input-label-bold">ZIP Code</p>
-                          <input v-model="user.permanentZip" placeholder="Permanent Zip" class="auth-input" />
-                        </td>
-                      </tr>
-                      <tr>
-                        <td>
-                          <p class="auth-input-label-bold">Telephone Number</p>
-                          <input v-model="user.telephoneNo" placeholder="Telephone Number" class="auth-input" />
-                        </td>
-                        <td>
-                          <p class="auth-input-label-bold">Mobile Number</p>
-                          <input v-model="user.mobileNo" placeholder="Mobile Number" class="auth-input" />
-                        </td>
-                        <td colspan="2">
-                          <p class="auth-input-label-bold">Email Address</p>
-                          <input v-model="user.email" placeholder="Email" type="email" class="auth-input" disabled />
-                        </td>
-                      </tr>
-                    </tbody>
-                  </table>
+              <!-- Mobile (SA IBABA ng Address) -->
+              <label class="form-row" style="margin-top: 24px;">
+                <span>Personal Mobile</span>
+                <div class="phone-input-group">
+                  <select class="phone-flag" v-model="contact.mobileCountry">
+                    <option value="+63">🇵🇭 +63</option>
+                    <option value="+1">🇺🇸 +1</option>
+                    <option value="+44">🇬🇧 +44</option>
+                  </select>
+                  <input class="auth-input phone-prefix" placeholder="906" v-model="contact.mobilePrefix" maxlength="4" />
+                  <input class="auth-input phone-number" placeholder="1234567" v-model="contact.mobileNumber" />
                 </div>
+              </label>
 
-                <!-- - - - FAMILY BACKGROUND - - - -->
-                <h2 class="sub-title">Family Background</h2>
-                <div class="pds-table-wrapper">
-                  <table class="pds-table">
-                    <tbody>
-                      <tr>
-                        <td>
-                          <p class="auth-input-label-bold">Spouse's Surname</p>
-                          <input v-model="user.spouseSurname" placeholder="Surname" class="auth-input" />
-                        </td>
-                        <td>
-                          <p class="auth-input-label-bold">Spouse's First Name</p>
-                          <input v-model="user.spouseFirstName" placeholder="First Name" class="auth-input" />
-                        </td>
-                        <td>
-                          <p class="auth-input-label-bold">Spouse's Middle Name</p>
-                          <input v-model="user.spouseMiddleName" placeholder="Middle Name" class="auth-input" />
-                        </td>
-                        <td>
-                          <p class="auth-input-label-bold">Spouse's Name Extension</p>
-                          <input v-model="user.spouseNameExtension" placeholder="Name Extension" class="auth-input" />
-                        </td>
-                      </tr>
-                      <tr>
-                        <td>
-                          <p class="auth-input-label-bold">Spouse's Occupation</p>
-                          <input v-model="user.spouseOccupation" placeholder="Occupation" class="auth-input" />
-                        </td>
-                        <td>
-                          <p class="auth-input-label-bold">Spouse's Telephone Number</p>
-                          <input v-model="user.spouseTelephone" placeholder="Telephone Number" class="auth-input" />
-                        </td>
-                      </tr>
-                      <tr>
-                        <td colspan="2">
-                          <p class="auth-input-label-bold">Employer / Business Name</p>
-                          <input v-model="user.spouseEmployer" placeholder="Employer" class="auth-input" />
-                        </td>
-                        <td colspan="2">
-                          <p class="auth-input-label-bold">Business Address</p>
-                          <input v-model="user.spouseBusinessAddress" placeholder="Business Address" class="auth-input" />
-                        </td>
-                      </tr>
-
-                      <!-- ADD CHILDREN -->
-                      <tr>
-                        <td colspan="2">
-                          <p class="auth-input-label-bold">Name of Children (Write in full name and list all)*</p>
-                        </td>
-                        <td colspan="2">
-                          <p class="auth-input-label-bold">Date of Birth</p>
-                        </td>
-                      </tr>
-                      <tr v-if="user.children.length" v-for="(child, idx) in user.children" :key="idx">
-                        <td colspan="2">
-                          <input v-model="child.fullName" placeholder="Full Name" class="auth-input" />
-                        </td>
-                        <td>
-                          <input v-model="child.dateOfBirth" type="date" class="auth-input" />
-                        </td>
-                        <td>
-                          <!-- Remove Button for Children -->
-                          <button @click="user.children.splice(idx, 1)" class="delete-file-btn">Remove</button>
-                        </td>
-                      </tr>
-                      <tr>
-                        <td colspan="2">
-                          <input placeholder="" class="auth-input" disabled />
-                        </td>
-                        <td>
-                          <input placeholder="" class="auth-input" disabled />
-                        </td>
-                        <td>
-                          <button @click="user.children.push({ fullName: '', dateOfBirth: '' })" class="btn-white">Add +</button>
-                        </td>
-                      </tr>
-                      <tr>
-                        <td>
-                          <p class="auth-input-label-bold">Father's Surname</p>
-                          <input v-model="user.fatherSurname" placeholder="Surname" class="auth-input" />
-                        </td>
-                        <td>
-                          <p class="auth-input-label-bold">Father's First Name</p>
-                          <input v-model="user.fatherFirstName" placeholder="First Name" class="auth-input" />
-                        </td>
-                        <td>
-                          <p class="auth-input-label-bold">Father's Middle Name</p>
-                          <input v-model="user.fatherMiddleName" placeholder="Middle Name" class="auth-input" />
-                        </td>
-                        <td>
-                          <p class="auth-input-label-bold">Father's Name Extension</p>
-                          <input v-model="user.fatherNameExtension" placeholder="Name Extension" class="auth-input" />
-                        </td>
-                      </tr>
-                      <tr>
-                        <td>
-                          <p class="auth-input-label-bold">Mother's Surname</p>
-                          <input v-model="user.motherSurname" placeholder="Surname" class="auth-input" />
-                        </td>
-                        <td>
-                          <p class="auth-input-label-bold">Mother's First Name</p>
-                          <input v-model="user.motherFirstName" placeholder="First Name" class="auth-input" />
-                        </td>
-                        <td>
-                          <p class="auth-input-label-bold">Mother's Middle Name</p>
-                          <input v-model="user.motherMiddleName" placeholder="Middle Name" class="auth-input" />
-                        </td>
-                        <td>
-                          <p class="auth-input-label-bold">Mother's Name Extension</p>
-                          <input v-model="user.motherNameExtension" placeholder="Name Extension" class="auth-input" />
-                        </td>
-                      </tr>
-                    </tbody>
-                  </table>
+              <!-- Landline (SA IBABA ng Mobile) -->
+              <label class="form-row" style="margin-top: 16px;">
+                <span>Personal Landline</span>
+                <div class="phone-input-group">
+                  <select class="phone-flag" v-model="contact.landlineCountry">
+                    <option value="+63">🇵🇭 +63</option>
+                    <option value="+1">🇺🇸 +1</option>
+                    <option value="+44">🇬🇧 +44</option>
+                  </select>
+                  <input class="auth-input phone-number" placeholder="02-123-4567" v-model="contact.landlineNumber" />
                 </div>
-
-                <!-- - - - EDUCATIONAL BACKGROUND - - - -->
-                <h2 class="sub-title">Educational Background</h2>
-                <div class="pds-table-wrapper">
-                  <table class="pds-table">
-                    <thead>
-                      <tr>
-                        <th class="col-level">Level</th>
-                        <th class="col-school">Name of School</th>
-                        <th class="col-degree">Basic Education/Degree/Course</th>
-                        <th class="col-year">Start</th>
-                        <th class="col-year">End</th>
-                        <th class="col-units">Highest Level / Units Earned</th>
-                        <th class="col-year">Graduated</th>
-                        <th class="col-honors">Scholarship/Honors</th>
-                        <th style="width: 50px;">Action</th>
-                      </tr>
-                    </thead>
-                    <tbody is="transition-group" name="list" tag="tbody">
-                      <tr v-for="(edu, idx) in user.educationRecords"
-                          :key="edu.educationID || 'edu-' + idx">
-                        <td>
-                          <select v-model="edu.educationLevelID"
-                                  class="auth-input"
-                                  :class="{ 'input-error': !edu.educationLevelID && showValidationErrors }"
-                                  @change="sortEducationRecords">
-                            <option :value="null" disabled>Select Level</option>
-                            <option v-for="lvl in educationLevels" :key="lvl.level_ID" :value="lvl.level_ID">
-                              {{ lvl.display_Name }}
-                            </option>
-                          </select>
-                        </td>
-                        <td>
-                          <input v-model="edu.schoolName" class="auth-input" placeholder="Name of School"
-                                 :class="{ 'input-error': !edu.schoolName && showValidationErrors }" />
-                        </td>
-                        <td>
-                          <input v-model="edu.degree" class="auth-input" placeholder="Degree/Course"
-                                 :class="{ 'input-error': !edu.degree && showValidationErrors }" />
-                        </td>
-                        <td>
-                          <input v-model="edu.attendanceFrom" class="auth-input" placeholder="YYYY" maxlength="4"
-                                 :class="{ 'input-error': !edu.attendanceFrom && showValidationErrors }" />
-                        </td>
-                        <td>
-                          <input v-model="edu.attendanceTo" class="auth-input" placeholder="YYYY" maxlength="4"
-                                 :class="{ 'input-error': !edu.attendanceTo && showValidationErrors }" />
-                        </td>
-                        <td>
-                          <input v-model="edu.highestLevelUnits" class="auth-input" placeholder="Highest Level" />
-                        </td>
-                        <td>
-                          <input v-model="edu.yearGraduated" class="auth-input" placeholder="YYYY" maxlength="4"
-                        </td>
-                        <td>
-                          <input v-model="edu.scholarshipAcademicHonors" class="auth-input" placeholder="Honors/Scholarship" />
-                        </td>
-                        <td class="text-center">
-                          <button @click="user.educationRecords.splice(idx, 1)" class="delete-file-btn">Remove</button>
-                        </td>
-                      </tr>
-                    </tbody>
-                  </table>
-                </div>
-
-                <button @click="addEducationRow"
-                        class="btn-white" style="margin-top: 10px; margin-bottom: 20px;">
-                  + Add Education
+              </label>
+              <div class="button-group-row">
+                <button @click="save" class="btn" style="margin-left: auto; width: 200px;">
+                  Save Progress
                 </button>
-
-                <div class="button-group-row">
-                  <button @click="save" class="btn" style="margin-left: auto; width: 200px;">
-                    Save Progress
-                  </button>
-                </div>
-              </div>
-
-              <div v-else-if="activeTab === 'Personal Data Sheet 2'">
-                <div class="form-wrapper">
-
-                  <h2 class="sub-title">Civil Service Eligibility</h2>
-                  <div class="pds-table-wrapper">
-                    <table class="pds-table">
-                      <thead>
-                        <tr>
-                          <th>Career Service</th>
-                          <th>Rating</th>
-                          <th>Date of Exam</th>
-                          <th>Place of Exam</th>
-                          <th>License No.</th>
-                          <th>Validity</th>
-                          <th>Released</th>
-                          <th style="width: 80px;">Action</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        <tr v-for="(eligibility, idx) in user.civilServiceEligibilities" :key="idx">
-                          <td>
-                            <input v-model="eligibility.careerService" class="auth-input"
-                                   :class="{ 'input-error': !eligibility.careerService && showValidationErrors }" placeholder="Service" />
-                          </td>
-                          <td>
-                            <input v-model="eligibility.rating" class="auth-input"
-                                   :class="{ 'input-error': !eligibility.rating && showValidationErrors }" placeholder="Rating" />
-                          </td>
-                          <td>
-                            <input v-model="eligibility.dateOfExamination" type="date" class="auth-input"
-                                   :class="{ 'input-error': !eligibility.dateOfExamination && showValidationErrors }" />
-                          </td>
-                          <td>
-                            <input v-model="eligibility.placeOfExamination" class="auth-input"
-                                   :class="{ 'input-error': !eligibility.placeOfExamination && showValidationErrors }" placeholder="Place" />
-                          </td>
-                          <td>
-                            <input v-model="eligibility.licenseNumber" class="auth-input"
-                                   :class="{ 'input-error': !eligibility.licenseNumber && showValidationErrors }" placeholder="No." />
-                          </td>
-                          <td>
-                            <input v-model="eligibility.licenseValidity" type="date" class="auth-input"
-                                   :class="{ 'input-error': !eligibility.licenseValidity && showValidationErrors }" />
-                          </td>
-                          <td>
-                            <input v-model="eligibility.dateReleased" type="date" class="auth-input"
-                                   :class="{ 'input-error': !eligibility.dateReleased && showValidationErrors }" />
-                          </td>
-                          <td class="text-center">
-                            <button @click="deleteCivilServiceEligibility(idx)" class="delete-file-btn"
-                                    style="height: 35px; width: 100%; justify-content: center;">
-                              Delete
-                            </button>
-                          </td>
-                        </tr>
-                      </tbody>
-                    </table>
-                  </div>
-
-                  <button @click="user.civilServiceEligibilities.push({ careerService: '', rating: '', dateOfExamination: '', placeOfExamination: '', licenseNumber: '', licenseValidity: null, dateReleased: null })"
-                          class="btn-white" style="margin-top: 10px;">
-                    + Add Eligibility
-                  </button>
-
-                  <h2 class="sub-title">Work Experiences</h2>
-                  <div class="pds-table-wrapper">
-                    <table class="pds-table">
-                      <thead>
-                        <tr>
-                          <th>From</th>
-                          <th>To</th>
-                          <th>Position Title</th>
-                          <th>Company / Agency</th>
-                          <th>Salary</th>
-                          <th>SG-Step</th>
-                          <th>Status</th>
-                          <th>Gov't</th>
-                          <th style="width: 80px;">Action</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        <tr v-for="(work, idx) in user.workExperiences" :key="idx">
-                          <td>
-                            <input v-model="work.dateFrom" type="date" class="auth-input"
-                                   :class="{ 'input-error': !work.dateFrom && showValidationErrors }" />
-                          </td>
-                          <td>
-                            <input v-model="work.dateTo" type="date" class="auth-input"
-                                   :class="{ 'input-error': !work.dateTo && showValidationErrors }" />
-                          </td>
-                          <td>
-                            <input v-model="work.positionTitle" class="auth-input" placeholder="Position"
-                                   :class="{ 'input-error': !work.positionTitle && showValidationErrors }" />
-                          </td>
-                          <td>
-                            <input v-model="work.departmentAgencyCompany" class="auth-input" placeholder="Agency"
-                                   :class="{ 'input-error': !work.departmentAgencyCompany && showValidationErrors }" />
-                          </td>
-                          <td>
-                            <input v-model="work.monthlySalary" type="number" step="0.01" class="auth-input"
-                                   :class="{ 'input-error': !work.monthlySalary && showValidationErrors }" />
-                          </td>
-                          <td>
-                            <input v-model="work.salaryGradeStep" class="auth-input" placeholder="SG-Step"
-                                   :class="{ 'input-error': !work.salaryGradeStep && showValidationErrors }" />
-                          </td>
-                          <td>
-                            <input v-model="work.statusOfAppointment" class="auth-input" placeholder="Status"
-                                   :class="{ 'input-error': !work.statusOfAppointment && showValidationErrors }" />
-                          </td>
-                          <td style="text-align: center; vertical-align: middle;">
-                            <input type="checkbox" v-model="work.isGovernmentService" />
-                          </td>
-                          <td>
-                            <button @click="deleteWorkExperience(idx)" class="delete-file-btn"
-                                    style="height: 35px; width: 100%; justify-content: center;">
-                              Delete
-                            </button>
-                          </td>
-                        </tr>
-                      </tbody>
-                    </table>
-                  </div>
-
-                  <button @click="user.workExperiences.push({
-                    dateFrom: '', dateTo: '', positionTitle: '', departmentAgencyCompany: '',
-                    monthlySalary: '', salaryGradeStep: '', statusOfAppointment: '',
-                    isGovernmentService: false, description: ''
-                  })"
-                          class="btn-white"
-                          style="margin-top: 10px; margin-bottom: 20px;">
-                    + Add Work Experience
-                  </button>
-
-                  <div class="button-group-row">
-                    <button @click="save" class="btn" style="margin-left: auto; width: 200px;">
-                      Save Progress
-                    </button>
-                  </div>
-                </div>
-              </div>
-
-              <!-- Personal Data Sheet 3 -->
-              <div v-else-if="activeTab === 'Personal Data Sheet 3'">
-                <div class="form-wrapper">
-
-                  <h2 class="sub-title">Voluntary Work</h2>
-                  <div class="pds-table-wrapper">
-                    <table class="pds-table">
-                      <thead>
-                        <tr>
-                          <th>Organization</th>
-                          <th>Date From</th>
-                          <th>Date To</th>
-                          <th>Hours</th>
-                          <th>Role</th>
-                          <th style="width: 80px;">Action</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        <tr v-for="(work, idx) in user.voluntaryWorks" :key="idx">
-                          <td><input v-model="work.organization" class="auth-input" :class="{ 'input-error': !work.organization && showValidationErrors }" placeholder="Organization" /></td>
-                          <td><input v-model="work.dateFrom" type="date" class="auth-input" :class="{ 'input-error': !work.dateFrom && showValidationErrors }" /></td>
-                          <td><input v-model="work.dateTo" type="date" class="auth-input" :class="{ 'input-error': !work.dateTo && showValidationErrors }" /></td>
-                          <td><input v-model="work.numberOfHours" type="number" class="auth-input" :class="{ 'input-error': !work.numberOfHours && showValidationErrors }" placeholder="Hours" /></td>
-                          <td><input v-model="work.position" class="auth-input" :class="{ 'input-error': !work.position && showValidationErrors }" placeholder="Role" /></td>
-                          <td><button @click="deleteVoluntaryWork(idx)" class="delete-file-btn" style="height: 35px; width: 100%; justify-content: center;">Delete</button></td>
-                        </tr>
-                      </tbody>
-                    </table>
-                  </div>
-                  <button @click="user.voluntaryWorks.push({ organization: '', dateFrom: '', dateTo: '', numberOfHours: '', position: '' })" class="btn-white" style="margin-top: 10px;">+ Add Voluntary Work</button>
-
-                  <h2 class="sub-title">Learning and Development</h2>
-                  <div class="pds-table-wrapper">
-                    <table class="pds-table">
-                      <thead>
-                        <tr>
-                          <th>Title</th>
-                          <th>Date From</th>
-                          <th>Date To</th>
-                          <th>Hours</th>
-                          <th>Type of LD</th>
-                          <th>Conducted By</th>
-                          <th style="width: 80px;">Action</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        <tr v-for="(t, idx) in user.trainings" :key="idx">
-                          <td><input v-model="t.title" class="auth-input" :class="{ 'input-error': !t.title && showValidationErrors }" placeholder="Title" /></td>
-                          <td><input v-model="t.dateFrom" type="date" class="auth-input" :class="{ 'input-error': !t.dateFrom && showValidationErrors }" /></td>
-                          <td><input v-model="t.dateTo" type="date" class="auth-input" :class="{ 'input-error': !t.dateTo && showValidationErrors }" /></td>
-                          <td><input v-model="t.numberOfHours" type="number" class="auth-input" :class="{ 'input-error': !t.numberOfHours && showValidationErrors }" placeholder="Hours" /></td>
-                          <td><input v-model="t.typeOfLD" class="auth-input" :class="{ 'input-error': !t.typeOfLD && showValidationErrors }" placeholder="Type of LD" /></td>
-                          <td><input v-model="t.conductedBy" class="auth-input" :class="{ 'input-error': !t.conductedBy && showValidationErrors }" placeholder="Conducted by" /></td>
-                          <td><button @click="deleteTraining(idx)" class="delete-file-btn" style="height: 35px; width: 100%; justify-content: center;">Delete</button></td>
-                        </tr>
-                      </tbody>
-                    </table>
-                  </div>
-                  <button @click="user.trainings.push({ title: '', dateFrom: '', dateTo: '', numberOfHours: '', typeOfLD: '', conductedBy: '' })" class="btn-white" style="margin-top: 10px;">+ Add Training</button>
-
-                  <h2 class="sub-title">Other Information</h2>
-
-                  <h3 class="auth-input-label-bold" style="margin-top: 20px;">Special Skills/Hobbies</h3>
-                  <div class="pds-table-wrapper">
-                    <table class="pds-table table-compact">
-                      <tbody>
-                        <tr v-for="(sh, idx) in user.skillsHobbies" :key="idx">
-                          <td><input v-model="sh.skillOrHobby" placeholder="Skill or Hobby" class="auth-input" :class="{ 'input-error': !sh.skillOrHobby && showValidationErrors }" /></td>
-                          <td><button @click="deleteSkillOrHobby(idx)" class="delete-file-btn" style="height: 35px; width: 80px; justify-content: center;">Delete</button></td>
-                        </tr>
-                      </tbody>
-                    </table>
-                  </div>
-                  <button @click="user.skillsHobbies.push({ skillOrHobby: '' })" class="btn-white" style="margin-top: 10px;">+ Add Skill/Hobby</button>
-
-                  <h3 class="auth-input-label-bold" style="margin-top: 20px;">Non-Academic Distinctions</h3>
-                  <div class="pds-table-wrapper">
-                    <table class="pds-table table-compact">
-                      <tbody>
-                        <tr v-for="(sh, idx) in user.distinctions" :key="idx">
-                          <td><input v-model="sh.distinction" placeholder="Distinction" class="auth-input" :class="{ 'input-error': !sh.distinction && showValidationErrors }" /></td>
-                          <td><button @click="deleteDistinction(idx)" class="delete-file-btn" style="height: 35px; width: 80px; justify-content: center;">Delete</button></td>
-                        </tr>
-                      </tbody>
-                    </table>
-                  </div>
-                  <button @click="user.distinctions.push({ distinction: '' })" class="btn-white" style="margin-top: 10px;">+ Add Distinction</button>
-
-                  <h3 class="auth-input-label-bold" style="margin-top: 20px;">Membership in Association/Organization</h3>
-                  <div class="pds-table-wrapper">
-                    <table class="pds-table table-compact">
-                      <tbody>
-                        <tr v-for="(sh, idx) in user.memberships" :key="idx">
-                          <td><input v-model="sh.organizationName" placeholder="Organization" class="auth-input" :class="{ 'input-error': !sh.organizationName && showValidationErrors }" /></td>
-                          <td><button @click="deleteMemberShip(idx)" class="delete-file-btn" style="height: 35px; width: 80px; justify-content: center;">Delete</button></td>
-                        </tr>
-                      </tbody>
-                    </table>
-                  </div>
-                  <button @click="user.memberships.push({ organizationName: '' })" class="btn-white" style="margin-top: 10px; margin-bottom: 20px;">+ Add Organization</button>
-
-                  <div class="button-group-row">
-                    <button @click="save" class="btn" style="margin-left: auto; width: 200px;">Save Progress</button>
-                  </div>
-
-                </div>
-              </div>
-
-              <div v-else-if="activeTab === 'Personal Data Sheet 4'">
-                <div class="form-wrapper">
-                  <h2 class="sub-title">IV. Other Information</h2>
-
-                  <table class="pds-table" style="table-layout: fixed; width: 100%;">
-                    <colgroup>
-                      <col style="width: 50%;">
-                      <col style="width: 50%;">
-                    </colgroup>
-                    <tbody>
-                      <tr>
-                        <td colspan="2" class="pds-question-header" style="text-align: left; padding: 15px 10px;">
-                          <p class="auth-input-label-bold text-lg">34. Are you related by consanguinity or affinity to the appointing or recommending authority, or to the chief of bureau or office or to the person who has immediate supervision over you in the Office, Bureau or Department where you will be appointed?</p>
-                        </td>
-                      </tr>
-
-                      <tr>
-                        <td style="vertical-align: top;">
-                          <p class="auth-input-label-bold">a. within the third degree?</p>
-                          <div class="flex items-center space-x-6 h-10">
-                            <label class="flex items-center cursor-pointer"><input type="radio" :value="true" v-model="user.areThirdDegree" class="mr-2" /> YES</label>
-                            <label class="flex items-center cursor-pointer"><input type="radio" :value="false" v-model="user.areThirdDegree" class="mr-2" /> NO</label>
-                          </div>
-                        </td>
-                        <td style="vertical-align: top;" :rowspan="user.areThirdDegree || user.areFourthDegree ? 2 : 1">
-                          <p class="auth-input-label-bold" v-if="user.areThirdDegree || user.areFourthDegree">If YES, give details:</p>
-                          <textarea v-if="user.areThirdDegree || user.areFourthDegree" v-model="user.thirdFourthDegreeDetails" class="auth-input w-full" rows="3" placeholder="Details of relationship..."></textarea>
-                        </td>
-                      </tr>
-
-                      <tr>
-                        <td style="vertical-align: top;">
-                          <p class="auth-input-label-bold">b. within the fourth degree (for LGU - Career Employees)?</p>
-                          <div class="flex items-center space-x-6 h-10">
-                            <label class="flex items-center cursor-pointer"><input type="radio" :value="true" v-model="user.areFourthDegree" class="mr-2" /> YES</label>
-                            <label class="flex items-center cursor-pointer"><input type="radio" :value="false" v-model="user.areFourthDegree" class="mr-2" /> NO</label>
-                          </div>
-                        </td>
-                      </tr>
-                      <tr><td colspan="2" class="spacer-row" style="height: 10px;"></td></tr>
-
-                      <tr>
-                        <td style="vertical-align: top;">
-                          <p class="auth-input-label-bold">35. a. Have you ever been found guilty of any administrative offense?</p>
-                          <div class="flex items-center space-x-6 h-10">
-                            <label class="flex items-center cursor-pointer"><input type="radio" :value="true" v-model="user.guiltyAdministrativeOffense" class="mr-2" /> YES</label>
-                            <label class="flex items-center cursor-pointer"><input type="radio" :value="false" v-model="user.guiltyAdministrativeOffense" class="mr-2" /> NO</label>
-                          </div>
-                        </td>
-                        <td style="vertical-align: top;">
-                          <p class="auth-input-label-bold" v-if="user.guiltyAdministrativeOffense">If YES, give details:</p>
-                          <textarea v-if="user.guiltyAdministrativeOffense" v-model="user.adminOffenseDetails" class="auth-input w-full" rows="3" placeholder="Details of administrative offense..."></textarea>
-                        </td>
-                      </tr>
-                      <tr><td colspan="2" class="spacer-row" style="height: 10px;"></td></tr>
-
-                      <tr>
-                        <td style="vertical-align: top;">
-                          <p class="auth-input-label-bold">b. Have you been criminally charged before any court?</p>
-                          <div class="flex items-center space-x-6 h-10">
-                            <label class="flex items-center cursor-pointer"><input type="radio" :value="true" v-model="user.criminallyCharged" class="mr-2" /> YES</label>
-                            <label class="flex items-center cursor-pointer"><input type="radio" :value="false" v-model="user.criminallyCharged" class="mr-2" /> NO</label>
-                          </div>
-                        </td>
-                        <td style="vertical-align: top;">
-                          <div v-if="user.criminallyCharged">
-                            <p class="auth-input-label-bold">If YES, give details:</p>
-                            <textarea v-model="user.criminalChargeDetails" class="auth-input w-full mb-2" rows="1" placeholder="Case details"></textarea>
-                            <div class="flex space-x-2">
-                              <input v-model="user.q35bDateFiled" placeholder="Date Filed" class="auth-input flex-1" type="date" />
-                              <input v-model="user.q35bStatus" placeholder="Status of Case/s" class="auth-input flex-1" />
-                            </div>
-                          </div>
-                        </td>
-                      </tr>
-                      <tr><td colspan="2" class="spacer-row" style="height: 10px;"></td></tr>
-
-                      <tr>
-                        <td style="vertical-align: top;">
-                          <p class="auth-input-label-bold">36. Convicted of any crime or violation of law?</p>
-                          <div class="flex items-center space-x-6 h-10">
-                            <label class="flex items-center cursor-pointer"><input type="radio" :value="true" v-model="user.convictedOfCrime" class="mr-2" /> YES</label>
-                            <label class="flex items-center cursor-pointer"><input type="radio" :value="false" v-model="user.convictedOfCrime" class="mr-2" /> NO</label>
-                          </div>
-                        </td>
-                        <td style="vertical-align: top;">
-                          <p class="auth-input-label-bold" v-if="user.convictedOfCrime">If YES, give details:</p>
-                          <textarea v-if="user.convictedOfCrime" v-model="user.convictedCrimeDetails" class="auth-input w-full" rows="3" placeholder="Details of conviction..."></textarea>
-                        </td>
-                      </tr>
-                      <tr><td colspan="2" class="spacer-row" style="height: 10px;"></td></tr>
-
-                      <tr>
-                        <td style="vertical-align: top;">
-                          <p class="auth-input-label-bold">37. Have you ever been separated from the service in any of the following modes: Resignation, Retirement, Dropped from the rolls, Dismissal, Termination, End of term, Finished contract or Phased out (abolition) in the public or private sector?</p>
-                          <div class="flex items-center space-x-6 h-10">
-                            <label class="flex items-center cursor-pointer"><input type="radio" :value="true" v-model="user.separatedFromService" class="mr-2" /> YES</label>
-                            <label class="flex items-center cursor-pointer"><input type="radio" :value="false" v-model="user.separatedFromService" class="mr-2" /> NO</label>
-                          </div>
-                        </td>
-                        <td style="vertical-align: top;">
-                          <p class="auth-input-label-bold" v-if="user.separatedFromService">If YES, give details:</p>
-                          <textarea v-if="user.separatedFromService" v-model="user.separatedServiceDetails" class="auth-input w-full" rows="3" placeholder="Details of separation..."></textarea>
-                        </td>
-                      </tr>
-                      <tr><td colspan="2" class="spacer-row" style="height: 10px;"></td></tr>
-
-                      <tr>
-                        <td style="vertical-align: top;">
-                          <p class="auth-input-label-bold">38. a. Have you ever been a candidate in a national or local election held within the last year (except Barangay election)?</p>
-                          <div class="flex items-center space-x-6 h-10">
-                            <label class="flex items-center cursor-pointer"><input type="radio" :value="true" v-model="user.candidateInElection" class="mr-2" /> YES</label>
-                            <label class="flex items-center cursor-pointer"><input type="radio" :value="false" v-model="user.candidateInElection" class="mr-2" /> NO</label>
-                          </div>
-                        </td>
-                        <td style="vertical-align: top;">
-                          <p class="auth-input-label-bold" v-if="user.candidateInElection">If YES, give details:</p>
-                          <input v-if="user.candidateInElection" v-model="user.candidateElectionDetails" class="auth-input w-full" placeholder="Specify election/position" />
-                        </td>
-                      </tr>
-                      <tr><td colspan="2" class="spacer-row" style="height: 10px;"></td></tr>
-
-                      <tr>
-                        <td style="vertical-align: top;">
-                          <p class="auth-input-label-bold">b. Have you resigned from the government service during the three (3)-month period before the last election to promote/aid any candidate?</p>
-                          <div class="flex items-center space-x-6 h-10">
-                            <label class="flex items-center cursor-pointer"><input type="radio" :value="true" v-model="user.resignedFromGovt" class="mr-2" /> YES</label>
-                            <label class="flex items-center cursor-pointer"><input type="radio" :value="false" v-model="user.resignedFromGovt" class="mr-2" /> NO</label>
-                          </div>
-                        </td>
-                        <td style="vertical-align: top;">
-                          <p class="auth-input-label-bold" v-if="user.resignedFromGovt">If YES, give details:</p>
-                          <input v-if="user.resignedFromGovt" v-model="user.resignedGovtDetails" class="auth-input w-full" placeholder="Details of resignation" />
-                        </td>
-                      </tr>
-                      <tr><td colspan="2" class="spacer-row" style="height: 10px;"></td></tr>
-
-                      <tr>
-                        <td style="vertical-align: top;">
-                          <p class="auth-input-label-bold">39. Immigrant / permanent resident of another country?</p>
-                          <div class="flex items-center space-x-6 h-10">
-                            <label class="flex items-center cursor-pointer"><input type="radio" :value="true" v-model="user.immigrantOrResident" class="mr-2" /> YES</label>
-                            <label class="flex items-center cursor-pointer"><input type="radio" :value="false" v-model="user.immigrantOrResident" class="mr-2" /> NO</label>
-                          </div>
-                        </td>
-                        <td style="vertical-align: top;">
-                          <p class="auth-input-label-bold" v-if="user.immigrantOrResident">If YES, give details (country):</p>
-                          <input v-if="user.immigrantOrResident" v-model="user.immigrantResidentDetails" class="auth-input w-full" placeholder="Country" />
-                        </td>
-                      </tr>
-                      <tr><td colspan="2" class="spacer-row" style="height: 10px;"></td></tr>
-
-                      <tr>
-                        <td colspan="2" class="pds-question-header" style="text-align: left; padding: 15px 10px;">
-                          <p class="auth-input-label-bold text-lg">40. Indigenous Group / Disability / Solo Parent Check:</p>
-                        </td>
-                      </tr>
-                      <tr>
-                        <td style="vertical-align: top;">
-                          <p class="auth-input-label-bold">a. Indigenous group member?</p>
-                          <div class="flex items-center space-x-6 h-10">
-                            <label class="flex items-center cursor-pointer"><input type="radio" :value="true" v-model="user.indigenousGroup" class="mr-2" /> YES</label>
-                            <label class="flex items-center cursor-pointer"><input type="radio" :value="false" v-model="user.indigenousGroup" class="mr-2" /> NO</label>
-                          </div>
-                        </td>
-                        <td style="vertical-align: top;">
-                          <p class="auth-input-label-bold" v-if="user.indigenousGroup">If YES, please specify:</p>
-                          <input v-if="user.indigenousGroup" v-model="user.indigenousGroupDetails" class="auth-input w-full" placeholder="Specify group" />
-                        </td>
-                      </tr>
-                      <tr>
-                        <td style="vertical-align: top;">
-                          <p class="auth-input-label-bold">b. Person with disability?</p>
-                          <div class="flex items-center space-x-6 h-10">
-                            <label class="flex items-center cursor-pointer"><input type="radio" :value="true" v-model="user.personWithDisability" class="mr-2" /> YES</label>
-                            <label class="flex items-center cursor-pointer"><input type="radio" :value="false" v-model="user.personWithDisability" class="mr-2" /> NO</label>
-                          </div>
-                        </td>
-                        <td style="vertical-align: top;">
-                          <p class="auth-input-label-bold" v-if="user.personWithDisability">If YES, please specify ID No:</p>
-                          <input v-if="user.personWithDisability" v-model="user.pwdIDNo" class="auth-input w-full" placeholder="Specify PWD ID No." />
-                        </td>
-                      </tr>
-                      <tr>
-                        <td style="vertical-align: top;">
-                          <p class="auth-input-label-bold">c. Solo Parent?</p>
-                          <div class="flex items-center space-x-6 h-10">
-                            <label class="flex items-center cursor-pointer"><input type="radio" :value="true" v-model="user.soloParent" class="mr-2" /> YES</label>
-                            <label class="flex items-center cursor-pointer"><input type="radio" :value="false" v-model="user.soloParent" class="mr-2" /> NO</label>
-                          </div>
-                        </td>
-                        <td style="vertical-align: top;">
-                          <p class="auth-input-label-bold" v-if="user.soloParent">If YES, please specify ID No:</p>
-                          <input v-if="user.soloParent" v-model="user.soloParentIDNo" class="auth-input w-full" placeholder="Specify Solo Parent ID No." />
-                        </td>
-                      </tr>
-                    </tbody>
-                  </table>
-
-                  <hr class="my-6 border-gray-400" />
-
-                  <div class="flex justify-between items-start gap-8">
-                    <div class="flex-grow">
-                      <h2 class="sub-title">41. REFERENCES</h2>
-                      <p class="auth-input-label-bold mb-3" style="font-size: 0.85rem; color: #666;">(Person not related by consanguinity or affinity to applicant)</p>
-
-                      <div class="pds-table-wrapper">
-                        <table class="pds-table">
-                          <thead>
-                            <tr>
-                              <th style="width: 30%;">NAME</th>
-                              <th style="width: 40%;">ADDRESS</th>
-                              <th style="width: 20%;">CONTACT NO.</th>
-                              <th style="width: 10%;">Action</th>
-                            </tr>
-                          </thead>
-                          <tbody>
-                            <tr v-for="(ref, idx) in user.references" :key="idx">
-                              <td>
-                                <input v-model="ref.name"
-                                       placeholder="Full Name"
-                                       class="auth-input"
-                                       :class="{ 'input-error': !ref.name && showValidationErrors }" />
-                              </td>
-                              <td>
-                                <input v-model="ref.address"
-                                       placeholder="Address"
-                                       class="auth-input"
-                                       :class="{ 'input-error': !ref.address && showValidationErrors }" />
-                              </td>
-                              <td>
-                                <input v-model="ref.telephoneNo"
-                                       placeholder="Contact/Email"
-                                       class="auth-input"
-                                       :class="{ 'input-error': !ref.telephoneNo && showValidationErrors }" />
-                              </td>
-                              <td>
-                                <button @click="user.references.splice(idx, 1)" class="delete-file-btn" style="height: 35px; width: 100%; justify-content: center;">Remove</button>
-                              </td>
-                            </tr>
-                          </tbody>
-                        </table>
-                      </div>
-                      <button @click="user.references.push({ name: '', address: '', telephoneNo: '' })" class="btn-white" style="margin-top: 10px;">
-                        + Add Reference
-                      </button>
-                    </div>
-
-                    <div class="file-action-container">
-                      <!--<div v-if="user.passportPhotoUrl" class="photo-preview-box">
-                        <img :src="getFileUrl(user.passportPhotoUrl)"
-                             alt="1x1 Preview"
-                             @error="(e) => console.error('Image Load Error. URL tried:', e.target.src)" />
-                      </div>-->
-
-                      <div class="file-info-group">
-
-                        <div v-if="user.passportPhotoUrl" class="uploaded-file-details">
-                          <span class="file-name-label" :title="user.passportPhotoOriginalName">
-                            {{ user.passportPhotoOriginalName || 'Uploaded Photo' }}
-                          </span>
-
-                          <div class="action-buttons">
-                            <button class="preview-file-btn" @click="previewFile(user.passportPhotoUrl, user.passportPhotoOriginalName)">
-                              View Full
-                            </button>
-                            <button class="delete-file-btn" @click="deleteFile('PassportPhoto', user.passportPhotoUrl)">
-                              Delete
-                            </button>
-                          </div>
-                        </div>
-
-                        <div class="upload-file-btn" @click="triggerGenericFileInput('PassportPhoto')">
-                          <img src="../assets/upload.png" />
-                          {{ user.passportPhotoUrl ? 'Change Photo' : 'Upload 1x1 Photo' }}
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  <hr class="my-6 border-gray-400" />
-
-                  <div class="button-group-row" style="margin-top: 30px;">
-                    <button @click="downloadPDS" class="btn-white" style="width: 200px;">Download as PDF</button>
-                    <button @click="save" class="btn" style="margin-left: auto; width: 200px;">Finalize & Save</button>
-                  </div>
-                </div>
               </div>
             </div>
+          </div>
+        </div>
+      </div>
           </transition>
         </div>
       </div>
     </div>
   </div>
+
+
 
   <!-- Reusable dialog -->
   <DialogBox :show="showDialog"
@@ -1045,6 +267,21 @@
   const employeeID = computed(() => auth.employeeID);
   const firstName = computed(() => auth.firstName);
   const lastName = computed(() => auth.lastName);
+
+const contact = ref({
+  mobile: '',
+  landline: '',
+  email: ''
+})
+
+const address = ref({
+  street: '',
+  city: '',
+  province: '',
+  region: '',
+  postalCode: '',
+  country: ''
+})
 
   // ------------------ State ------------------
   const user = ref({
@@ -2624,6 +1861,175 @@
   /* 1. DASHBOARD GRID LAYOUT STYLES (MATCHING EmployeeID.vue) */
   /* ************************************************************************** */
   /* Renamed .app-grid-layout to .app-layout and updated style */
+
+
+  /*SCONTACT*/
+  .form-section {
+    background: #fff;
+    border-radius: 12px;
+    padding: 24px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    margin-bottom: 24px;
+  }
+
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 24px;
+    padding-bottom: 12px;
+    border-bottom: 2px solid #e5e7eb;
+  }
+
+  .section-icon {
+    width: 32px;
+    height: 32px;
+    background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 16px;
+    font-weight: 600;
+  }
+
+  .section-title {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 700;
+    color: #1f2937;
+  }
+
+  .form-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+
+    .form-row:last-child {
+      margin-bottom: 0;
+    }
+
+    .form-row span {
+      min-width: 140px;
+      font-weight: 500;
+      color: #374151;
+      font-size: 14px;
+    }
+
+  .auth-input,
+  .auth-select,
+  .phone-flag {
+    padding: 12px 16px;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    font-size: 14px;
+    background-color: #f9fafb;
+    transition: all 0.2s ease;
+    height: 48px;
+    box-sizing: border-box;
+  }
+
+  .auth-input {
+    flex: 1;
+  }
+
+  .auth-select {
+    flex: 1;
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
+    background-position: right 12px center;
+    background-repeat: no-repeat;
+    background-size: 16px;
+    padding-right: 40px;
+    cursor: pointer;
+  }
+
+  .phone-input-group {
+    display: flex;
+    gap: 8px;
+    flex: 1;
+    align-items: center;
+  }
+
+  .phone-flag {
+    min-width: 100px;
+    padding-right: 32px;
+    background-color: #f9fafb;
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
+    background-position: right 8px center;
+    background-repeat: no-repeat;
+    background-size: 16px;
+    cursor: pointer;
+  }
+
+  .phone-prefix {
+    max-width: 80px;
+    text-align: center;
+  }
+
+  .phone-number {
+    flex: 1;
+  }
+
+  .auth-input:focus,
+  .auth-select:focus,
+  .phone-flag:focus {
+    outline: none;
+    border-color: #3b82f6;
+    background-color: #eef2ff;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  }
+
+  .two-column-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+
+  .full-width {
+    grid-column: 1 / -1;
+  }
+
+  .required::after {
+    content: " *";
+    color: #ef4444;
+  }
+  /*FINISH*/
+
+  /* Select Dropdown Arrow */
+  .auth-select {
+    cursor: pointer;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
+    background-position: right 12px center;
+    background-repeat: no-repeat;
+    background-size: 16px;
+    padding-right: 40px;
+  }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .form-row {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 8px;
+    }
+
+      .form-row span {
+        min-width: auto;
+        font-weight: bold;
+      }
+
+    .phone-input-group {
+      flex-direction: column;
+      width: 100%;
+    }
+  }
+
+
+
   .app-layout {
     display: grid;
     grid-template-columns: 280px 1fr;
