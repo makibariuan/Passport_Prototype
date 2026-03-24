@@ -110,13 +110,13 @@ namespace OnlineRegistration.Server.Controllers
                     Email = dto.Email,
                     FirstName = dto.FirstName,
                     LastName = dto.LastName,
-                    UserType = 1,
-                    UserRole = 1,
+                    UserType = 1, // Defaulting to System
+                    UserRole = 2, // Assigning "System User" as a flat integer
                     IsActive = true,
                     CreatedAt = DateTime.UtcNow,
                     PasswordHash = _hasher.HashPassword(null!, dto.Password),
 
-                    // Populate the navigation property directly
+                    // Fully populate the passport info table
                     PassportInfo = new PassportPersonalInformation
                     {
                         FirstName = dto.FirstName,
@@ -126,7 +126,7 @@ namespace OnlineRegistration.Server.Controllers
                         Birthdate = dto.Birthdate,
                         Gender = dto.Gender,
                         Nationality = dto.Nationality,
-                        CivilStatusId = dto.CivilStatusId, // Mapping to your string property
+                        CivilStatusId = dto.CivilStatusId,
                         hasPSABirthcert = dto.HasPSABirthcert,
                         isBirthLegitimate = dto.IsBirthLegitimate,
                         BirthCountry = dto.BirthCountry,
