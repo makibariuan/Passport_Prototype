@@ -30,6 +30,7 @@ namespace Passport_Prototype.Server.Models
 
         public string? Suffix { get; set; }
 
+        [Required]
         public string? Citizenship { get; set; }
     }
 }

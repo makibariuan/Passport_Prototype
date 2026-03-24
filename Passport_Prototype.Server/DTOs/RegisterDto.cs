@@ -17,7 +17,7 @@ namespace OnlineRegistration.Server.DTOs
         public DateTime Birthdate { get; set; }
         public string Gender { get; set; }
         public string Nationality { get; set; }
-        public int CivilStatusId { get; set; }
+        public string CivilStatus { get; set; }
         public bool HasPSABirthcert { get; set; }
         public bool IsBirthLegitimate { get; set; }
         public string BirthCountry { get; set; }

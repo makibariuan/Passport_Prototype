@@ -126,7 +126,7 @@ namespace OnlineRegistration.Server.Controllers
                         Birthdate = dto.Birthdate,
                         Gender = dto.Gender,
                         Nationality = dto.Nationality,
-                        CivilStatusId = dto.CivilStatusId,
+                        CivilStatus = dto.CivilStatus,
                         hasPSABirthcert = dto.HasPSABirthcert,
                         isBirthLegitimate = dto.IsBirthLegitimate,
                         BirthCountry = dto.BirthCountry,

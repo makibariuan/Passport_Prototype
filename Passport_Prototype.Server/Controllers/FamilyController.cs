@@ -76,13 +76,13 @@ namespace Passport_Prototype.Server.Controllers
                 return NotFound();
 
             // Manual mapping
-            if (dto.FirstName != null) family.FirstName = dto.FirstName;
-            if (dto.MiddleName != null) family.MiddleName = dto.MiddleName;
-            if (dto.LastName != null) family.LastName = dto.LastName;
-            if (dto.Suffix != null) family.Suffix = dto.Suffix;
-            if (dto.Relationship != null) family.Relationship = dto.Relationship;
-            if (dto.IsAlive.HasValue) family.isAlive = dto.IsAlive.Value;
-            if (dto.Citizenship != null) family.Citizenship = dto.Citizenship;
+            family.FirstName = dto.FirstName;
+            family.MiddleName = dto.MiddleName;
+            family.LastName = dto.LastName;
+            family.Suffix = dto.Suffix;
+            family.Relationship = dto.Relationship;
+            family.isAlive = dto.IsAlive.Value;
+            family.Citizenship = dto.Citizenship;
 
             await _context.SaveChangesAsync();
 
