@@ -82,12 +82,11 @@
           <input type="text" placeholder="Suffix" />
         </div>
 
-        <div class="form-field">
-          <label>Email (Will be your Username)</label>
-          <div class="input-with-action">
-            <input v-model="email" type="email" placeholder="Email Address" />
-            <button class="action-btn">Send verification code</button>
-          </div>
+        <div class="input-with-action">
+          <input v-model="email" type="email" placeholder="Email Address" />
+          <button @click="sendVerificationCode" class="action-btn" :disabled="isLoading">
+            {{ isLoading ? 'Sending...' : 'Send verification code' }}
+          </button>
         </div>
 
         <div class="form-field">
@@ -391,178 +390,6 @@
     };
   };
 
-  // Register
-  const handleRegister = async () => {
-    clearErrors();
-
-    // 1. FRONT-END VALIDATION: Check required fields upfront
-    if (!email.value) {
-      dialogTitle.value = "Required Field";
-      dialogMessage.value = "Email Address is required.";
-      showDialog.value = true;
-      return;
-    }
-
-    // 🔥 UPDATED: Check for the relevant ID/Name field
-    if (isEmployee.value && !employeeID.value) {
-      dialogTitle.value = "Required Field";
-      dialogMessage.value = "Employee ID is required for employee registration.";
-      showDialog.value = true;
-      return;
-    } else if (!isEmployee.value && !firstName.value) {
-      dialogTitle.value = "Required Field";
-      dialogMessage.value = "First Name is required for citizen registration.";
-      showDialog.value = true;
-      return;
-    }
-
-    if (!isPasswordValid.value) {
-      dialogTitle.value = "Password";
-      dialogMessage.value = "Please ensure your password meets all the requirements.";
-      showDialog.value = true;
-      return;
-    }
-
-    if (passwordMismatch.value) {
-      dialogTitle.value = "Password Mismatch";
-      dialogMessage.value = "The confirmed password does not match the password.";
-      showDialog.value = true;
-      return;
-    }
-
-
-    if (!isTermsAccepted.value) {
-      dialogTitle.value = "Terms of Service";
-      dialogMessage.value = "Please accept the Terms of Service before registering.";
-      showDialog.value = true;
-      return;
-    }
-
-
-    if (!captchaVerified.value) {
-      dialogTitle.value = "Captcha Required";
-      dialogMessage.value = "Please verify the captcha before signing up.";
-      showDialog.value = true;
-      return;
-    }
-
-
-    try {
-      isLoading.value = true;
-
-      // 2. DATA PAYLOAD PREPARATION
-      const registrationData = {
-        username: email.value,
-        email: email.value,
-        password: password.value,
-        firstName: firstName.value,
-        lastName: lastName.value,
-        employeeID: isEmployee.value ? employeeID.value : "",
-        birthDate: birthday.value ? new Date(birthday.value).toISOString() : null,
-        userRole: isEmployee.value ? 1 : 0,
-        govIDType: govIDType.value,
-        govIDNumber: govIDNumber.value,
-        idImageBase64: idImageBase64.value,
-        idFileExtension: idFileExtension.value
-      };
-
-
-      const res = await api.post("/auth/register", registrationData);
-
-      dialogTitle.value = "Success";
-      dialogMessage.value = res.data.message || "Registration successful ✅";
-      showDialog.value = true;
-
-      isLogin.value = true;
-      resetRegistrationForm();
-      username.value = email.value;
-    } catch (err) {
-      console.error("FULL REGISTRATION ERROR:", err);
-      dialogTitle.value = "Registration Failed";
-
-      let msg = "Registration failed.";
-      if (err.response?.data?.message) {
-    msg = err.response.data.message;
-    const lowerMsg = msg.toLowerCase();
-
-    // 1. Check for Birthdate first (Specific mismatch)
-    if (lowerMsg.includes("birth date") || lowerMsg.includes("birthdate")) {
-      fieldErrors.value.birthday = true;
-    }
-    // 2. Check for Name mismatches
-    else if (lowerMsg.includes("first name")) {
-      fieldErrors.value.firstName = true;
-    }
-    else if (lowerMsg.includes("last name") || lowerMsg.includes("surname")) {
-      fieldErrors.value.lastName = true;
-    }
-    // 3. Check for Email
-    else if (lowerMsg.includes("email")) {
-      fieldErrors.value.email = true;
-    }
-    // 4. Check for Employee ID (General catch-all for ID errors)
-    else if (lowerMsg.includes("employee id")) {
-      fieldErrors.value.employeeID = true;
-    }
-
-  } else if (err.response?.data?.errors) {
-    // Handle ASP.NET ModelState errors (Dictionary based)
-    const errorData = err.response.data.errors;
-    msg = Object.values(errorData).flat().join("\n");
-
-    if (errorData.Email) fieldErrors.value.email = true;
-    if (errorData.EmployeeID) fieldErrors.value.employeeID = true;
-    if (errorData.FirstName) fieldErrors.value.firstName = true;
-    if (errorData.LastName || errorData.Surname) fieldErrors.value.lastName = true;
-    if (errorData.BirthDate) fieldErrors.value.birthday = true;
-  }
-      captchaKey.value++; // refresh CAPTCHA
-      dialogMessage.value = msg;
-      showDialog.value = true;
-    } finally {
-      isLoading.value = false;
-    }
-  };
-
-  // Login Step 1: credentials → send OTP
-  // AuthPage.vue: Inside handleLogin function
-  const handleLogin = async () => {
-    try {
-      isLoading.value = true;
-      otpArray.value = ['', '', '', '', '', ''];
-      await api.post("/auth/login", {
-        email: username.value, // Make sure this key is 'email'
-        password: password.value,
-      });
-      showOtpDialog.value = true;
-      startCooldown(); // 🔥 start 60 second timer
-
-    } catch (err) {
-      dialogTitle.value = "Login Failed";
-
-      // 1. Initialize 'msg' with a strong fallback string
-      let msg = "Login failed. A connection or unknown error occurred.";
-
-      if (err.response?.data?.message) {
-        msg = err.response.data.message;
-      } else if (err.response?.data?.errors) {
-        // Handle ASP.NET ModelState errors
-        const errors = Object.values(err.response.data.errors).flat();
-        msg = errors.join("\n");
-      } else if (err.message) {
-        // Handle general network errors (e.g., Axios timeout)
-        msg = err.message;
-      }
-
-      // 2. CRITICAL STEP: Explicitly ensure a string is assigned
-      dialogMessage.value = String(msg);
-      showDialog.value = true;
-    } finally {
-      isLoading.value = false;
-    }
-  };
-
-
   watch(otp, (newVal) => {
     if (!newVal) {
       otpError.value = ""; // clear error if otp is empty
@@ -793,6 +620,88 @@
       isLoading.value = false;
     }
   }
+
+
+  // --- API Integration Functions ---
+
+  // 1. Send Verification Code (Initiate)
+  const sendVerificationCode = async () => {
+    if (!email.value) {
+      alert("Please enter an email address.");
+      return;
+    }
+
+    isLoading.value = true;
+    try {
+      // Matches [HttpPost("initiate-registration")]
+      const response = await api.post("/Auth/initiate-registration", JSON.stringify(email.value), {
+        headers: { 'Content-Type': 'application/json' }
+      });
+      alert(response.data.message);
+      // Start your countdown timer here
+    } catch (err) {
+      alert(err.response?.data?.message || "Failed to send code.");
+    } finally {
+      isLoading.value = false;
+    }
+  };
+
+  // 2. Verify OTP (Before filling the rest of the form)
+  const verifyOtpCode = async () => {
+    try {
+      // Matches [HttpPost("verify-registration-otp")]
+      const response = await api.post("/Auth/verify-registration-otp", {
+        email: email.value,
+        verificationCode: otp.value
+      });
+      alert("Email Verified! Please complete your details.");
+    } catch (err) {
+      alert(err.response?.data?.message || "Invalid Code.");
+    }
+  };
+
+  // 3. Final Sign Up (Complete)
+  const handleRegister = async () => {
+    if (!canRegister.value) return;
+
+    isLoading.value = true;
+    try {
+      // Matches [HttpPut("complete-registration")]
+      const payload = {
+        email: email.value,
+        password: password.value,
+        firstName: firstName.value,
+        middleName: hasMiddleName.value ? middleName.value : null,
+        lastName: lastName.value,
+        suffix: "", // Add a ref for this if needed
+        // Map other fields required by your RegisterDto/PassportPersonalInformation
+      };
+
+      await api.put("/Auth/complete-registration", payload);
+      alert("Registration Successful!");
+      router.push("/login");
+    } catch (err) {
+      alert(err.response?.data?.message || "Registration failed.");
+    } finally {
+      isLoading.value = false;
+    }
+  };
+
+  // 4. Login Logic
+  const handleLogin = async () => {
+    try {
+      // Matches [HttpPost("login")]
+      const response = await api.post("/Auth/login", {
+        email: username.value,
+        password: password.value
+      });
+      // The backend sends an OTP for login too! 
+      // You should show your OTP dialog now.
+      showOtpDialog.value = true;
+    } catch (err) {
+      alert(err.response?.data?.message || "Login failed.");
+    }
+  };
 </script>
 
 
