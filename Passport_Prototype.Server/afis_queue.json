@@ -4,41 +4,42 @@
     "FingerPosition": 4,
     "Base64Image": "string",
     "RetryCount": 26,
-    "NextAttempt": "2026-03-24T13:26:44.3943502Z"
+    "NextAttempt": "2026-03-24T12:56:38.2069417Z"
   },
   {
     "PersonId": 5,
     "FingerPosition": 5,
     "Base64Image": "string",
     "RetryCount": 26,
-    "NextAttempt": "2026-03-24T13:26:51.6027302Z"
+    "NextAttempt": "2026-03-24T12:56:45.5158462Z"
   },
   {
     "PersonId": 5,
     "FingerPosition": 6,
     "Base64Image": "string",
     "RetryCount": 26,
-    "NextAttempt": "2026-03-24T13:26:58.7629179Z"
+    "NextAttempt": "2026-03-24T12:56:52.7703326Z"
   },
   {
     "PersonId": 5,
     "FingerPosition": 7,
     "Base64Image": "string",
     "RetryCount": 26,
-    "NextAttempt": "2026-03-24T13:27:05.9375638Z"
+    "NextAttempt": "2026-03-24T12:56:59.9695537Z"
   },
   {
     "PersonId": 5,
     "FingerPosition": 8,
     "Base64Image": "string",
     "RetryCount": 26,
-    "NextAttempt": "2026-03-24T13:27:13.1710808Z"
+    "NextAttempt": "2026-03-24T12:57:07.1292354Z"
   },
   {
     "PersonId": 5,
     "FingerPosition": 9,
     "Base64Image": "string",
     "RetryCount": 26,
+    "NextAttempt": "2026-03-24T12:57:14.2620464Z"
     "NextAttempt": "2026-03-24T13:51:52.0975935Z"
   },
   {
@@ -46,6 +47,7 @@
     "FingerPosition": 10,
     "Base64Image": "string",
     "RetryCount": 26,
+    "NextAttempt": "2026-03-24T12:57:21.4536905Z"
     "NextAttempt": "2026-03-24T13:51:59.3835613Z"
   },
   {
@@ -53,6 +55,7 @@
     "FingerPosition": 1,
     "Base64Image": "string",
     "RetryCount": 27,
+    "NextAttempt": "2026-03-24T12:57:28.5971663Z"
     "NextAttempt": "2026-03-24T13:52:06.5938453Z"
   },
   {
@@ -60,6 +63,7 @@
     "FingerPosition": 2,
     "Base64Image": "string",
     "RetryCount": 27,
+    "NextAttempt": "2026-03-24T12:57:35.7934936Z"
     "NextAttempt": "2026-03-24T13:52:13.9135864Z"
   },
   {
@@ -67,6 +71,7 @@
     "FingerPosition": 3,
     "Base64Image": "string",
     "RetryCount": 27,
+    "NextAttempt": "2026-03-24T12:57:42.9387847Z"
     "NextAttempt": "2026-03-24T13:52:21.1072621Z"
   }
 ]

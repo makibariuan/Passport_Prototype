@@ -53,15 +53,20 @@ public class PassportPersonalInformationsController : ControllerBase
     {
         var query = _context.PassportPersonalInformation.AsQueryable();
 
+        var totalPages = 1;
+        var totalDocuments = await query.CountAsync();
+
         if (pageNumber.HasValue && pageSize.HasValue)
         {
             query = query
                 .Skip((pageNumber.Value - 1) * pageSize.Value)
                 .Take(pageSize.Value);
+
+            totalPages = (int)totalDocuments / (int)pageSize;
         }
 
         var passportPersonalInformations = await query.ToListAsync();
-        return Ok(passportPersonalInformations);
+        return Ok(new { totalPages, totalDocuments, passportPersonalInformations, });
     }
 
     // READ BY ID
@@ -102,21 +107,6 @@ public class PassportPersonalInformationsController : ControllerBase
         if (dto.BirthCity != null) passportPersonalInformation.BirthCity = dto.BirthCity;
         if (dto.BirthBarangay != null) passportPersonalInformation.BirthBarangay = dto.BirthBarangay;
 
-        await _context.SaveChangesAsync();
-
-        return NoContent();
-    }
-
-    // DELETE
-    [HttpDelete("{id}")]
-    public async Task<IActionResult> Delete(int id)
-    {
-        var passportPersonalInformation = await _context.PassportPersonalInformation.FindAsync(id);
-
-        if (passportPersonalInformation == null)
-            return NotFound();
-
-        _context.PassportPersonalInformation.Remove(passportPersonalInformation);
         await _context.SaveChangesAsync();
 
         return NoContent();
