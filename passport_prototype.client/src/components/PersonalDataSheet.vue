@@ -7,17 +7,17 @@
          accept=".pdf, .jpg, .jpeg, .png" />
 
   <div class="app-layout">
-    <LeftMenu class="leftMenu" />
+    <LeftMenu class="leftMenu" /> 
 
-    <Header title="Personal Data Sheet" class="header" />
+    <Header title="Personal Profile" class="header" />
 
     <div class="dashboard-content">
 
-      <h2 class="page-title">Personal Data Sheet Management</h2>
+      <h2 class="page-title">Personal Profile </h2>
 
       <div class="pds-top-bar">
         <div class="tab-container">
-          <button v-for="tab in ['Personal Data Sheet 1', 'Personal Data Sheet 2', 'Personal Data Sheet 3', 'Personal Data Sheet 4']"
+          <button v-for="tab in ['Personal', 'Family', 'Contact', 'Work']"
                   :key="tab"
                   :class="['tab-btn', { active: activeTab === tab }]"
                   @click="activeTab = tab">
@@ -33,7 +33,7 @@
             <div :key="activeTab" class="form-wrapper">
 
               <!-- Personal Data Sheet 1 -->
-              <div v-if="activeTab === 'Personal Data Sheet 1'">
+              <div v-if="activeTab === 'Personal'">
                 <h2 class="sub-title">Personal Information</h2>
                 <div class="pds-table-wrapper">
 
@@ -465,7 +465,7 @@
                 </div>
               </div>
 
-              <div v-else-if="activeTab === 'Personal Data Sheet 2'">
+              <div v-else-if="activeTab === 'Family'">
                 <div class="form-wrapper">
 
                   <h2 class="sub-title">Civil Service Eligibility</h2>
@@ -608,7 +608,7 @@
               </div>
 
               <!-- Personal Data Sheet 3 -->
-              <div v-else-if="activeTab === 'Personal Data Sheet 3'">
+              <div v-else-if="activeTab === 'Contact'">
                 <div class="form-wrapper">
 
                   <h2 class="sub-title">Voluntary Work</h2>
@@ -715,7 +715,7 @@
                 </div>
               </div>
 
-              <div v-else-if="activeTab === 'Personal Data Sheet 4'">
+              <div v-else-if="activeTab === 'Work'">
                 <div class="form-wrapper">
                   <h2 class="sub-title">IV. Other Information</h2>
 
@@ -1035,8 +1035,8 @@
   const dialogMessage = ref("");
   const isLoading = ref(false);
 
-  const tabs = ["Personal Data Sheet 1", "Personal Data Sheet 2", "Personal Data Sheet 3", "Personal Data Sheet 4"];
-  const activeTab = ref("Personal Data Sheet 1");
+  const tabs = ["Personal", "Family", "Contact", "Work"];
+  const activeTab = ref("Personal");
 
   const auth = useAuthStore();
   const personId = computed(() => auth.userId); // logged in user’s ID
