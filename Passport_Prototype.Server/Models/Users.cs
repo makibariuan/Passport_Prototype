@@ -6,7 +6,7 @@ namespace OnlineRegistration.Server.Models
 {
     // Ensure all interfaces (IResettableUser, IStatusUser) are correctly defined elsewhere.
     [Table("Users")]
-    public class Users : IResettableUser, IStatusUser
+    public class Users
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
@@ -15,8 +15,8 @@ namespace OnlineRegistration.Server.Models
         // You can now use: _context.Users.Include(u => u.PassportInfo)
         public virtual PassportPersonalInformation? PassportInfo { get; set; }
         public int? PersonID { get; set; }
-        public int UserType { get; set; } // 1=System, 2=Kit 
-        public int UserRole { get; set; } //1 = Super Admin, 2 = System User, 3 = Kit User
+        public int? UserType { get; set; } // 1=System, 2=Kit 
+        public int? UserRole { get; set; } //1 = Super Admin, 2 = System User, 3 = Kit User
         public string? EmployeeID { get; set; }
         public string? Username { get; set; } // Matches DB NULL-ability
         public string? FirstName { get; set; }
@@ -24,8 +24,8 @@ namespace OnlineRegistration.Server.Models
         public string? PasswordHash { get; set; }
         public string? Email { get; set; }
         public DateTime? BirthDate { get; set; }
-        public bool MustResetPassword { get; set; } = true;
-        public bool IsActive { get; set; } 
+        public bool? MustResetPassword { get; set; } = true;
+        public bool? IsActive { get; set; } 
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
         public string? ActiveToken { get; set; }
         public int? OneTimePIN { get; set; }

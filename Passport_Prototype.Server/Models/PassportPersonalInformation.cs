@@ -40,7 +40,8 @@ namespace Passport_Prototype.Server.Models
         [MaxLength(100)]
         public string? Nationality { get; set; }
 
-        public int? CivilStatusId { get; set; } // Changed to int to match typical ID patterns
+        [Column("CivilStatus")] // This tells EF the DB column is named "CivilStatus"
+        public string? CivilStatusId { get; set; }
 
         public bool hasPSABirthcert { get; set; }
 
