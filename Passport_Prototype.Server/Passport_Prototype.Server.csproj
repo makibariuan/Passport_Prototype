@@ -4,7 +4,7 @@
     <TargetFramework>net8.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
-    <SpaRoot>..\onlineregistration.client</SpaRoot>
+    <SpaRoot>..\passport_prototype.client</SpaRoot>
     <SpaProxyLaunchCommand>npm run dev</SpaProxyLaunchCommand>
     <SpaProxyServerUrl>https://localhost:50431</SpaProxyServerUrl>
     <UserSecretsId>70957392-f03e-4298-9a61-13dfe81cc23e</UserSecretsId>
@@ -32,7 +32,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\onlineregistration.client\SeniorCitizen.client.esproj">
+    <ProjectReference Include="..\passport_prototype.client\passport_prototype.client.esproj">
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
     </ProjectReference>
   </ItemGroup>

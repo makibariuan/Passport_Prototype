@@ -1,32 +1,27 @@
 /* AUTH PAGE BUTTONS */
 .auth-btn {
   width: 100%;
-  padding: 16px 15px;
+  height: 38px; /* Slightly taller for main actions, but same radius */
   border: none;
-  border-radius: 12px;
-  font-size: 1.1rem;
+  border-radius: 8px;
+  font-size: 0.9rem;
   font-weight: 700;
   color: white;
-  background: #004085;
+  background: #3b82f6;
   cursor: pointer;
-  transition: all 0.3s ease;
-  margin-top: 5px;
-  margin-bottom: 5px;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-  font-family: 'Montserrat', sans-serif;
+  transition: all 0.2s ease;
   display: flex;
   justify-content: center;
   align-items: center;
+  font-family: inherit;
 }
 
   .auth-btn:hover:not(:disabled) {
-    background: #002a57;
-    transform: translateY(-1px);
+    background: #2563eb;
   }
 
   .auth-btn:disabled {
-    background: #b3cde0;
-    box-shadow: none;
+    background: #93c5fd;
     cursor: not-allowed;
   }
 
@@ -102,42 +97,31 @@
   }
 
 /* --- CAPTCHA BUTTONS --- */
-.captcha-btn {
-  height: 38px; /* Matches the input height */
-  padding: 0 15px;
-  border: none;
+.captcha-btn, .refresh-btn {
+  height: 32px; /* Matches input height exactly */
   border-radius: 8px;
-  background: #004085;
-  color: white;
-  font-weight: 600;
-  font-size: 0.85rem;
-  cursor: pointer;
-  transition: background 0.2s;
+  font-size: 0.8rem;
   display: flex;
   align-items: center;
   justify-content: center;
   box-sizing: border-box;
 }
 
-  .captcha-btn:hover {
-    background: #002a57;
-  }
+.captcha-btn {
+  padding: 0 15px;
+  border: none;
+  background: #3b82f6;
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+}
 
 .refresh-btn {
-  height: 38px; /* Matches the input height */
-  width: 38px; /* Makes it square */
-  padding: 0;
+  width: 32px;
   border: 1px solid #cbd5e1;
-  border-radius: 8px;
   background: white;
   color: #64748b;
-  font-size: 1.1rem;
   cursor: pointer;
-  transition: all 0.2s;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-sizing: border-box;
 }
 
 /* --- CONTEXTUAL OVERRIDES --- */

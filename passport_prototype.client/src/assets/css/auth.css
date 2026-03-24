@@ -1,536 +1,348 @@
-/* Import Google Fonts */
-/*@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap');*/
-/* Import Font Awesome */
-/*@import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css');*/
-
-/*
-  * AUTH.CSS - ADAPTED FOR PERFECTLY CENTERED TWO-COLUMN LAYOUT
-  * Theme: Deep Blue (#004085)
-  */
-/* --- PAGE WRAPPER --- */
-.auth-page-wrapper {
-  display: flex;
-  justify-content: center;
-  align-items: center;
+.dfa-wrapper {
+  background-color: #f4f7f6;
   min-height: 100vh;
-  padding: 20px;
-  background: linear-gradient(135deg, #eaf3ff, #f9ffff);
-  box-sizing: border-box;
-  overflow-y: auto;
-  color: #333333;
+  font-family: 'Arial', sans-serif;
 }
 
-/*
-   * NEW: Adjust vertical alignment when the register form is active
-   * This prevents the taller register form from being perfectly centered on its height,
-   * which often pushes the top of the form outside the viewport. By setting align-items
-   * to flex-start, the content starts from the top, respecting the 20px padding.
-  */
-.auth-page-wrapper.register-active {
-  align-items: flex-start;
-}
-
-/* --- MAIN LAYOUT CONTAINER (for desktop split) --- */
-.auth-main-layout {
-  display: flex;
-  width: 100%;
-  max-width: 1250px;
-  align-items: center;
-  gap: 60px;
-  flex-shrink: 0;
-  flex-grow: 0;
-  min-height: fit-content;
-  padding: 0;
-}
-
-/* --- LOGO AND TITLE SECTION (Left Side on Desktop) --- */
-.logo-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  padding: 20px;
-}
-
-.top-seal {
-  /* Dropped to 70px to make it a secondary accent */
-  width: 70px;
-  height: auto;
-  margin-bottom: 15px;
-  border-radius: 50%;
-  border: 3px solid #fff; /* Slightly thinner border for the smaller size */
-  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-}
-
-.branding-wrapper {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 2px; /* Minimal gap so they feel like one logo unit */
-  width: 100%;
-  /* Increased further to allow the title to expand more */
-  max-width: 650px;
-}
-
-.brand-title {
-  /* This will now expand to the 650px container width */
-  width: 100%;
-  height: auto;
-  object-fit: contain;
-}
-
-.brand-subheader {
-  /* Dropped to 50% to ensure it looks like a small, elegant tagline */
-  width: 50%;
-  height: auto;
-  object-fit: contain;
-  margin-top: 0px;
-  opacity: 0.9; /* Slight transparency helps it feel "secondary" */
-}
-
-/* Optional: Add a subtle fade-in animation for the branding */
-.branding-wrapper {
-  animation: fadeIn 0.8s ease-out;
-}
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.page-title h2 {
-  font-size: 1.4rem;
-  color: #64748b;
-  font-weight: 500;
-}
-
-.page-title h1 {
-  font-size: 3.2rem;
-  font-weight: 800;
-  color: #004085;
-  margin-top: -5px;
-}
-
-/* --- AUTH CONTAINER/BOX (Right Side on Desktop - The "Card") --- */
-.auth-container {
-  flex: 1;
-  min-width: 400px;
-  max-width: 580px;
-  flex-shrink: 0;
-  padding: 0;
-  align-self: center;
-}
-
-.auth-box {
-  background: white;
-  border-radius: 20px;
-  box-shadow: 0 15px 40px rgba(0, 64, 133, 0.25), 0 5px 15px rgba(0, 0, 0, 0.1);
-  padding: 25px;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-  border: 1px solid #e0e0e0;
-  max-height: calc(100vh - 40px);
-  overflow-y: auto; 
-  color: #333333;
-}
-
-.auth-title {
-  font-size: 2.4rem;
-  font-weight: 800;
-  margin-bottom: 15px;
-  margin-top: 5px;
-  color: #004085;
-  text-align: center;
-}
-
-/* ------------------- FORM ELEMENTS ------------------- */
-.auth-input-label {
-  font-size: 0.9em;
-  font-weight: 600;
-  color: #004085;
-  margin-top: 15px;
-  margin-bottom: 5px;
-}
-
-.auth-input {
-  width: 100%;
-  padding: 12px 15px;
-  border: 1px solid #cbd5e1;
-  border-radius: 8px;
-  font-size: 1.05rem;
-  transition: border-color 0.3s ease, box-shadow 0.3s ease;
-  font-family: 'Montserrat', sans-serif;
-  box-sizing: border-box;
-  color: #333;
-  background-color: white;
-/*  appearance: initial;
-  -webkit-appearance: initial;
-  -moz-appearance: initial;
-  background-image: none;*/
-}
-
-  .auth-input:focus {
-    outline: none;
-    border-color: #004085;
-    box-shadow: 0 0 8px rgba(0, 64, 133, 0.4);
-  }
-
-  .auth-input select {
-    appearance: none;
-    -webkit-appearance: none;
-    -moz-appearance: none;
-    padding-right: 35px;
-    background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23002a57%22%20d%3D%22M287%2069.4l-14.9-14.9c-2.3-2.3-5.3-3.6-8.5-3.6s-6.2%201.3-8.5%203.6L146.2%20174.4%2050.4%2078.6c-2.3-2.3-5.3-3.6-8.5-3.6s-6.2%201.3-8.5%203.6L18.4%2093.5c-4.7%204.7-4.7%2012.3%200%2017l128%20128c4.7%204.7%2012.3%204.7%2017%200l128-128c4.7-4.7%204.7-12.3%200-17z%22%2F%3E%3C%2Fsvg%3E');
-    background-repeat: no-repeat;
-    background-position: right 10px center; 
-    background-size: 10px; 
-  }
-
-.auth-input-group {
-/*   This creates the space between the Email Address group and the Password group */
-  margin-bottom: 15px;
-}
-
-/* HIDE BROWSER-PROVIDED SHOW/HIDE PASSWORD TOGGLE */
-.auth-input[type="password"]::-ms-reveal,
-.auth-input[type="password"]::-webkit-reveal {
-  display: none !important;
-}
-
-/* FIX 5: Ensure placeholder color is not white in dark mode */
-.auth-input::placeholder {
-  color: #94a3b8; /* A light gray for visibility */
-}
-
-.password-wrapper {
-  position: relative;
-}
-
-/* ------------------- BUTTONS & LINKS ------------------- */
-/* Specific alignment for the Employee Toggle to match the input baseline */
-.employee-toggle-align {
-  font-weight: 600;
-  align-self: flex-end; /* Aligns checkbox to the bottom of the grid row */
-  margin-bottom: 12px; /* Matches the spacing of the input boxes */
-  height: 48px; /* Matches the height of your auth-inputs */
-  display: flex;
-  align-items: center;
-}
-
-.text-center {
-  color: #333333;
-}
-
-/* --- FILE UPLOAD STYLES (Aligned with Input Boxes) --- */
-.file-action-container {
-  display: flex;
-  align-items: center;
-  min-height: 48px; /* Matches the approximate height of your auth-input */
-  padding: 8px 15px; /* Tighter padding to match input scale */
-  border: 2px dashed #cbd5e1;
-  border-radius: 8px;
-  background-color: #f8fafc;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  box-sizing: border-box;
-}
-
-  .file-action-container:hover {
-    border-color: #004085;
-    background-color: #f0f7ff;
-  }
-
-.uploaded-file-details {
-  width: 100%;
+.dfa-header {
+  background: #3b82f6;
+  color: white;
+  padding: 10px 50px;
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
 
-.file-name {
-  color: #2e7d32;
-  font-weight: 600;
-  font-size: 0.9rem;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-/* ------------------- REGISTRATION SPECIFIC ------------------- */
-.register-grid-container {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
+.header-content {
+  display: flex;
+  align-items: center;
   gap: 15px;
 }
 
-.password-title {
-  font-weight: 600;
-  color: #002a57;
-  font-size: 0.9em;
-  margin-bottom: 5px;
-  margin-top: 0;
+.dfa-logo-img {
+  height: 65px; /* Adjust this value to make it even smaller/larger */
+  width: auto;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
 }
 
-/* Ensure the rules and captcha sit side-by-side in the grid */
-.password-rules-container {
-  grid-column: 1; /* Force to left column */
-  padding-right: 10px;
+/* Gray, Right-Aligned PST Bar */
+.ph-standard-time-bar {
+  background-color: #4b5563;
+  color: white;
+  padding: 10px 50px; /* Increased vertical padding for the two lines */
+  text-align: right;
+  line-height: 1.2;
 }
 
-.captcha-wrapper {
-  grid-column: 2;
+.pst-content {
+  display: inline-flex;
+  flex-direction: column; /* Stacks the label on top of the value */
+  align-items: flex-end; /* Keeps both lines right-aligned */
+}
+
+.pst-label {
+  font-size: 12px; /* Bigger label */
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 2px;
+}
+
+.pst-value {
+  font-size: 0.8rem; /* Smaller date/time below */
+  font-weight: normal;
+  opacity: 0.9;
+}
+
+.header-text {
   display: flex;
   flex-direction: column;
-  align-items: flex-start; /* Ensure the component starts at the left */
-  justify-content: flex-start; /* Ensure it starts at the top */
 }
 
-.password-rules {
-  list-style: none;
-  padding: 0;
+.agency-subtext {
+  font-size: 0.7rem;
+  letter-spacing: 1px;
   margin: 0;
-  color: #333333;
+  opacity: 0.9;
 }
 
-  .password-rules li {
-    margin-bottom: 5px; 
-    font-size: 0.8em; 
-    display: flex;
-    align-items: center;
-    gap: 8px;
+.agency-main-title {
+  font-size: 1.3rem; /* Scaled down for the smaller logo */
+  font-weight: 700;
+  margin: -2px 0;
+  text-transform: uppercase;
+}
+
+.agency-location {
+  font-size: 0.65rem;
+  margin: 0;
+  opacity: 0.8;
+}
+
+/* --- Top Login Bar (Right Side) --- */
+.top-login-bar {
+  display: flex;
+  align-items: flex-start; /* Aligns inputs and button at the top */
+  gap: 10px;
+  padding-top: 20px;
+}
+
+  .top-login-bar input {
+    width: 160px;
+    height: 28px;
+    padding: 4px 8px;
+    margin-bottom: 0; /* Override the global 15px margin */
+    font-size: 0.8rem;
+    border-radius: 8px;
   }
 
-.valid {
-  color: #388e3c;
-}
-
-.invalid {
-  color: #d32f2f;
-}
-
-.terms-captcha-row {
+.password-group {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-top: 20px; 
-  margin-bottom: 15px;
-  grid-column: 1 / -1;
+  flex-direction: column;
 }
 
-.terms-wrapper {
-  margin-top: 0;
-  margin-bottom: 0;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 0.95em;
+  .password-group input {
+    margin-bottom: 1px;
+  }
+
+.forgot-link {
+  font-size: 12px;
+  color: white;
+  cursor: pointer;
+  margin: 0;
+  padding-left: 2px;
+  padding-top: 6px;
+}
+
+.sign-in-btn {
+  background-color: #3b82f6;
+  color: white;
+  border: solid 1px;
+  padding: 5px 15px;
+  font-size: 0.8rem;
+  font-weight: bold;
+  cursor: pointer;
+  border-radius: 8px;
+}
+
+.main-split-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  padding: 40px 100px;
+  gap: 60px;
+}
+
+.form-field {
+  margin-bottom: 20px; /* Equal spacing between each grouping */
+  width: 100%;
+}
+
+  /* Optional: Add this to your style section for a smoother transition */
+  .form-field input {
+    transition: opacity 0.3s ease;
+  }
+
+.form-column {
+  background: white;
+  padding: 30px;
+  border-radius: 4px;
+  box-shadow: 0 2px 15px rgba(0,0,0,0.05);
+}
+
+.label-text, label {
+  font-weight: bold;
+  font-size: 0.85rem;
   color: #333;
+  margin-bottom: 5px;
+  display: block;
 }
 
-  .terms-wrapper input[type="checkbox"] {
-    transform: scale(1.2);
-    cursor: pointer;
-    accent-color: #004085;
-  }
-
-.error-text {
-  color: #d32f2f;
-  font-size: 0.9em;
-  font-weight: 500;
-  text-align: center;
-  margin-top: 10px;
-}
-
-/* Container for the whole OTP section */
-.otp-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  width: 100%;
-}
-
-/* Force items into a single row */
-.otp-input-group {
-  display: flex;
-  flex-direction: row; /* Ensures horizontal alignment */
-  justify-content: center;
-  align-items: center;
-  gap: 10px; /* Space between boxes */
-  margin: 25px 0;
-  width: 100%;
-}
-
-/* Individual Boxes */
-.otp-box {
-  width: 45px;
-  height: 55px;
-  text-align: center;
-  font-size: 1.4rem;
-  font-weight: 800;
-  border: 2px solid #ced4da;
-  border-radius: 8px;
-  background: #ffffff;
-  color: #002a57;
-  transition: all 0.2s ease-in-out;
-  /* Prevent zooming on mobile */
-  line-height: normal;
-}
-
-  .otp-box:focus {
-    border-color: #004085;
-    background: #f0f7ff;
-    box-shadow: 0 0 0 3px rgba(0, 64, 133, 0.1);
-    outline: none;
-  }
-
-/* Ensure the button stays centered below the row */
-.error-border {
-  border: 2px solid #dc2626 !important; /* Makati Red / Danger Red */
-  background-color: #fef2f2 !important; /* Very light red tint */
-  transition: all 0.3s ease;
-}
-
-/* Optional: add a shake animation for better UX */
-.error-border {
-  animation: shake 0.4s focus;
-}
-
-@keyframes shake {
-  0%, 100% {
-    transform: translateX(0);
-  }
-
-  25% {
-    transform: translateX(-5px);
-  }
-
-  75% {
-    transform: translateX(5px);
-  }
-}
-
-/* --- CAPTCHA UI --- */
-.captcha-container {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start; /* Changed from center to align with text */
-  gap: 8px;
-  width: 100%;
-}
-
-.captcha-canvas {
-  border: 1px solid #cbd5e1;
-  border-radius: 8px;
-  background-color: #f8fafc;
-  margin-bottom: 4px;
-}
-
-.captcha-controls {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  width: 100%;
-}
-
-.captcha-input {
-  flex: 1;
-  max-width: 110px;
-  height: 38px; /* Fixed height for alignment */
-  padding: 0 10px;
-  border: 1px solid #cbd5e1;
-  border-radius: 8px;
-  font-family: 'Montserrat', sans-serif;
-  font-size: 0.9rem;
+input,
+.submit-register-btn,
+.toggle-btns button,
+.action-btn {
+  height: 32px; /* Matching the visual weight of sign-in-btn */
+  border-radius: 8px; /* Your perfect radius */
+  font-size: 0.8rem;
   box-sizing: border-box;
 }
 
-  .captcha-input:focus {
-    outline: none;
-    border-color: #004085;
-    box-shadow: 0 0 5px rgba(0, 64, 133, 0.2);
-  }
+/* Container to keep input and button aligned */
+.input-with-action {
+  display: flex;
+  gap: 8px; /* Space between email input and the button */
+  align-items: flex-start;
+}
 
-.captcha-status-msg {
+.action-btn {
+  /* Dimensions & Shape */
+  height: 32px; /* Matches your input height exactly */
+  padding: 0 15px;
+  border-radius: 8px; /* Your "perfect" radius */
+  /* Colors & Branding */
+  background-color: #3b82f6; /* Matches Sign-In button */
+  color: white;
+  border: none;
+  /* Typography */
   font-size: 0.8rem;
-  font-weight: 600;
-  margin: 0;
-  min-height: 1.2em; /* Prevents layout jump when message appears */
+  font-weight: bold;
+  white-space: nowrap; /* Prevents text from wrapping to a second line */
+  /* Interaction */
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.2s ease;
 }
 
-  .captcha-status-msg.success {
-    color: #2e7d32;
+  .action-btn:hover {
+    background-color: #2563eb; /* Slightly darker blue on hover */
   }
 
-  .captcha-status-msg.error {
-    color: #d32f2f;
+  .action-btn:active {
+    transform: translateY(1px); /* Subtle click feel */
   }
 
-/* --- MEDIA QUERIES (Switch to mobile view) --- */
-@media (max-width: 960px) {
-  .auth-main-layout {
-    flex-direction: column;
-    align-items: center; /* Center items when stacked */
-    gap: 30px;
-  }
+/* Ensure the email input next to it doesn't have a bottom margin 
+   that throws off the button's alignment */
+.input-with-action input {
+  margin-bottom: 0 !important;
+  flex: 1; /* Allows the input to grow and fill space */
+}
 
-  /* Reset the align-items rule when it collapses to a column */
-  .auth-page-wrapper.register-active {
+input {
+  width: 100%;
+  padding: 0 12px; /* Removed top/bottom padding to let height control centering */
+  border: 1px solid #ccc;
+  margin-bottom: 15px;
+  background-color: #fff;
+}
+
+.toggle-btns {
+  display: flex;
+  gap: 10px; /* Adjust this for the spacing between buttons */
+  margin-bottom: 15px;
+}
+
+  .toggle-btns button {
+    flex: 0 1 auto; /* Buttons will take only necessary space */
+    padding: 0 25px;
+    border: 1px solid #3b82f6;
+    background: white;
+    color: #3b82f6;
+    cursor: pointer;
+    display: flex;
     align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+    height: 32px;
+    border-radius: 8px;
+    font-size: 0.8rem;
   }
 
-  .auth-box {
-    /* Allow the box to expand fully on smaller screens,
-           relying on the main wrapper's scroll (or mobile's default scroll) */
-    max-height: none;
-  }
+    .toggle-btns button.active {
+      background: #3b82f6;
+      color: white;
+    }
 
-  .logo-container {
-    text-align: center;
-    max-width: 100%;
-    min-width: unset;
-    /* Reset max-width on mobile to allow full width usage */
-    max-width: 100%;
-  }
-
-  .page-title h1 {
-    font-size: 2.2rem;
-  }
-
-  .auth-container {
-    max-width: 100%;
-    min-width: 100%;
-    /* Reset max-width on mobile to allow full width usage */
-    max-width: 100%;
-  }
-
-  .terms-captcha-row {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 15px;
-  }
+.otp-wrapper {
+  position: relative;
+  width: 240px; /* Reduced from 360px */
+  height: 40px; /* Reduced from 60px */
+  margin-top: 5px;
 }
 
-@media (max-width: 600px) {
-  .register-grid-container div:empty {
-    display: none;
+/* Layer the real input exactly over the visual slots */
+.otp-hidden-input {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0; /* Fully invisible but still clickable */
+  cursor: text;
+  z-index: 2;
+  letter-spacing: 40px; /* Helps keep the cursor somewhat aligned */
+}
+
+.otp-slots-container {
+  display: flex;
+  gap: 15px; /* Spacing between the lines */
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 1;
+}
+
+.otp-slot {
+  flex: 1;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Arial', sans-serif;
+  font-size: 1.4rem;
+  font-weight: bold;
+  color: black;
+  /* THE UNDERLINE: Each digit gets its own distinct border-bottom */
+  border-bottom: 1px solid #ccc;
+  transition: all 0.2s ease;
+}
+
+  /* When a digit is entered or the field is focused */
+  .otp-slot.filled {
+    border-bottom: 1px solid black;
   }
 
-  .register-grid-container {
-    grid-template-columns: 1fr;
+/* Highlight the "active" slot (optional) */
+.otp-hidden-input:focus + .otp-slots-container .otp-slot {
+  border-color: #94a3b8; /* Light blue/gray when focused */
+}
+
+.terms-check {
+  display: flex;
+  align-items: center; /* Vertically centers checkbox with text */
+  gap: 10px; /* Space between checkbox and label */
+  margin-top: 10px;
+  margin-bottom: 25px; /* Space before the Sign Up button */
+  cursor: pointer;
+}
+
+  .terms-check input[type="checkbox"] {
+    width: 18px; /* Slightly larger for easier clicking */
+    height: 18px;
+    cursor: pointer;
+    margin: 0; /* Removes default browser margins that break alignment */
+    accent-color: #3b82f6; /* Uses your DFA blue for the checkmark */
   }
 
-  .password-rules-container {
-    margin-top: 15px;
+  .terms-check span {
+    font-size: 0.85rem;
+    color: #333;
+    user-select: none; /* Prevents text highlighting when clicking the box */
   }
 
-  .password-rules-container, .captcha-wrapper {
-    grid-column: 1 / -1;
+  .terms-check a {
+    color: #3b82f6;
+    text-decoration: none;
+    font-weight: bold;
   }
+
+    .terms-check a:hover {
+      text-decoration: underline;
+    }
+
+.submit-register-btn {
+  background-color: #3b82f6; /* Updated to match sign-in blue */
+  color: white;
+  width: 100%;
+  border: none;
+  font-weight: bold;
+  cursor: pointer;
+  margin-top: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
