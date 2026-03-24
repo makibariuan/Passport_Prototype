@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using OnlineRegistration.Server.DTOs;
 using OnlineRegistration.Server.Models;
+using Passport_Prototype.Server.Models;
 using SeniorCitizen.Server.DTOs;
 using SeniorCitizen.Server.Models;
 
@@ -30,6 +31,11 @@ namespace OnlineRegistration.Server.Data
         //stored procedures
         public DbSet<UserReadDto> UserReadDtos { get; set; }
         public DbSet<ApplicantReadDto> ApplicantReadDtos { get; set; }
+
+        // Additional tables for personal information
+        public DbSet<ContactInformation> ContactInformation { get; set; }
+        public DbSet<WorkInformation> WorkInformation { get; set; }
+
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
