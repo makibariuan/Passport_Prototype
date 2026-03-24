@@ -1,7 +1,7 @@
 <Solution>
   <Project Path="passport_prototype.client/passport_prototype.client.esproj">
     <Build />
-    <Deploy />
+    <Deploy Solution="Release|*" />
   </Project>
   <Project Path="Passport_Prototype.Server/Passport_Prototype.Server.csproj" />
 </Solution>

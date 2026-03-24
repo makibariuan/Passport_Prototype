@@ -6,6 +6,10 @@ import App from './App.vue'
 import axios from 'axios'
 import router from './router'
 
+import '@/assets/base.css'
+import '@/assets/css/auth.css'
+//import '@/assets/css/buttons.css'
+
 const app = createApp(App)
 
 // ✅ create Pinia instance and save it

@@ -32,6 +32,32 @@ import CreateApplication from "@/components/CreateApplication.vue";
     6 - HR
 */
 
+//const routes = [
+//  { path: "/", component: AuthPage, name: "Login" },
+//  { path: "/login", redirect: "/" },
+//  { path: "/confirm-email", name: "ConfirmEmail", component: EmailConfirm },
+//  { path: "/reset-password", name: "ResetPassword", component: ResetPassword },
+//  { path: "/dashboard-system", component: Dashboard, meta: { requiresAuth: true, userRole: [2] } },
+//  { path: "/pds", component: PersonalDataSheet, meta: { requiresAuth: true, userRole: [4, 6] } },
+//  { path: "/timesheet", component: Timesheet, meta: { requiresAuth: true, userRole: [1, 2, 4, 6] } },
+//  { path: "/dashboard-admin", component: DashboardAdmin, meta: { requiresAuth: true, userRole: [1] } },
+//  //{ path: "/employee-id", component: EmployeeID, meta: { requiresAuth: true, userRole: [2, 3] } },
+//  { path: "/manage-employee-ids", component: DetailsPage, meta: { requiresAuth: true, userRole: [1, 6] } },
+//  { path: "/manage-kit-users", component: ManageKitUserPage, meta: { requiresAuth: true, userRole: [1] } },
+//  { path: "/manage-system-users", component: ManageSystemUserPage, meta: { requiresAuth: true, userRole: [1] } },
+//  { path: "/manage-citizens", component: ManageCitizenPage, meta: { requiresAuth: true, userRole: [1, 2] } },
+
+//  { path: "/dashboard", component: DashboardUser, meta: { requiresAuth: true, userRole: [4, 5] } },
+//  { path: "/dashboard-hr", component: DashboardHR, meta: { requiresAuth: true, userRole: [6] } },
+//  { path: "/adjudication-details", component: AdjudicationDetailsPage, meta: { requiresAuth: true, userRole: [6] } },
+
+//  { path: "/biometric-test", component: BiometricTest, name: "BiometricTest" },
+//  { path: "/attendance-management", component: AttendanceManagement, meta: { requiresAuth: true, userRole: [6] } },
+//  { path: "/id-details", component: IDDetails, meta: { requriesAuth: true, userRole: [4, 5, 6] } },
+
+//  { path: "/:pathMatch(.*)*", redirect: "/" }
+//];
+
 const routes = [
   // ── Public / Auth ──────────────────────────────────────────────
   { path: "/", name: "Login", component: AuthPage },

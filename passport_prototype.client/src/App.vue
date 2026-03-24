@@ -21,8 +21,6 @@
   import { useRouter } from "vue-router";
   import { useAuthStore } from "@/stores/auth";
 
-  import TopHeader from "@/components/TopHeader.vue";
-
   const router = useRouter();
   const auth = useAuthStore();
 
