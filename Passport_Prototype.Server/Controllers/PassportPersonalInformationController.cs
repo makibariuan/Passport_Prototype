@@ -31,7 +31,7 @@ public class PassportPersonalInformationsController : ControllerBase
             Birthdate = dto.Birthdate,
             Gender = dto.Gender,
             Nationality = dto.Nationality,
-            CivilStatusId = dto.CivilStatusId,
+            //CivilStatusId = dto.CivilStatusId,
             hasPSABirthcert = dto.HasPSABirthcert,
             isBirthLegitimate = dto.IsBirthLegitimate,
             BirthCountry = dto.BirthCountry,
@@ -93,7 +93,7 @@ public class PassportPersonalInformationsController : ControllerBase
         if (dto.Birthdate.HasValue) passportPersonalInformation.Birthdate = dto.Birthdate.Value;
         if (dto.Gender != null) passportPersonalInformation.Gender = dto.Gender;
         if (dto.Nationality != null) passportPersonalInformation.Nationality = dto.Nationality;
-        if (dto.CivilStatusId != null) passportPersonalInformation.CivilStatusId = dto.CivilStatusId;
+        //if (dto.CivilStatusId != null) passportPersonalInformation.CivilStatusId = dto.CivilStatusId;
         if (dto.HasPSABirthcert.HasValue) passportPersonalInformation.hasPSABirthcert = dto.HasPSABirthcert.Value;
         if (dto.IsBirthLegitimate.HasValue) passportPersonalInformation.isBirthLegitimate = dto.IsBirthLegitimate.Value;
         if (dto.BirthCountry != null) passportPersonalInformation.BirthCountry = dto.BirthCountry;
