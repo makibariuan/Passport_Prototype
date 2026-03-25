@@ -17,37 +17,26 @@ namespace Passport_Prototype.Server.DTOs
 
         public string? Suffix { get; set; }
 
-        [Required]
         public DateTime Birthdate { get; set; }
 
-        [Required]
         public string Gender { get; set; } = null!;
 
-        [Required]
         public string Nationality { get; set; } = null!;
 
-        [Required]
         public string CivilStatus { get; set; } = null!;
 
-        [Required]
         public bool HasPSABirthcert { get; set; }
 
-        [Required]
-        public bool IsBirthLegitimate { get; set; }
+        public string BirthLegitimacy { get; set; }
 
-        [Required]
         public string BirthCountry { get; set; } = null!;
 
-        [Required]
         public string BirthRegion { get; set; } = null!;
 
-        [Required]
         public string BirthProvince { get; set; } = null!;
 
-        [Required]
         public string BirthCity { get; set; } = null!;
 
-        [Required]
         public string BirthBarangay { get; set; } = null!;
     }
 
@@ -71,7 +60,7 @@ namespace Passport_Prototype.Server.DTOs
 
         public bool? HasPSABirthcert { get; set; }
 
-        public bool? IsBirthLegitimate { get; set; }
+        public string? BirthLegitimacy { get; set; }
 
         public string? BirthCountry { get; set; }
 
