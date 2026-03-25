@@ -21,5 +21,6 @@ namespace OnlineRegistration.Server.Services
             _queue.TryDequeue(out var message);
             return message;
         }
+
     }
 }

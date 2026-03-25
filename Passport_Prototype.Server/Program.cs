@@ -18,12 +18,31 @@ using System.Text;
 using QuestPDF.Infrastructure;
 using System.Reflection;
 using SeniorCitizen.Server.Data;
+using Microsoft.AspNetCore.HttpOverrides;
 
 QuestPDF.Settings.License = LicenseType.Community;
 
 
-var builder = WebApplication.CreateBuilder(args);
+var builder = WebApplication.CreateBuilder(new WebApplicationOptions
+{
+    Args = args,
+    ContentRootPath = AppContext.BaseDirectory,
+    WebRootPath = "wwwroot" // Explicitly tell it to look for this folder
+});
+
+
+
 // ------------------ Services ------------------
+builder.Services.Configure<ForwardedHeadersOptions>(options =>
+{
+    // Add XForwardedHost so it knows the domain name
+    options.ForwardedHeaders = ForwardedHeaders.XForwardedFor |
+                               ForwardedHeaders.XForwardedProto |
+                               ForwardedHeaders.XForwardedHost;
+
+    options.KnownNetworks.Clear();
+    options.KnownProxies.Clear();
+});
 
 // Users Table
 builder.Services.AddDbContext<AppDbContext>(opt =>
@@ -107,6 +126,7 @@ builder.Services.AddCors(options =>
         policy.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader();
     });
 });
+
 
 // ------------------ Auth (JWT + Single Session) ------------------
 builder.Services.AddAuthentication(options =>
@@ -198,13 +218,17 @@ builder.Services.AddAuthorization(options =>
 
 builder.Services.AddAuthorization();
 
+
 var app = builder.Build();
 
 // 1. Core Middleware
-app.UseHttpsRedirection(); // Move this UP
-app.UseStaticFiles();
-app.UseDefaultFiles();
+app.UseForwardedHeaders();
 
+// Move these to the top, above redirection and routing
+app.UseDefaultFiles();
+app.UseStaticFiles();
+
+app.UseHttpsRedirection();
 app.UseRouting();
 
 // 2. Security
@@ -220,14 +244,6 @@ app.UseSwaggerUI();
 app.MapControllers();
 
 // 5. SPA Fallback (KEEP THIS LAST)
-app.MapFallback(async context => {
-    if (context.Request.Path.StartsWithSegments("/api"))
-    {
-        context.Response.StatusCode = 404;
-        await context.Response.WriteAsJsonAsync(new { message = "API endpoint not found." });
-        return;
-    }
-    await context.Response.SendFileAsync("wwwroot/index.html");
-});
+app.MapFallbackToFile("index.html");
 
 app.Run();
