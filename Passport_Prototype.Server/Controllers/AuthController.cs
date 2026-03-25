@@ -379,7 +379,6 @@ namespace OnlineRegistration.Server.Controllers
             {
                 // 1. Fetch the user including Role if needed for claims
                 var user = await _context.Users
-                    .Include(u => u.UserRole)
                     .FirstOrDefaultAsync(u => u.Username.ToLower() == request.username.ToLower());
 
                 // 2. Basic Validation (User Found/Active)
