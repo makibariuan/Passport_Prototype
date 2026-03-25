@@ -11,8 +11,7 @@ namespace Passport_Prototype.Server.Models
         [Key]
         public int FamilyId { get; set; }
 
-        [Required]
-        public int? UserId { get; set; }
+        public int PassportPersonalInformationId { get; set; }
 
         [Required]
         public string? Relationship { get; set; }

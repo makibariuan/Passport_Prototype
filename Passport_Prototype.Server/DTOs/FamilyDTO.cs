@@ -5,7 +5,7 @@ namespace Passport_Prototype.Server.DTOs
     public class FamilyMemberDTO
     {
         [Required]
-        public int UserId { get; set; }
+        public int PassportPersonalInformationId { get; set; }
 
         [Required]
         public string? Relationship { get; set; }

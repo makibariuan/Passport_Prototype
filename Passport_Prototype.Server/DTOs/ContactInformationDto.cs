@@ -4,7 +4,7 @@ namespace Passport_Prototype.Server.DTOs
 {
     public class ContactInformationDto
     {
-        public int? UserId { get; set; }
+        public int PassportPersonalInformationId { get; set; }
 
         [Required]
         public string CurrentRegion { get; set; } = string.Empty;

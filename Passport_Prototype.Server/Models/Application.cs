@@ -7,6 +7,10 @@ namespace Passport_Prototype.Server.Models
         [Key]
         public int ApplicationId { get; set; }
 
+        public string ApplicationCode { get; set; }
+
+        public int PassportPersonalInformationId { get; set; }
+
         [Required]
         public int? UserId { get; set; }
 
