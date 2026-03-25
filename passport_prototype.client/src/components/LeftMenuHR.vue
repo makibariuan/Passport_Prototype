@@ -1,7 +1,8 @@
 <template>
   <div class="left-menu">
-    <div class="logo-section" @click="goTo('/dashboard')">
-      <img src="../assets/makati-logo.png" alt="Makati Logo" class="official-logo" />
+    <div class="logo-section">
+      <img src="../assets/dfa-logo.png" alt="DFA Logo" class="official-logo" />
+
       <div class="brand-text">
         <span class="gov-text">Passport Online Registration &</span>
         <span class="city-text">Application System</span>

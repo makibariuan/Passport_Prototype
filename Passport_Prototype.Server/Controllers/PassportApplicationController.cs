@@ -2,6 +2,7 @@
 using OnlineRegistration.Server.Data;
 using Passport_Prototype.Server.DTOs;
 using Passport_Prototype.Server.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace Passport_Prototype.Server.Controllers
 {
@@ -87,5 +88,37 @@ namespace Passport_Prototype.Server.Controllers
 
             return Ok(application);
         }
+
+        [HttpGet("GetApplicationsWithUserInfo")]
+        public async Task<IActionResult> GetApplicationsWithUserInfo()
+        {
+            var result = await (
+                from app in _context.Applications
+
+                join user in _context.Users
+                    on app.UserId equals user.Id
+
+                join ppi in _context.PassportPersonalInformation
+                    on user.Id equals ppi.UserId
+
+                select new
+                {
+                    id = app.ApplicationId,
+                    number = app.ApplicationId.ToString(),
+
+                    type = app.ApplicationType,
+
+                    date = app.Schedule,
+
+                    name = $"{user.FirstName} {user.LastName}",
+
+                    status = app.ApplicationStatus
+                }
+            ).ToListAsync();
+
+            return Ok(result);
+        }
+
+
     }
 }

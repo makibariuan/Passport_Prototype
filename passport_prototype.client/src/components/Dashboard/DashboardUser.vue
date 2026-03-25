@@ -6,7 +6,7 @@
     <div class="dashboard-content">
       <h1 class="welcome-title">Dashboard 🛡️</h1>
       <p class="role-info">
-        Welcome, {{ firstName }}. Manage your ID application and biometrics appointment here TEST.
+        Welcome, {{ firstName }}. Manage your ID application and biometrics appointment here.
       </p>
 
       <div class="summary-grid">
@@ -80,7 +80,7 @@
 <script setup>
   import { ref, onMounted, computed } from "vue";
   import { useAuthStore } from "@/stores/auth";
-  import LeftMenu from "@/components/LeftMenuHR.vue";
+  import LeftMenu from "@/components/LeftMenu.vue";
   import LoadingDialog from "@/components/LoadingDialog.vue";
   import DialogBox from "@/components/DialogBox.vue"; // Ensure this is imported
   import api from "@/api";
