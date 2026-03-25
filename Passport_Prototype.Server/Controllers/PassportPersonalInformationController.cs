@@ -91,7 +91,7 @@ public class PassportPersonalInformationsController : ControllerBase
     }
 
     // UPDATE
-    [HttpPatch("/Update-Profile")]
+    [HttpPatch("Update-Profile")]
     public async Task<IActionResult> Update(UpdatePassportPersonalInformationDTO dto)
     {
         var userIdString = User.FindFirstValue(ClaimTypes.NameIdentifier);

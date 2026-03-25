@@ -191,19 +191,14 @@
                       <label class="pds-label"
                         >Civil Status<span class="required-star">*</span></label
                       >
-                      <select
-                        v-model="user.civilStatusID"
-                        class="pds-input"
-                        :class="{ 'pds-input-error': showValidationErrors && !user.civilStatusID }"
-                      >
+                      <select v-model="user.civilStatusID"
+                              class="pds-input"
+                              :class="{ 'pds-input-error': showValidationErrors && !user.civilStatusID }">
                         <option disabled value="">— Select Civil Status —</option>
-                        <option
-                          v-for="cs in civilStatuses"
-                          :key="cs.civilStatusID"
-                          :value="cs.civilStatusID"
-                        >
-                          {{ cs.statusName }}
-                        </option>
+                        <option>Single</option>
+                        <option>Married</option>
+                        <option>Widowed</option>
+                        <option>Legally Separated</option>
                       </select>
                     </div>
 
@@ -940,17 +935,19 @@ import { ref, computed, onMounted } from "vue";
 import axios from "axios";
 import DialogBox from "@/components/DialogBox.vue";
 import LoadingDialog from "./LoadingDialog.vue";
+import { useAuthStore } from "../stores/auth";
 
 const showDialog = ref(false);
 const dialogTitle = ref("");
 const dialogMessage = ref("");
 const isLoading = ref(false);
 const activeTab = ref("Personal");
-const userId = 5;
+  const userId = 5;
+  const Auth = useAuthStore();
 
 // ------------------ State ------------------
 const user = ref({
-  surname: "",
+  lastName: "",
   firstName: "",
   middleName: "",
   nameExtension: "",
@@ -1190,7 +1187,11 @@ const fetchPersonal = async () => {
   try {
     isLoading.value = true;
     const { data } = await axios.get(
-      `https://localhost:5000/api/PassportPersonalInformations/${userId}`,
+      `https://localhost:5000/api/PassportPersonalInformations/My-Profile`, {
+        headers: {
+          Authorization: `Bearer ${Auth.token}`
+      }
+    }
     );
 
     user.value.lastName = data.lastName ?? "";
@@ -1223,7 +1224,11 @@ const fetchPersonal = async () => {
 const fetchFamily = async () => {
   try {
     isLoading.value = true;
-    const { data } = await axios.get(`https://localhost:5000/api/Families/${userId}`);
+    const { data } = await axios.get(`https://localhost:5000/api/Families/My-Family`, {
+      headers: {
+        Authorization: `Bearer ${Auth.token}`
+      }
+    });
 
     // father — API returns nested { father: {...}, mother: {...} }
     user.value.fatherSurname = data.relationship === "Father" ? data.lastName : "";
@@ -1236,7 +1241,7 @@ const fetchFamily = async () => {
     fatherHasMiddleName.value = data.relationship === "Father" ? data.middleName : "";
 
     // mother
-    user.value.motherSurname = data.mother?.surname ?? "";
+    user.value.motherSurname = data.mother?.lastName ?? "";
     user.value.motherFirstName = data.mother?.firstName ?? "";
     user.value.motherMiddleName = data.mother?.middleName ?? "";
     user.value.motherNameExtension = data.mother?.nameExtension ?? "";
@@ -1260,7 +1265,7 @@ const updatePersonal = async () => {
   try {
     isLoading.value = true;
     const payload = {
-      surname: user.value.surname,
+      lastName: user.value.lastName,
       firstName: user.value.firstName,
       middleName: hasMiddleName.value ? user.value.middleName : null,
       nameExtension: user.value.nameExtension,
@@ -1278,7 +1283,12 @@ const updatePersonal = async () => {
       birthBarangay: birthBarangay.value,
       placeOfBirth: birthCountry.value !== "PH" ? user.value.placeOfBirth : null,
     };
-    await axios.patch(`https://localhost:5000/api/PassportPersonalInformations/${userId}`, payload);
+    await axios.patch(`https://localhost:5000/api/PassportPersonalInformations/Update-Profile`, payload,
+      {
+        headers: {
+          Authorization: `Bearer ${Auth.token}`
+      }
+    });
     dialogTitle.value = "Success";
     dialogMessage.value = "Personal info saved.";
     showDialog.value = true;
@@ -1297,7 +1307,7 @@ const updateFamily = async () => {
     isLoading.value = true;
     const payload = {
       father: {
-        surname: user.value.fatherSurname,
+        surname: user.value.fatherLastName,
         firstName: user.value.fatherFirstName,
         middleName: fatherHasMiddleName.value ? user.value.fatherMiddleName : null,
         nameExtension: user.value.fatherNameExtension,
@@ -1305,7 +1315,7 @@ const updateFamily = async () => {
         lifeStatus: fatherLifeStatus.value,
       },
       mother: {
-        surname: user.value.motherSurname,
+        surname: user.value.motherLastName,
         firstName: user.value.motherFirstName,
         middleName: motherHasMiddleName.value ? user.value.motherMiddleName : null,
         nameExtension: user.value.motherNameExtension,
