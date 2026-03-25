@@ -56,7 +56,7 @@ namespace Passport_Prototype.Server.Controllers
         }
 
         // READ BY ID
-        [HttpGet("/My-Family")]
+        [HttpGet("My-Family")]
         public async Task<IActionResult> GetById()
         {
             var userIdString = User.FindFirstValue(ClaimTypes.NameIdentifier);
