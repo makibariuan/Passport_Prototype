@@ -1226,6 +1226,7 @@ const fetchPersonal = async () => {
   } finally {
     isLoading.value = false;
   }
+
 };
 
   const fetchFamily = async () => {

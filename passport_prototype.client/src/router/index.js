@@ -18,6 +18,8 @@ import BiometricTest from "@/components/BiometricTest.vue";
 import AttendanceManagement from "@/components/HR/AttendanceManagement.vue";
 import IDDetails from "@/components/Employee/IDDetails.vue";
 import CreateApplication from "@/components/CreateApplication.vue";
+import ApplicationAssessment from "@/components/ApplicationAssessment.vue";
+
 
 /*
   DEV MODE — auth guard disabled, navigate freely to any route.
@@ -94,6 +96,10 @@ const routes = [
 
   // ── Catch-all ──────────────────────────────────────────────────
   { path: "/:pathMatch(.*)*", redirect: "/" },
+
+  // ── Application-Assessment ──────────────────────────────────────────────────
+  { path: "/applicationassessment", name: "ApplicationAssessment", component: ApplicationAssessment },
+
 ];
 
 const router = createRouter({

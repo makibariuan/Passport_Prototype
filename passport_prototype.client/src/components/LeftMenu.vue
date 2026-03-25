@@ -207,3 +207,4 @@ const logout = () => {
   border-color: #c53030;
 }
 </style>
+

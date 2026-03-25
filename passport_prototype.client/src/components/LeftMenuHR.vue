@@ -1,169 +1,203 @@
 <template>
   <div class="left-menu">
-    <!--<div class="logo" @click="goTo('/admin')">
-      <div style="display: grid; grid-template-columns: auto 1fr; align-items: center; gap: 12px;">
-        <img src="../assets/makati-logo.png" alt="Makati" />
-        <div>
-          <p>Makati Senior Citizen Portal</p>
-        </div>
+    <div class="logo-section" @click="goTo('/dashboard')">
+      <img src="../assets/makati-logo.png" alt="Makati Logo" class="official-logo" />
+      <div class="brand-text">
+        <span class="gov-text">Passport Online Registration &</span>
+        <span class="city-text">Application System</span>
       </div>
-    </div>-->
+    </div>
 
-    <ul>
+    <nav class="nav-menu">
+      <ul>
+        <li v-for="item in navItems"
+            :key="item.path"
+            :class="{ active: isActive(item.path) }"
+            @click="goTo(item.path)">
+          <component :is="item.icon" class="nav-icon" />
+          <p>{{ item.label }}</p>
+        </li>
+      </ul>
+    </nav>
 
-      <!-- Main Navigation Items -->
-      <li v-for="item in menuItems"
-          :key="item.name"
-          class="menu-item"
-          :class="{ active: $route.path === item.path }"
-          @click="handleMenuClick(item)">
-        {{ item.name }}
-      </li>
-
-      <!-- The "Go Back" button is now always visible at the top of the list -->
-      <li class="menu-item back-btn"
-          @click="router.back()">
-          Go Back
-      </li>
-
-      <li class="logout" @click="logout">Logout</li>
-    </ul>
+    <div class="menu-footer">
+      <div class="user-info">
+        <Settings class="w-5 h-5 shrink-0" />
+        <span class="username">JUAN DELA CRUZ</span>
+      </div>
+      <div class="logout-button" @click="logout">Logout</div>
+    </div>
   </div>
 </template>
 
 <script setup>
-  import { computed, onMounted, watch } from "vue";
-  import { useAuthStore } from "@/stores/auth";
   import { useRouter, useRoute } from "vue-router";
+  import { User, LayoutDashboard, Users, Calendar, FileSearch, BookText, CheckSquare, Settings } from "@lucide/vue";
+  import { useAuthStore } from "@/stores/auth";
 
-  const auth = useAuthStore();
   const router = useRouter();
   const route = useRoute();
+  const auth = useAuthStore();
 
-  // 🧩 Menu configuration per user type
-  const allMenus = {
-    1: [ // Super Admin
-      { name: "Manage Kit Users", path: "/manage-kit-users" },
-      { name: "Manage System Users", path: "/manage-system-users" },
-      { name: "Manage Citizens", path: "/manage-citizens" },
-    ],
-    2: [ // System Admin
-      { name: "Manage Citizens", path: "/manage-citizens" },
-    ],
+  const navItems = [
+    { icon: LayoutDashboard, label: "Application Assessment", path: "/applicationassessment" },
+  ];
+
+  const isActive = (path) => route.path === path;
+
+  const goTo = (path) => {
+    if (path && route.path !== path) router.push(path);
   };
 
-  // Reactive menu
-  const menuItems = computed(() => {
-    const type = parseInt(auth.userRole ?? -1);
-    return allMenus[type] || [];
-  });
-
-  // Handle menu item click
-  const handleMenuClick = (item) => {
-    // If menu has a custom action (like Go Back), run it
-    if (item.action && typeof item.action === "function") {
-      item.action();
-      return;
-    }
-
-    // Otherwise, navigate by path
-    if (item.path && route.path !== item.path) {
-      router.push(item.path);
-    }
-  };
-
-  // Logout
   const logout = () => {
-    auth.logout();
+    localStorage.removeItem("menu_open_states");
+    auth.logout?.();
     router.push("/login");
   };
-
-  // Load user info (optional)
-  onMounted(async () => {
-    if (typeof auth.loadUser === "function") {
-      await auth.loadUser();
-    }
-  });
 </script>
+
 
 <style scoped>
   .left-menu {
     position: fixed;
-    top: 85px; /* Match the new header height */
+    top: 0;
     left: 0;
-    height: calc(100% - 85px);
-    width: 250px;
-    background: #0c2884; /* Slightly deeper, more professional blue */
+    height: 100vh;
+    width: 280px;
+    background: #06195e;
     display: flex;
     flex-direction: column;
     color: white;
-    box-shadow: 4px 0 15px rgba(0, 0, 0, 0.05); /* Softer shadow */
-    z-index: 100;
-    border-right: 1px solid rgba(255, 255, 255, 0.05);
+    box-shadow: 4px 0 10px rgba(0, 0, 0, 0.2);
+    z-index: 1000;
   }
 
-  .left-menu ul {
-    list-style: none;
-    padding: 30px 15px; /* More breathing room */
-    margin: 0;
-    flex: 1;
+  .logo-section {
+    padding: 25px 20px;
+    cursor: pointer;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    flex-shrink: 0;
+  }
+
+  .official-logo {
+    width: 55px;
+    height: auto;
+  }
+
+  .brand-text {
     display: flex;
     flex-direction: column;
   }
 
-  .left-menu li {
-    padding: 14px 18px;
-    margin-bottom: 8px;
-    cursor: pointer;
-    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-    border-radius: 10px; /* Modern rounded corners */
-    font-size: 0.9rem;
-    font-weight: 500;
+  .gov-text {
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    opacity: 0.8;
+    font-weight: 400;
+    white-space: nowrap;
+  }
+
+  .city-text {
+    font-size: 1.3rem;
+    font-weight: 700;
+    line-height: 1.2;
+    white-space: nowrap;
+  }
+
+  .nav-menu {
+    flex: 1;
+    overflow-y: auto;
+    padding: 10px 12px;
+  }
+
+    .nav-menu ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .nav-menu li {
+      padding: 2px 5px;
+      cursor: pointer;
+      border-radius: 8px;
+      transition: all 0.2s ease;
+      font-size: 0.95rem;
+      color: rgba(255, 255, 255, 0.75);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      white-space: nowrap;
+      border-left: 3px solid transparent;
+    }
+
+      .nav-menu li:hover {
+        background: #243e90;
+        color: white;
+        transform: translateX(4px);
+      }
+
+      .nav-menu li.active {
+        background: #243e90;
+        color: white;
+        border-left-color: #60a5fa;
+        font-weight: 600;
+      }
+
+  .nav-icon {
+    width: 18px;
+    height: 18px;
+    flex-shrink: 0;
+  }
+
+  .menu-footer {
+    padding: 12px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    flex-shrink: 0;
+  }
+
+  .user-info {
     display: flex;
     align-items: center;
-    color: rgba(255, 255, 255, 0.8);
+    gap: 8px;
+    padding: 4px 2px;
   }
 
-  .left-menu li:hover {
-    background: rgba(255, 255, 255, 0.1);
-    color: white;
-    transform: translateX(5px);
+  .username {
+    font-weight: 600;
+    font-size: 0.85rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
-  .left-menu li.active {
-    background: rgba(248, 215, 69, 0.15); /* Soft yellow glow */
-    color: #f8d745;
-    font-weight: 700;
-    border-left: 4px solid #f8d745;
-    padding-left: 14px; /* Adjust for border */
-  }
-
-  .left-menu li.back-btn {
-    color: #f8d745;
-    border: 1px solid rgba(248, 215, 69, 0.3);
-    margin-bottom: 25px;
-    justify-content: center; /* Center "Go Back" text */
-    background: rgba(248, 215, 69, 0.05);
-  }
-
-  .left-menu li.back-btn:hover {
-    background: #f8d745;
-    color: #003366;
-  }
-
-  .left-menu li.logout {
-    margin-top: auto;
-    background: rgba(230, 57, 70, 0.1);
-    color: #E63946;
-    border: 1px solid rgba(230, 57, 70, 0.2);
-    font-weight: 700;
-    text-align: center;
+  .logout-button {
+    padding: 12px;
+    cursor: pointer;
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.05);
+    color: #ffbaba;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    display: flex;
     justify-content: center;
+    font-weight: 700;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    transition: all 0.2s ease;
   }
 
-  .left-menu li.logout:hover {
-    background: #E63946;
-    color: white;
-    transform: none;
-  }
+    .logout-button:hover {
+      background: #c53030;
+      color: white;
+      border-color: #c53030;
+    }
 </style>
