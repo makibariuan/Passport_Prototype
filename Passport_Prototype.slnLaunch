@@ -1,0 +1,15 @@
+[
+  {
+    "Name": "New Profile",
+    "Projects": [
+      {
+        "Path": "Passport_Prototype.Server\\Passport_Prototype.Server.csproj",
+        "Action": "Start"
+      },
+      {
+        "Path": "passport_prototype.client\\passport_prototype.client.esproj",
+        "Action": "Start"
+      }
+    ]
+  }
+]

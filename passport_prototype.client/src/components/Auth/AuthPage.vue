@@ -499,9 +499,13 @@
 
     // Role-based redirection
     const role = parseInt(auth.userRole);
-    if (role === 4 || role === 5 || role === 6) {
+    if (role === 5 || role === 6) {
       router.push("/dashboard");
-    } else if (role === 1) {
+    }
+    else if (role === 4) {
+      router.push("/applicationassessment");
+    }
+    else if (role === 1) {
       router.push("/dashboard-admin");
     } else {
       router.push("/");
@@ -783,7 +787,11 @@
       const role = parseInt(auth.userRole);
       if (role === 1) {
         router.push("/dashboard-admin");
-      } else {
+      }
+      else if (role === 4) {
+        router.push("/applicationassessment");
+      }
+      else {
         router.push("/dashboard");
       }
     } catch (err) {
