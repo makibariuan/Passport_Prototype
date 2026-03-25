@@ -35,7 +35,7 @@ namespace Passport_Prototype.Server.Controllers
             {
                 var member = new Family
                 {
-                    UserId = familyMember.UserId,
+                    PassportPersonalInformationId = familyMember.PassportPersonalInformationId,
                     FirstName = familyMember.FirstName,
                     MiddleName = familyMember.MiddleName,
                     LastName = familyMember.LastName,
@@ -47,8 +47,6 @@ namespace Passport_Prototype.Server.Controllers
                 Members.Add(member);
             }
 
-            
-
             await _context.Family.AddRangeAsync(Members);
             await _context.SaveChangesAsync();
 
@@ -59,14 +57,16 @@ namespace Passport_Prototype.Server.Controllers
         [HttpGet("My-Family")]
         public async Task<IActionResult> GetById()
         {
-            var userIdString = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var userIdString = User.FindFirstValue("id");
 
             if (!int.TryParse(userIdString, out int userId))
             {
                 throw new Exception("Invalid user ID in claims.");
             }
 
-            var family = await _context.Family.Where(f => f.UserId == userId).ToListAsync();
+            var passportPersonalInformation = await _context.PassportPersonalInformation.FirstOrDefaultAsync(p => p.UserId == userId && p.Relationship == null);
+
+            var family = await _context.Family.Where(f => f.PassportPersonalInformationId == passportPersonalInformation.PassportPersonalInformationId).ToListAsync();
 
             if (family == null)
                 return NotFound();

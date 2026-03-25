@@ -22,9 +22,16 @@ public class PassportPersonalInformationsController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> Create(CreatePassportPersonalInformationDTO dto)
     {
+        var userIdString = User.FindFirstValue("id");
+
+        if (!int.TryParse(userIdString, out int userId))
+        {
+            throw new Exception("Invalid user ID in claims.");
+        }
+
         var passportPersonalInformation = new PassportPersonalInformation
         {
-            UserId = dto.UserId,
+            UserId = userId,
             FirstName = dto.FirstName,
             MiddleName = dto.MiddleName,
             LastName = dto.LastName,
@@ -39,7 +46,8 @@ public class PassportPersonalInformationsController : ControllerBase
             BirthRegion = dto.BirthRegion,
             BirthProvince = dto.BirthProvince,
             BirthCity = dto.BirthCity,
-            BirthBarangay = dto.BirthBarangay
+            BirthBarangay = dto.BirthBarangay,
+            Relationship = dto.Relationship
         };
 
         var newPassportPersonalInformation = await _context.PassportPersonalInformation.AddAsync(passportPersonalInformation);
@@ -48,41 +56,18 @@ public class PassportPersonalInformationsController : ControllerBase
         return CreatedAtAction(nameof(GetById), new { id = newPassportPersonalInformation.Entity.PassportPersonalInformationId }, newPassportPersonalInformation.Entity);
     }
 
-    // READ
-    [HttpGet]
-    public async Task<IActionResult> GetAll(int? pageNumber, int? pageSize)
-    {
-        var query = _context.PassportPersonalInformation.AsQueryable();
-
-        var totalPages = 1;
-        var totalDocuments = await query.CountAsync();
-
-        if (pageNumber.HasValue && pageSize.HasValue)
-        {
-            query = query
-                .Skip((pageNumber.Value - 1) * pageSize.Value)
-                .Take(pageSize.Value);
-
-            totalPages = (int)totalDocuments / (int)pageSize;
-        }
-
-        var passportPersonalInformations = await query.ToListAsync();
-        return Ok(new { totalPages, totalDocuments, passportPersonalInformations, });
-    }
-
     // READ BY ID
     [HttpGet,Route("My-Profile")]
     public async Task<IActionResult> GetById()
     {
-        var userIdString = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        var userIdString = User.FindFirstValue("id");
 
         if (!int.TryParse(userIdString, out int userId))
         {
             throw new Exception("Invalid user ID in claims.");
         }
 
-
-        var passportPersonalInformation = await _context.PassportPersonalInformation.FirstOrDefaultAsync(p => p.UserId == userId);
+        var passportPersonalInformation = await _context.PassportPersonalInformation.FirstOrDefaultAsync(p => p.UserId == userId && p.Relationship == null);
 
         if (passportPersonalInformation == null)
             return NotFound();
@@ -94,14 +79,14 @@ public class PassportPersonalInformationsController : ControllerBase
     [HttpPatch("Update-Profile")]
     public async Task<IActionResult> Update(UpdatePassportPersonalInformationDTO dto)
     {
-        var userIdString = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        var userIdString = User.FindFirstValue("id");
 
         if (!int.TryParse(userIdString, out int userId))
         {
             throw new Exception("Invalid user ID in claims.");
         }
 
-        var passportPersonalInformation = await _context.PassportPersonalInformation.FirstOrDefaultAsync(p => p.UserId == userId);
+        var passportPersonalInformation = await _context.PassportPersonalInformation.FirstOrDefaultAsync(p => p.UserId == userId && p.Relationship == null);
 
         if (passportPersonalInformation == null)
             return NotFound();

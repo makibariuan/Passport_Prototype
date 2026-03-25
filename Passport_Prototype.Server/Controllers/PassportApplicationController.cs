@@ -3,6 +3,7 @@ using OnlineRegistration.Server.Data;
 using Passport_Prototype.Server.DTOs;
 using Passport_Prototype.Server.Models;
 using Microsoft.EntityFrameworkCore;
+using SeniorCitizen.Server.Models;
 
 namespace Passport_Prototype.Server.Controllers
 {
@@ -11,6 +12,7 @@ namespace Passport_Prototype.Server.Controllers
     public class ApplicationController : ControllerBase
     {
         private readonly AppDbContext _context;
+        private readonly EmployeesDbContext _db;
         private readonly IWebHostEnvironment _env;
         private readonly IFileService _fileService;
 
@@ -19,11 +21,13 @@ namespace Passport_Prototype.Server.Controllers
         public ApplicationController(
             AppDbContext context,
             IWebHostEnvironment env,
-            IFileService fileService)
+            IFileService fileService,
+            EmployeesDbContext db)
         {
             _context = context;
             _env = env;
             _fileService = fileService;
+            _db = db;
         }
 
         [HttpPost]
@@ -32,31 +36,30 @@ namespace Passport_Prototype.Server.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
+            // 1. Handle File Uploads
             string tempPath = Path.Combine(_env.WebRootPath, "temp_uploads");
-            if (!Directory.Exists(tempPath))
-                Directory.CreateDirectory(tempPath);
+            if (!Directory.Exists(tempPath)) Directory.CreateDirectory(tempPath);
 
             async Task<string> SaveTempFile(IFormFile file)
             {
                 string ext = Path.GetExtension(file.FileName);
                 string fileName = $"{Guid.NewGuid()}{ext}";
                 string fullPath = Path.Combine(tempPath, fileName);
-
                 using var stream = new FileStream(fullPath, FileMode.Create);
                 await file.CopyToAsync(stream);
-
                 return fileName;
             }
 
-            // Save to temp
             string validIdKey = await SaveTempFile(dto.ValidId);
             string certificateKey = await SaveTempFile(dto.Certificate);
 
-            // FINALIZE BEFORE DB SAVE
             string validIdPath = await _fileService.FinalizeUpload(validIdKey, dto.UserId);
             string certificatePath = await _fileService.FinalizeUpload(certificateKey, dto.UserId);
 
-            // Now create entity with paths READY
+            // 2. Generate a Shared Application Code
+            string sharedCode = GenerateApplicationCode();
+
+            // 3. Create Passport Application Entity
             var application = new Application
             {
                 UserId = dto.UserId,
@@ -71,22 +74,51 @@ namespace Passport_Prototype.Server.Controllers
                 DocumentType = dto.DocumentType,
                 IdDocumentIdNumber = dto.IdDocumentIdNumber,
                 IdDocumentType = dto.IdDocumentType,
-
                 ValidIdPath = validIdPath,
                 CertificatePath = certificatePath,
-
                 ProcessingType = dto.ProcessingType,
                 PaymentMethod = dto.PaymentMethod,
                 DeliveryOption = dto.DeliveryOption,
-
                 isPaid = false,
                 ApplicationStatus = "Pending"
             };
 
-            await _context.Applications.AddAsync(application);
-            await _context.SaveChangesAsync();
+            // 4. Create Registry Entry
+            var registryEntry = new EnrollmentRegistryID
+            {
+                PersonID = dto.UserId,
+                ApplicationCode = sharedCode,
+                ApplicationType = 2, 
 
-            return Ok(application);
+                Status = 1, // Pending/Active
+                CreatedAt = DateTime.Now,
+                DateSchedule = dto.Schedule
+            };
+
+            // 5. Transactional Save
+            using var transaction = await _context.Database.BeginTransactionAsync();
+            try
+            {
+                await _context.Applications.AddAsync(application);
+                await _context.SaveChangesAsync();
+
+                await _db.EnrollmentRegistries.AddAsync(registryEntry);
+                await _db.SaveChangesAsync();
+
+                await transaction.CommitAsync();
+                return Ok(new { application, registryCode = sharedCode });
+            }
+            catch (Exception ex)
+            {
+                await transaction.RollbackAsync();
+                return StatusCode(500, "Error saving data to multiple registries: " + ex.Message);
+            }
+        }
+
+        private string GenerateApplicationCode()
+        {
+            // Example: MKT-20251011-ABC123
+            return $"MKT-{DateTime.Now:yyyyMMdd}-{Guid.NewGuid().ToString().Substring(0, 6).ToUpper()}";
         }
 
         [HttpGet("GetApplicationsWithUserInfo")]
@@ -121,4 +153,5 @@ namespace Passport_Prototype.Server.Controllers
 
 
     }
+
 }

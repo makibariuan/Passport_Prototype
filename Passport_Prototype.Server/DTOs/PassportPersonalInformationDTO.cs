@@ -1,4 +1,5 @@
 ﻿using OnlineRegistration.Server.Models;
+using SixLabors.ImageSharp.Formats.Gif;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -91,6 +92,8 @@ namespace Passport_Prototype.Server.DTOs
         public string BirthCity { get; set; } = null!;
 
         public string BirthBarangay { get; set; } = null!;
+
+        public string Relationship { get; set; }
     }
 
     public class UpdatePassportPersonalInformationDTO
