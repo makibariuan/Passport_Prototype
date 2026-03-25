@@ -33,7 +33,7 @@ public class PassportPersonalInformationsController : ControllerBase
             Nationality = dto.Nationality,
             CivilStatusId = dto.CivilStatus,
             hasPSABirthcert = dto.HasPSABirthcert,
-            isBirthLegitimate = dto.IsBirthLegitimate,
+            BirthLegitimacy = dto.BirthLegitimacy,
             BirthCountry = dto.BirthCountry,
             BirthRegion = dto.BirthRegion,
             BirthProvince = dto.BirthProvince,
@@ -82,10 +82,10 @@ public class PassportPersonalInformationsController : ControllerBase
     }
 
     // UPDATE
-    [HttpPatch("{id}")]
-    public async Task<IActionResult> Update(int id, UpdatePassportPersonalInformationDTO dto)
+    [HttpPatch("{userId}")]
+    public async Task<IActionResult> Update(int userId, UpdatePassportPersonalInformationDTO dto)
     {
-        var passportPersonalInformation = await _context.PassportPersonalInformation.FindAsync(id);
+        var passportPersonalInformation = await _context.PassportPersonalInformation.FirstOrDefaultAsync(p => p.UserId == userId);
 
         if (passportPersonalInformation == null)
             return NotFound();
@@ -100,7 +100,7 @@ public class PassportPersonalInformationsController : ControllerBase
         passportPersonalInformation.Nationality = dto.Nationality;
         passportPersonalInformation.CivilStatusId = dto.CivilStatus;
         passportPersonalInformation.hasPSABirthcert = dto.HasPSABirthcert.Value;
-        passportPersonalInformation.isBirthLegitimate = dto.IsBirthLegitimate.Value;
+        passportPersonalInformation.BirthLegitimacy = dto.BirthLegitimacy;
         passportPersonalInformation.BirthCountry = dto.BirthCountry;
         passportPersonalInformation.BirthRegion = dto.BirthRegion;
         passportPersonalInformation.BirthProvince = dto.BirthProvince;

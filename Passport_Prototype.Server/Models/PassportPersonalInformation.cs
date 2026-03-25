@@ -31,10 +31,8 @@ namespace Passport_Prototype.Server.Models
         [MaxLength(50)]
         public string? Suffix { get; set; }
 
-        [Required]
         public DateTime? Birthdate { get; set; }
 
-        [Required]
         [MaxLength(50)]
         public string? Gender { get; set; }
 
@@ -44,29 +42,22 @@ namespace Passport_Prototype.Server.Models
         [Column("CivilStatus")] // This tells EF the DB column is named "CivilStatus"
         public string? CivilStatusId { get; set; }
 
-        [Required]
-        public bool hasPSABirthcert { get; set; }
+        public bool? hasPSABirthcert { get; set; }
 
-        [Required]
-        public bool isBirthLegitimate { get; set; }
+        public string? BirthLegitimacy { get; set; }
 
-        [Required]
         [MaxLength(100)]
         public string? BirthCountry { get; set; }
 
-        [Required]
         [MaxLength(100)]
         public string? BirthRegion { get; set; }
 
-        [Required]
         [MaxLength(100)]
         public string? BirthProvince { get; set; }
 
-        [Required]
         [MaxLength(100)]
         public string? BirthCity { get; set; }
 
-        [Required]
         [MaxLength(100)]
         public string? BirthBarangay { get; set; }
     }
