@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using OnlineRegistration.Server.Data;
 using Passport_Prototype.Server.DTOs;
 using Passport_Prototype.Server.Models;
+using System.Security.Claims;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Passport_Prototype.Server.Controllers
@@ -55,9 +56,16 @@ namespace Passport_Prototype.Server.Controllers
         }
 
         // READ BY ID
-        [HttpGet("{userId}")]
-        public async Task<IActionResult> GetById(int userId)
+        [HttpGet("/My-Family")]
+        public async Task<IActionResult> GetById()
         {
+            var userIdString = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            if (!int.TryParse(userIdString, out int userId))
+            {
+                throw new Exception("Invalid user ID in claims.");
+            }
+
             var family = await _context.Family.Where(f => f.UserId == userId).ToListAsync();
 
             if (family == null)

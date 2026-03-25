@@ -73,6 +73,16 @@ public class PassportPersonalInformationsController : ControllerBase
     [HttpGet("{userId}")]
     public async Task<IActionResult> GetById(int userId)
     {
+<<<<<<< Updated upstream
+=======
+        var userIdString = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+        if (!int.TryParse(userIdString, out int userId))
+        {
+            throw new Exception("Invalid user ID in claims.");
+        }
+
+>>>>>>> Stashed changes
         var passportPersonalInformation = await _context.PassportPersonalInformation.FirstOrDefaultAsync(p => p.UserId == userId);
 
         if (passportPersonalInformation == null)
@@ -82,9 +92,16 @@ public class PassportPersonalInformationsController : ControllerBase
     }
 
     // UPDATE
-    [HttpPatch("{userId}")]
-    public async Task<IActionResult> Update(int userId, UpdatePassportPersonalInformationDTO dto)
+    [HttpPatch("/Update-Profile")]
+    public async Task<IActionResult> Update(UpdatePassportPersonalInformationDTO dto)
     {
+        var userIdString = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+        if (!int.TryParse(userIdString, out int userId))
+        {
+            throw new Exception("Invalid user ID in claims.");
+        }
+
         var passportPersonalInformation = await _context.PassportPersonalInformation.FirstOrDefaultAsync(p => p.UserId == userId);
 
         if (passportPersonalInformation == null)
