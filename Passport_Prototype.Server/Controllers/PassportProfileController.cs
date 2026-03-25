@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using OnlineRegistration.Server.Data;
 using Passport_Prototype.Server.DTOs;
@@ -7,9 +8,10 @@ using System.Security.Claims;
 
 namespace Passport_Prototype.Server.Controllers
 {
+
     [ApiController]
     [Route("/api/[controller]")]
-
+    
     public class PassportProfileController : ControllerBase
     {
         private readonly AppDbContext _context;

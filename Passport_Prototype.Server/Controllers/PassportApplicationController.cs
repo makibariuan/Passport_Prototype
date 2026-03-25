@@ -28,7 +28,7 @@ namespace Passport_Prototype.Server.Controllers
             _fileService = fileService;
             _db = db;
         }
-
+        
         [HttpPost]
         public async Task<IActionResult> CreateApplication([FromForm] CreateApplicationDTO dto)
         {
