@@ -52,7 +52,7 @@ namespace OnlineRegistration.Server.Data
             // 3. PASSPORT RELATIONSHIP (One-to-One)
             modelBuilder.Entity<Users>()
                 .HasOne(u => u.PassportInfo)
-                .WithOne(p => p.User)
+                .WithOne()
                 .HasForeignKey<PassportPersonalInformation>(p => p.UserId)
                 .OnDelete(DeleteBehavior.Cascade);
 

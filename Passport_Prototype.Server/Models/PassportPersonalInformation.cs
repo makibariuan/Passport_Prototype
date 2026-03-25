@@ -14,9 +14,6 @@ namespace Passport_Prototype.Server.Models
         [Required]
         public int UserId { get; set; }
 
-        [ForeignKey("UserId")]
-        public virtual Users? User { get; set; }
-
         [Required]
         [MaxLength(255)]
         public string? FirstName { get; set; }

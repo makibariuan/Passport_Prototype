@@ -5,6 +5,7 @@ using OnlineRegistration.Server.DTOs;
 using OnlineRegistration.Server.Models;
 using Passport_Prototype.Server.DTOs;
 using Passport_Prototype.Server.Models;
+using System.Security.Claims;
 
 [ApiController]
 [Route("api/[controller]")]
@@ -70,9 +71,17 @@ public class PassportPersonalInformationsController : ControllerBase
     }
 
     // READ BY ID
-    [HttpGet("{userId}")]
-    public async Task<IActionResult> GetById(int userId)
+    [HttpGet,Route("My-Profile")]
+    public async Task<IActionResult> GetById()
     {
+        var userIdString = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+        if (!int.TryParse(userIdString, out int userId))
+        {
+            throw new Exception("Invalid user ID in claims.");
+        }
+
+
         var passportPersonalInformation = await _context.PassportPersonalInformation.FirstOrDefaultAsync(p => p.UserId == userId);
 
         if (passportPersonalInformation == null)
