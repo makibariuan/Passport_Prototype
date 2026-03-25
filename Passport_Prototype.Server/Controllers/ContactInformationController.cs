@@ -26,7 +26,7 @@ namespace Passport_Prototype.Server.Controllers
 
             var entity = new ContactInformation
             {
-                UserId = dto.UserId,
+                PassportPersonalInformationId = dto.PassportPersonalInformationId,
                 CurrentRegion = dto.CurrentRegion,
                 CurrentProvince = dto.CurrentProvince,
                 CurrentCityMunicipality = dto.CurrentCityMunicipality,
@@ -55,11 +55,11 @@ namespace Passport_Prototype.Server.Controllers
         }
 
         // READ BY ID (UserID)
-        [HttpGet("{userId}")]
-        public async Task<IActionResult> GetByUserId(int userId)
+        [HttpGet("{personalId}")]
+        public async Task<IActionResult> GetByUserId(int personalId)
         {
             var data = await _context.ContactInformation
-                .FirstOrDefaultAsync(c => c.UserId == userId);
+                .FirstOrDefaultAsync(c => c.PassportPersonalInformationId == personalId);
 
             if (data == null)
                 return NotFound();
@@ -68,11 +68,11 @@ namespace Passport_Prototype.Server.Controllers
         }
 
         // UPDATE
-        [HttpPatch("{userId}")]
-        public async Task<IActionResult> Update(int userId, ContactInformationDto dto)
+        [HttpPatch("{personalId}")]
+        public async Task<IActionResult> Update(int personalId, ContactInformationDto dto)
         {
             var entity = await _context.ContactInformation
-                .FirstOrDefaultAsync(c => c.UserId == userId);
+                .FirstOrDefaultAsync(c => c.PassportPersonalInformationId == personalId);
 
             if (entity == null)
                 return NotFound();
@@ -89,22 +89,6 @@ namespace Passport_Prototype.Server.Controllers
             await _context.SaveChangesAsync();
 
             return Ok(entity);
-        }
-
-        // DELETE
-        [HttpDelete("{userId}")]
-        public async Task<IActionResult> Delete(int userId)
-        {
-            var entity = await _context.ContactInformation
-                .FirstOrDefaultAsync(c => c.UserId == userId);
-
-            if (entity == null)
-                return NotFound();
-
-            _context.ContactInformation.Remove(entity);
-            await _context.SaveChangesAsync();
-
-            return NoContent();
         }
     }
 }

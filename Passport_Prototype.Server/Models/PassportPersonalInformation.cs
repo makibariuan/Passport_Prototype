@@ -57,5 +57,7 @@ namespace Passport_Prototype.Server.Models
 
         [MaxLength(100)]
         public string? BirthBarangay { get; set; }
+
+        public string? Relationship { get; set; }
     }
 }

@@ -27,7 +27,7 @@ namespace Passport_Prototype.Server.Controllers
 
             var entity = new WorkInformation
             {
-                UserId = dto.UserId,
+                PassportPersonalInformationId = dto.PassportPersonalInformationId,
                 Occupation = dto.Occupation,
                 OfficeAddress = dto.OfficeAddress,
                 OfficeCountry = dto.OfficeCountry,
@@ -57,12 +57,12 @@ namespace Passport_Prototype.Server.Controllers
         }
 
         // READ BY ID
-        [HttpGet("{userId}")]
-        public async Task<IActionResult> GetById(int userId)
+        [HttpGet("{personalId}")]
+        public async Task<IActionResult> GetById(int personalId)
         {
             var data = await _context.WorkInformation
                 //.Include(w => w.Users)
-                .FirstOrDefaultAsync(w => w.UserId == userId);
+                .FirstOrDefaultAsync(w => w.PassportPersonalInformationId == personalId);
 
             if (data == null)
                 return NotFound();
@@ -71,16 +71,16 @@ namespace Passport_Prototype.Server.Controllers
         }
 
         // UPDATE
-        [HttpPatch("{userId}")]
-        public async Task<IActionResult> Update(int userId, WorkInformationDto dto)
+        [HttpPatch("{personalId}")]
+        public async Task<IActionResult> Update(int personalId, WorkInformationDto dto)
         {
             var entity = await _context.WorkInformation
-                .FirstOrDefaultAsync(w => w.UserId == userId);
+                .FirstOrDefaultAsync(w => w.PassportPersonalInformationId == personalId);
 
             if (entity == null)
                 return NotFound();
 
-            entity.UserId = dto.UserId;
+            entity.PassportPersonalInformationId = dto.PassportPersonalInformationId;
             entity.Occupation = dto.Occupation;
             entity.OfficeAddress = dto.OfficeAddress;
             entity.OfficeCountry = dto.OfficeCountry;
@@ -97,11 +97,11 @@ namespace Passport_Prototype.Server.Controllers
         }
 
         // DELETE
-        [HttpDelete("{userId}")]
-        public async Task<IActionResult> Delete(int userId)
+        [HttpDelete("{personalId}")]
+        public async Task<IActionResult> Delete(int personalId)
         {
             var entity = await _context.WorkInformation
-                .FirstOrDefaultAsync(w => w.UserId == userId);
+                .FirstOrDefaultAsync(w => w.PassportPersonalInformationId == personalId);
 
             if (entity == null)
                 return NotFound();

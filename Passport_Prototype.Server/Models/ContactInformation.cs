@@ -6,8 +6,8 @@ namespace Passport_Prototype.Server.Models
     public class ContactInformation
     {
         public int Id { get; set; }
-        public int? UserId { get; set; }
-        //public Users? Users { get; set; }
+        public int PassportPersonalInformationId { get; set; }
+
         public required string CurrentRegion { get; set; }
         public required string CurrentProvince { get; set; }
         public required string CurrentCityMunicipality { get; set; }

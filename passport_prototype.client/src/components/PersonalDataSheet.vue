@@ -129,7 +129,7 @@
                       <label class="pds-label"
                         >Date of Birth<span class="required-star">*</span></label
                       >
-                      <input v-model="user.dateOfBirth" type="date" class="pds-input" />
+                      <input v-model="user.birthdate" type="date" class="pds-input" />
                       <span class="pds-readonly-tag">From record</span>
                     </div>
 
@@ -1200,7 +1200,7 @@ const fetchPersonal = async () => {
     user.value.nameExtension = data.suffix ?? "";
 
     user.value.dateOfBirth = data.birthdate
-      ? data.birthdate.substring(0, 10)
+      ? new Date(data.birthdate)
       : "";
 
     user.value.sex = data.gender ?? "";
