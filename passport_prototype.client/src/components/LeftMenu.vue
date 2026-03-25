@@ -26,7 +26,9 @@
     <div class="menu-footer">
       <div class="user-info">
         <Settings class="w-5 h-5 shrink-0" />
-        <span class="username">JUAN DELA CRUZ</span>
+        <span class="username">
+          {{ fullName }}
+        </span>
       </div>
       <div class="logout-button" @click="logout">Logout</div>
     </div>
@@ -37,6 +39,40 @@
 import { useRouter, useRoute } from "vue-router";
 import { User, Users, Calendar, FileSearch, BookText, CheckSquare, Settings } from "@lucide/vue";
 import { useAuthStore } from "@/stores/auth";
+import { ref, computed, onMounted } from "vue";
+import axios from "axios";
+
+  const Auth = useAuthStore();
+
+  const isLoading = ref(false);
+
+  const user = ref({
+    surname: "",
+    firstName: ""
+  });
+
+  const fetchPersonal = async () => {
+    try {
+      const { data } = await axios.get(
+        "https://localhost:5000/api/PassportPersonalInformations/My-Profile",
+        {
+          headers: {
+            Authorization: `Bearer ${Auth.token}`
+          }
+        }
+      );
+
+      user.value.firstName = data.firstName ?? "";
+      user.value.surname = data.lastName ?? "";
+
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  const fullName = computed(() =>
+    `${user.value.firstName} ${user.value.surname}`.trim().toUpperCase()
+  );
 
 const router = useRouter();
 const route = useRoute();
@@ -51,6 +87,8 @@ const navItems = [
   { icon: CheckSquare, label: "Privacy Policy", path: "/privacy-policy" },
 ];
 
+
+
 const isActive = (path) => route.path === path;
 
 const goTo = (path) => {
@@ -62,6 +100,8 @@ const logout = () => {
   auth.logout?.();
   router.push("/login");
 };
+
+  onMounted(fetchPersonal);
 </script>
 
 <style scoped>

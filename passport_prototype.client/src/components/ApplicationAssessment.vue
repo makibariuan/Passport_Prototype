@@ -71,7 +71,7 @@
 
   const router = useRouter();
 
-  const searchInput = ref(null);
+  const searchText = ref("");
   const tableData = ref([]);
 
   let table;
@@ -92,6 +92,13 @@
       hour: "2-digit",
       minute: "2-digit",
     });
+  };
+
+  const statusClass = (status) => {
+    if (status === "Approved") return "status-approved";
+    if (status === "Pending") return "status-pending";
+    if (status === "Rejected") return "status-rejected";
+    return "";
   };
 
   const fetchApplications = async () => {
@@ -156,10 +163,10 @@
       info: false,
     });
 
-    // Search
-    searchInput.value.addEventListener("keyup", (e) => {
-      table.search(e.target.value).draw();
-    });
+    //// Search
+    //searchInput.value.addEventListener("keyup", (e) => {
+    //  table.search(e.target.value).draw();
+    //});
   });
 
   /* ---------------------------
@@ -171,6 +178,20 @@
 </script>
 
 <style scoped>
+  .status-approved {
+    color: #28a745;
+    font-weight: bold;
+  }
+
+  .status-pending {
+    color: #ffc107;
+    font-weight: bold;
+  }
+
+  .status-rejected {
+    color: #dc3545;
+    font-weight: bold;
+  }
 
   .text-center {
     text-align: center;
