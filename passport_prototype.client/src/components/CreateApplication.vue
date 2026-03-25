@@ -162,7 +162,7 @@
                 new passport. Applicants who wish to pick-up their passports will have to go to the
                 Supervising Consular Office of the TOPS Site to personally claim their passports.
                 Please click
-                <a href="#" class="notice-link">here</a> for the requirements for passport release.
+                <a href="#" class="notice-link">here</a> for the requirements for passport release.x`
               </li>
               <li>
                 Applicants who wish to have their passports released via courier must agree to have
@@ -257,11 +257,16 @@
 
 
 
+                <!-- ══════════════════════════════════════════
+       STEP 4 — Documentary Requirements
+  ══════════════════════════════════════════ -->
                 <div v-else-if="currentStep === 4">
                   <div class="pds-section">
-                    <div class="pds-section-header">
-                      <h3 class="pds-section-title">Documentary Requirements</h3>
-                    </div>
+
+                    <!-- Header -->
+                    <p class="appt-title">
+                      Appointment for <span class="hname">MARVIN ALFRED MERCADO PICO</span>
+                    </p>
 
                     <!-- File notice banner -->
                     <div class="file-notice">
@@ -275,201 +280,319 @@
                         {{ req.label }}<span class="required">*</span>
                       </label>
 
+                      <!-- Browse button -->
                       <div class="upload-zone">
-                        <!-- Blue Browse Button with + -->
                         <button class="browse-btn" @click.stop="triggerFileInput(req.id)">
                           + Browse
                         </button>
+                      </div>
 
-                        <!-- File name display -->
-                        <span class="file-name" :class="{ 'file-name--filled': req.file }">
-                          {{ req.file ? req.file.name : 'No file chosen' }}
-                        </span>
-
-                        <!-- Remove button -->
-                        <button v-if="req.file"
-                                class="remove-btn"
-                                @click.stop="removeFile(req.id)">
-                          &times;
+                      <!-- File display row (shown after file attached) -->
+                      <div v-if="req.file" class="file-display">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#888" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0">
+                          <path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48" />
+                        </svg>
+                        <span class="file-name">{{ req.file.name }}</span>
+                        <button class="remove-btn" @click.stop="removeFile(req.id)">
+                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                            <line x1="18" y1="6" x2="6" y2="18" />
+                            <line x1="6" y1="6" x2="18" y2="18" />
+                          </svg>
                         </button>
                       </div>
 
-                      <!-- Hidden input -->
+                      <!-- Hidden file input -->
                       <input :ref="(el) => setFileInputRef(req.id, el)"
                              type="file"
-                             accept=".jpeg,.jpg,.bmp,.pdf"
+                             accept=".jpeg,.jpg,.png,.bmp,.pdf"
                              class="hidden-input"
                              @change="onFileChange(req.id, $event)" />
 
-                      <!-- Divider line -->
                       <hr class="divider" />
                     </div>
+
                   </div>
+
+                  <!-- ── Conflict Detection Modal ── -->
+                  <teleport to="body">
+                    <div v-if="showConflictModal" class="modal-overlay" @click.self="closeModal">
+                      <div class="modal-box">
+
+                        <!-- Warning banner -->
+                        <div class="modal-banner">
+                          System found possible conflicts. Please confirm if the attachment is valid.
+                        </div>
+
+                        <div class="modal-body">
+                          <!-- Conflict comparison table -->
+                          <table class="conflict-table">
+                            <thead>
+                              <tr>
+                                <th></th>
+                                <th>Detected</th>
+                                <th>Inserted</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              <tr v-for="row in conflictRows" :key="row.field">
+                                <td class="field-name">{{ row.field }}</td>
+                                <td>{{ row.detected }}</td>
+                                <td>{{ row.inserted }}</td>
+                              </tr>
+                            </tbody>
+                          </table>
+
+                          <!-- ✅ Actual uploaded image preview — not a generated card -->
+                          <div class="id-preview-wrap">
+                            <img v-if="pendingFilePreviewUrl"
+                                 :src="pendingFilePreviewUrl"
+                                 class="id-preview-img"
+                                 alt="Uploaded ID" />
+                            <div v-else class="id-preview-placeholder">
+                              Preview not available
+                            </div>
+                          </div>
+                        </div>
+
+                        <!-- Action buttons -->
+                        <div class="modal-actions">
+                          <button class="btn-confirm" @click="confirmAttachment">Confirm Attachment</button>
+                          <button class="btn-reupload" @click="uploadAgain">Upload again</button>
+                        </div>
+
+                      </div>
+                    </div>
+                  </teleport>
                 </div>
 
 
-                <!-- Step 5 -->
+
+                <!-- ══════════════════════════════════════════
+       STEP 5 — Payment
+  ══════════════════════════════════════════ -->
                 <div v-else-if="currentStep === 5">
                   <div class="pds-section">
-                    <div class="pds-section-header">
-                      <h3 class="pds-section-title">Payment</h3>
-                    </div>
 
-                    <p class="section-description">
-                      Review your application summary and complete payment.
+                    <!-- Header -->
+                    <p class="appt-title">
+                      Appointment for <span class="hname">{{ selectedProfile?.name }}</span>
                     </p>
 
-                    <!-- Processing Type -->
-                    <div class="payment-section">
-                      <label class="section-label">Choose a Processing Type<span class="required">*</span></label>
-                      <div class="option">
-                        <input type="radio" id="regular" value="regular" v-model="processingType" />
-                        <label for="regular">Regular Processing (₱950.00) – 12 Working Days</label>
-                      </div>
-                      <div class="option">
-                        <input type="radio" id="special" value="special" v-model="processingType" />
-                        <label for="special">Special Processing (₱1,200.00) – Expedited</label>
-                      </div>
+                    <!-- ── Processing Type ── -->
+                    <div class="payment-group">
+                      <p class="group-label">Choose a Processing Type</p>
+
+                      <label class="radio-card" :class="{ selected: processingType === 'regular' }">
+                        <input type="radio" value="regular" v-model="processingType" />
+                        <div class="radio-card__content">
+                          <p class="radio-card__title">Regular Processing (₱ 950.00)</p>
+                          <p class="radio-card__sub">12 Working Days for All Consular Offices</p>
+                        </div>
+                      </label>
+
+                      <label class="radio-card" :class="{ selected: processingType === 'special' }">
+                        <input type="radio" value="special" v-model="processingType" />
+                        <div class="radio-card__content">
+                          <p class="radio-card__title">Special Processing (₱ 1,200.00)</p>
+                          <p class="radio-card__sub">a. TOPS Processing, or</p>
+                          <p class="radio-card__sub">b. Expedite Processing (Applicable to DFA ASEANA And Consular Offices Only)</p>
+                        </div>
+                      </label>
                     </div>
 
-                    <!-- Payment Method -->
-                    <div class="payment-section">
-                      <label class="section-label">Choose a Payment Method<span class="required">*</span></label>
-                      <div class="option">
-                        <input type="radio" id="epayment" value="epayment" v-model="paymentMethod" />
-                        <label for="epayment">ePayment (Maya/GCash)</label>
-                      </div>
-                      <div class="option">
-                        <input type="radio" id="card" value="card" v-model="paymentMethod" />
-                        <label for="card">Debit/Credit Card</label>
-                      </div>
-                      <div class="option">
-                        <input type="radio" id="otc" value="otc" v-model="paymentMethod" />
-                        <label for="otc">Over-the-counter (+₱50.00 convenience fee)</label>
-                      </div>
+                    <!-- ── Payment Method ── -->
+                    <div class="payment-group">
+                      <p class="group-label">Choose a Payment Method</p>
+
+                      <label class="radio-card" :class="{ selected: paymentMethod === 'epayment' }">
+                        <input type="radio" value="epayment" v-model="paymentMethod" />
+                        <div class="radio-card__content">
+                          <p class="radio-card__title">EPayment</p>
+                          <p class="radio-card__sub">Pay via Maya/G Cash</p>
+                        </div>
+                      </label>
+
+                      <label class="radio-card" :class="{ selected: paymentMethod === 'card' }">
+                        <input type="radio" value="card" v-model="paymentMethod" />
+                        <div class="radio-card__content">
+                          <p class="radio-card__title">Debit/Credit Card</p>
+                          <p class="radio-card__sub">Pay via Debit or Credit Card</p>
+                        </div>
+                      </label>
+
+                      <label class="radio-card" :class="{ selected: paymentMethod === 'otc' }">
+                        <input type="radio" value="otc" v-model="paymentMethod" />
+                        <div class="radio-card__content">
+                          <p class="radio-card__title">Over the counter Payment to be made at authorized Payment Centers (₱ 50.00 Convenience Fee)</p>
+                          <p class="radio-card__sub">Pay via Bayad Center accredited merchant</p>
+                        </div>
+                      </label>
                     </div>
 
-                    <!-- Delivery Options -->
-                    <div class="payment-section">
-                      <label class="section-label">Delivery Options<span class="required">*</span></label>
-                      <div class="option">
-                        <input type="radio" id="site" value="site" v-model="deliveryOption" />
-                        <label for="site">Site – DFA Manila (ASEANA)</label>
-                      </div>
-                      <div class="option">
-                        <input type="radio" id="address" value="address" v-model="deliveryOption" />
-                        <label for="address">Current Address – T1 U1214 LINEAR CONDOMINIUM, MALUGAY, SAN ANTONIO, MAKATI</label>
-                      </div>
+                    <!-- ── Delivery Options ── -->
+                    <div class="payment-group">
+                      <p class="group-label">Delivery Options</p>
+
+                      <label class="radio-card" :class="{ selected: deliveryOption === 'site' }">
+                        <input type="radio" value="site" v-model="deliveryOption" />
+                        <div class="radio-card__content">
+                          <p class="radio-card__title">Site</p>
+                          <p class="radio-card__sub">DFA Manila (Aseana), ASEANA Business Park, Bradco Avenue corner Macapagal Boulevard, Parañaque City</p>
+                        </div>
+                      </label>
+
+                      <label class="radio-card" :class="{ selected: deliveryOption === 'address' }">
+                        <input type="radio" value="address" v-model="deliveryOption" />
+                        <div class="radio-card__content">
+                          <p class="radio-card__title">Current address</p>
+                          <p class="radio-card__sub">T1 U2124 LINEAR CONDOMINIUM, MALUGAY, SAN ANTONIO, MAKATI</p>
+                        </div>
+                      </label>
                     </div>
 
-                    <!-- Summary -->
-                    <div class="summary">
-                      <h4>Summary</h4>
-                      <table>
+                    <!-- ── Summary (shown only when all selected) ── -->
+                    <div v-if="processingType && paymentMethod && deliveryOption" class="summary-section">
+                      <p class="group-label">Summary</p>
+                      <table class="summary-table">
                         <thead>
                           <tr>
                             <th>Particulars</th>
                             <th>Quantity</th>
-                            <th>Amount</th>
+                            <th class="text-right">Amount</th>
                           </tr>
                         </thead>
                         <tbody>
                           <tr>
                             <td>Passport Fee</td>
                             <td>1</td>
-                            <td>₱950.00</td>
+                            <td class="text-right">₱ {{ processingType === 'special' ? '1,200.00' : '950.00' }}</td>
+                          </tr>
+                          <tr v-if="paymentMethod === 'otc'">
+                            <td>Convenience Fee</td>
+                            <td>1</td>
+                            <td class="text-right">₱ 50.00</td>
                           </tr>
                           <tr class="total-row">
-                            <td colspan="2"><strong>Total</strong></td>
-                            <td><strong>₱950.00</strong></td>
+                            <td><strong>TOTAL</strong></td>
+                            <td></td>
+                            <td class="text-right"><strong>₱ {{ totalAmount }}</strong></td>
                           </tr>
                         </tbody>
                       </table>
+
+                      <!-- Proceed button -->
+                      <div class="pay-actions">
+                        <button class="btn-proceed" @click="showPaymentModal = true">Proceed to Payment</button>
+                      </div>
                     </div>
 
-                    <!-- Proceed Button -->
-                    <div class="payment-actions">
-                      <button class="agree-btn" @click="showPaymentModal = true">Proceed to Payment</button>
-                    </div>
+                  </div>
+                </div>
 
-                    <!-- Payment Status Panel -->
-                    <div v-if="showPaymentStatus" class="status-panel">
-                      <h3 class="status-title">Appointment for MARVIN ALFRED MERCADO PICO</h3>
-                      <p><strong>This mode of payment is requesting for:</strong></p>
-                      <table class="status-table">
-                        <tr><td><strong>Status</strong></td><td>Initiated</td></tr>
-                        <tr><td><strong>Amount</strong></td><td>₱950.00</td></tr>
-                        <tr><td><strong>Total Amount Due</strong></td><td>₱950.00</td></tr>
-                      </table>
+                <!-- ══════════════════════════════════════════
+       PAYMENT CONFIRMATION MODAL
+  ══════════════════════════════════════════ -->
+                <teleport to="body">
+                  <div v-if="showPaymentModal" class="modal-overlay" @click.self="showPaymentModal = false">
+                    <div class="modal-box payment-modal">
+                      <h3 class="modal-title">Payment Confirmation</h3>
+                      <div class="modal-scroll-body">
+                        <p class="modal-remind"><strong>Please be reminded of the following:</strong></p>
+                        <ul class="modal-list">
+                          <li>Your chosen mode of payment will charge a convenience fee in addition to the passport fee.</li>
+                          <li>Fees must be settled within <strong>24 hours</strong> upon receipt of the Reference Number.</li>
+                          <li>Your bank may not be available on weekends and holidays.</li>
+                          <li>Amount indicated is exclusively for the payment of the Passport Processing Fee. Processing fee is not refundable and not transferable.</li>
+                          <li>Applicants are advised to appear on their scheduled appointment with complete requirements or risk forfeiting payment. Applicants availing of courier service shall submit their current passport for cancellation during their appointment.</li>
+                          <li><strong>For TOPS applicants:</strong> Passports for pick-up shall be claimed by you or your authorized representative at the designated Supervising Consular Office (SCO) of TOPS. There are no available courier delivery services on the TOPS site. Further, applicants at TOPS Sites will be unable to request the delivery of their passports on the day of their appointment schedule.</li>
+                        </ul>
 
-                      <h4>General Guidelines:</h4>
-                      <ul>
-                        <li>Pay in CASH at Bayad Center Branches and Authorized Partners...</li>
-                        <li>Confirmation Payments are processed once paid.</li>
-                        <li>We will send a confirmation email to you once processed.</li>
-                        <li>Pay the exact amount. Any excess payment will be forfeited.</li>
-                        <li>Amount is inclusive of convenience fee.</li>
-                        <li>Make sure to get a reference number before paying.</li>
-                        <li>A reference number can only be used once...</li>
-                      </ul>
-
-                      <div class="status-actions">
-                        <button class="cancel-btn" @click="showPaymentStatus = false">Back</button>
-                        <button class="agree-btn" @click="payNow">Pay Now</button>
+                        <p class="modal-remind"><strong>Basahin ang mga sumusunod na paalala:</strong></p>
+                        <ul class="modal-list">
+                          <li>Ang pinili ninyong mode of payment ay may karagdagang convenience fee, maliban sa passport fee.</li>
+                          <li>Ang mga fees ay kailangang mabayaran sa loob ng 24 oras matapos matanggap ang Reference Number. Ang mga bangko o bayad center ay maaaring hindi bukas ng weekend o holidays.</li>
+                          <li>Ang amount na nakasaad ay para lamang sa pagbabayad ng Passport Processing Fee.</li>
+                          <li>Ang processing fee ay hindi refundable at hindi maaaring i-transfer sa ibang aplikante.</li>
+                          <li>Kailangan po ninyong magpunta sa aming tanggapan sa araw ng inyong appointment, dala ang kumpletong passport requirements. Kung hindi makakapunta sa araw ng appointment, ang inyong bayad ay mawawalang bisa.</li>
+                          <li>Para sa mga nag-avail ng courier service, kailangang ipresenta ng mga aplikante ang lumang passport para makansela ito ng prosesor.</li>
+                          <li>Para sa mga aplikante sa TOPS: Ang mga passports na for pick-up ay kailangang kunin, ninyo o ng inyong representative sa designated na Supervising Consular Office (SCO) ng TOPS. Hindi maaaring mag-request sa TOPS na ipa-deliver ang inyong passport sa araw ng inyong appointment, dahil hindi available ang courier service sa mga TOPS Sites.</li>
+                        </ul>
+                      </div>
+                      <div class="modal-foot">
+                        <button class="btn-cancel" @click="showPaymentModal = false">Cancel</button>
+                        <button class="btn-agree" @click="agreePaymentModal">I Agree</button>
                       </div>
                     </div>
                   </div>
-                </div>
+                </teleport>
 
-                <!-- Payment Confirmation Modal -->
-                <div v-if="showPaymentModal" class="modal-overlay">
-                  <div class="modal-box">
-                    <h3 class="modal-title">Payment Confirmation</h3>
-                    <div class="modal-body">
-                      <p><strong>Please be reminded of the following:</strong></p>
-                      <ul>
-                        <li>Your chosen mode of payment will charge a convenience fee in addition to the passport fee.</li>
-                        <li>Fees must be settled within 24 hours upon receipt of the Reference Number.</li>
-                        <li>Your bank may not be available on weekends and holidays.</li>
-                        <li>Amount indicated is exclusively for the payment of the Passport Processing Fee. Processing fee is not refundable and not transferable.</li>
-                        <li>Applicants are advised to appear on their scheduled appointment with complete requirements or risk forfeiting payment.</li>
-                        <li>Applicants availing of courier service shall submit their current passport for cancellation during their appointment.</li>
-                        <li>For TOPS applicants: Passports for pick-up shall be claimed by you or your authorized representative at the designated Supervising Consular Office (SCO) of TOPS. Courier delivery is not available at TOPS sites.</li>
-                      </ul>
-
-                      <p><strong>Basahin ang mga sumusunod na paalala:</strong></p>
-                      <ul>
-                        <li>Ang pinili ninyong mode of payment ay may karagdagang convenience fee, maliban sa passport fee.</li>
-                        <li>Ang mga fees ay kailangang mabayaran sa loob ng 24 oras matapos matanggap ang Reference Number. Ang mga bangko o bayad center ay maaaring hindi bukas ng weekend o holidays.</li>
-                        <li>Ang amount na nakasaad ay para lamang sa pagbabayad ng Passport Processing Fee.</li>
-                        <li>Ang processing fee ay hindi refundable at hindi maaaring i-transfer sa ibang aplikante.</li>
-                        <li>Kailangan po ninyong magpunta sa aming tanggapan sa araw ng inyong appointment, dala ang kumpletong passport requirements. Kung hindi makakapunta sa araw ng appointment, ang inyong bayad ay mawawalang bisa.</li>
-                        <li>Para sa mga nag-avail ng courier service, kailangang ipresenta ng mga aplikante ang lumang passport para makansela ito ng prosesor.</li>
-                        <li>Para sa mga aplikante sa TOPS: Ang mga passports na for pick-up ay kailangang kunin, ninyo o ng inyong representative sa designated na Supervising Consular Office (SCO) ng TOPS. Hindi maaaring mag-request sa TOPS na ipa-deliver ang inyong passport sa araw ng inyong appointment, dahil hindi available ang courier service sa mga TOPS Sites.</li>
-                      </ul>
-                    </div>
-
-                    <div class="modal-actions">
-                      <button class="cancel-btn" @click="showPaymentModal = false">Cancel</button>
-                      <button class="agree-btn" @click="agreePaymentModal">I Agree</button>
+                <!-- ══════════════════════════════════════════
+       PAYMENT SUCCESS MODAL
+  ══════════════════════════════════════════ -->
+                <teleport to="body">
+                  <div v-if="showPaymentSuccess" class="modal-overlay" @click.self="closePaymentSuccess">
+                    <div class="modal-box modal-small">
+                      <!-- Green check circle -->
+                      <div class="success-icon-wrap">
+                        <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
+                          <circle cx="24" cy="24" r="23" stroke="#34a853" stroke-width="2" />
+                          <polyline points="14,24 21,31 34,17" stroke="#34a853" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
+                        </svg>
+                      </div>
+                      <h3 class="modal-title">Payment successful</h3>
+                      <p class="success-sub">Your payment has been successful!</p>
+                      <div class="modal-foot modal-foot--center">
+                        <button class="btn-agree" @click="closePaymentSuccess">Close</button>
+                      </div>
                     </div>
                   </div>
-                </div>
+                </teleport>
 
+                <!-- ══════════════════════════════════════════
+       DFA ePAYMENT RECEIPT MODAL
+  ══════════════════════════════════════════ -->
+                <teleport to="body">
+                  <div v-if="showEReceipt" class="modal-overlay" @click.self="showEReceipt = false">
+                    <div class="modal-box modal-small">
+                      <!-- DFA header -->
+                      <div class="dfa-header">
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/5c/Seal_of_the_Department_of_Foreign_Affairs_of_the_Philippines.svg/240px-Seal_of_the_Department_of_Foreign_Affairs_of_the_Philippines.svg.png"
+                             class="dfa-seal" alt="DFA Seal" />
+                        <div>
+                          <p class="dfa-dept">Department of Foreign Affairs</p>
+                          <p class="dfa-epay">ePayment Services</p>
+                        </div>
+                      </div>
 
-                <!-- Payment Success Modal -->
-                <div v-if="showPaymentSuccess" class="modal-overlay">
-                  <div class="modal-box success-box">
-                    <div class="success-icon">✔</div>
-                    <h3 class="modal-title">Payment Successful</h3>
-                    <div class="modal-body">
-                      <p>Your payment has been successful!</p>
-                    </div>
-                    <div class="modal-actions">
-                      <button class="agree-btn" @click="closePaymentSuccess">Close</button>
+                      <p class="epay-intro">This mode of payment is requesting for...</p>
+
+                      <table class="epay-table">
+                        <tr>
+                          <td class="ep-label">Status</td>
+                          <td class="ep-value ep-bold">PAID</td>
+                        </tr>
+                        <tr>
+                          <td class="ep-label">Scheduled Date</td>
+                          <td class="ep-value">9 January 2025, 09:00</td>
+                        </tr>
+                        <tr>
+                          <td class="ep-label">Amount</td>
+                          <td class="ep-value">PHP 950.00</td>
+                        </tr>
+                        <tr>
+                          <td class="ep-label">Total Amount Due</td>
+                          <td class="ep-value ep-green">PHP 950.00</td>
+                        </tr>
+                      </table>
+
+                      <p class="not-receipt">This is not your e-Receipt.</p>
+
+                      <div class="modal-foot modal-foot--center">
+                        <button class="btn-agree" @click="showEReceipt = false">Close</button>
+                      </div>
                     </div>
                   </div>
-                </div>
+                </teleport>
 
 
 
@@ -496,14 +619,38 @@
 </template>
 
 
-<script setup>
-  import LeftMenu from "@/components/LeftMenu.vue";
-  import { ref, reactive, computed, onMounted, watch } from 'vue'
 
+
+
+
+<!-- ════════════════════════════════════════
+     SCRIPT
+═══════════════════════════════════════════ -->
+<script setup>
+  import LeftMenu from "@/components/LeftMenu.vue"
+  import { ref, computed } from 'vue'
+
+  // Add these to your existing script — merge with what you already have
+
+  // ── Payment step state ──────────────────────────────────────────────
+  const processingType = ref(null)   // 'regular' | 'special'
+  const paymentMethod = ref(null)   // 'epayment' | 'card' | 'otc'
+  const deliveryOption = ref(null)   // 'site' | 'address'
+
+  // ── Modal visibility ────────────────────────────────────────────────
   const showPaymentModal = ref(false)
   const showPaymentStatus = ref(false)
   const showPaymentSuccess = ref(false)
+  const showEReceipt = ref(false)   // Image 6 — DFA ePayment receipt
 
+  // ── Computed total ──────────────────────────────────────────────────
+  const totalAmount = computed(() => {
+    let base = processingType.value === 'special' ? 1200 : 950
+    if (paymentMethod.value === 'otc') base += 50
+    return base.toLocaleString('en-PH', { minimumFractionDigits: 2 })
+  })
+
+  // ── Payment flow handlers ───────────────────────────────────────────
   const agreePaymentModal = () => {
     showPaymentModal.value = false
     showPaymentStatus.value = true
@@ -516,117 +663,8 @@
 
   const closePaymentSuccess = () => {
     showPaymentSuccess.value = false
+    showEReceipt.value = true   // show DFA receipt after success
   }
-
-  // ── File Upload Config ──────────────────────────────
-  const MAX_FILE_SIZE = 5 * 1024 * 1024 // 5MB
-  const SUPPORTED_FORMATS = ['image/jpeg', 'image/jpg', 'image/bmp', 'application/pdf']
-
-  // Props
-  const props = defineProps({
-    requirements: {
-      type: Array,
-      default: () => []
-    }
-  })
-
-  // Reactive data
-  const fileInputs = ref({})
-  const dragStates = ref({})
-  const uploadProgress = ref(0)
-
-  // Computed
-  const hasMissingFiles = computed(() => {
-    return props.requirements.some(req => !req.file)
-  })
-
-  // Methods
-  const setFileInputRef = (id, el) => {
-    if (el) fileInputs.value[id] = el
-  }
-
-  const triggerFileInput = (id) => {
-    const input = fileInputs.value[id]
-    if (input) input.click()
-  }
-
-  const validateFile = (file) => {
-    if (file.size > MAX_FILE_SIZE) {
-      alert(`File size exceeds 5MB limit. Current size: ${formatFileSize(file.size)}`)
-      return false
-    }
-    if (!SUPPORTED_FORMATS.includes(file.type)) {
-      alert('Unsupported file format. Please use jpeg, jpg, bmp, or pdf.')
-      return false
-    }
-    return true
-  }
-
-  const onFileChange = (id, event) => {
-    const file = event.target.files[0]
-    if (file && validateFile(file)) {
-      emitFileChange(id, file)
-      event.target.value = ''
-    }
-  }
-
-  const onDragOver = (event, id) => {
-    event.dataTransfer.dropEffect = 'copy'
-    dragStates.value[id] = true
-  }
-
-  const onDragEnter = (event, id) => {
-    dragStates.value[id] = true
-  }
-
-  const onDragLeave = (event, id) => {
-    if (!event.currentTarget.contains(event.relatedTarget)) {
-      dragStates.value[id] = false
-    }
-  }
-
-  const onDrop = (event, id) => {
-    dragStates.value[id] = false
-    const file = event.dataTransfer.files[0]
-    if (file && validateFile(file)) {
-      const input = fileInputs.value[id]
-      if (input) {
-        const dataTransfer = new DataTransfer()
-        dataTransfer.items.add(file)
-        input.files = dataTransfer.files
-        input.dispatchEvent(new Event('change', { bubbles: true }))
-      }
-    }
-  }
-
-  const removeFile = (id) => {
-    emitFileChange(id, null)
-  }
-
-  const formatFileSize = (bytes) => {
-    if (bytes === 0) return '0 Bytes'
-    const k = 1024
-    const sizes = ['Bytes', 'KB', 'MB']
-    const i = Math.floor(Math.log(bytes) / Math.log(k))
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i]
-  }
-
-  // Emits
-  const emit = defineEmits(['file-change'])
-  const emitFileChange = (id, file) => {
-    emit('file-change', { id, file })
-  }
-
-  // Reset drag states on cleanup
-  onMounted(() => {
-    uploadProgress.value = 0
-  })
-
-  watch(() => props.requirements, () => {
-    Object.keys(dragStates.value).forEach(id => {
-      dragStates.value[id] = false
-    })
-  }, { deep: true })
 
   // ── Pre-step state ──────────────────────────────────────────────────
   const preStep = ref("terms")
@@ -634,15 +672,14 @@
   const profiles = ref([{ id: 1, name: "MARVIN ALFRED MERCADO PICO" }])
   const selectedProfile = ref(null)
 
-  // Pre-step handlers
-  const continueExisting = () => alert("Continue existing application - implement routing")
+  const continueExisting = () => alert("Continue existing application")
   const startIndividual = () => { if (consentChecked.value) preStep.value = "selectProfile" }
   const startGroup = () => { if (consentChecked.value) preStep.value = "selectProfile" }
   const proceedWithProfile = () => { if (selectedProfile.value) preStep.value = "appointmentNotice" }
   const cancelNotice = () => { preStep.value = "terms" }
   const agreeNotice = () => { preStep.value = null }
 
-  // ── Main stepper state ──────────────────────────────────────────────
+  // ── Main stepper ────────────────────────────────────────────────────
   const tabs = [
     "Site Location & Schedule",
     "Application Type",
@@ -652,282 +689,419 @@
     "Payment",
   ]
   const currentStep = ref(0)
-
   const nextStep = () => { if (currentStep.value < tabs.length - 1) currentStep.value++ }
   const prevStep = () => { if (currentStep.value > 0) currentStep.value-- }
   const submit = () => alert("Application submitted successfully!")
 
-  // ── Documentary Requirements (Step 4) ──────────────────────────────
+  // ── Step 4: Documentary Requirements ───────────────────────────────
+  const MAX_FILE_SIZE = 5 * 1024 * 1024
+  const SUPPORTED_TYPES = ['image/jpeg', 'image/jpg', 'image/png', 'image/bmp', 'application/pdf']
+  const CONFLICT_IDS = ['gov-id'] // only gov-id triggers conflict modal
+
   const requirements = ref([
-    { id: "gov_id", label: "Valid Government Issued ID", file: null },
-    { id: "birth_cert", label: "PSA Birth Certificate or Local Civil Registrar Copy", file: null },
+    { id: 'gov-id', label: 'Valid Government Issued ID', file: null },
+    { id: 'birth-cert', label: 'PSA Birth Certificate or Local Civil Registrar Copy', file: null },
   ])
 
-  const fileInputRefs = ref({})
-  const showVerification = ref(false)
+  const fileInputs = ref({})
+  const showConflictModal = ref(false)
+  const pendingFile = ref(null)             // { id, file }
+  const pendingFilePreviewUrl = ref(null)             // ← base64 data URL of the uploaded image
 
-  const setFileInputRefStep4 = (id, el) => { if (el) fileInputRefs.value[id] = el }
-  const triggerFileInputStep4 = (id) => { fileInputRefs.value[id]?.click() }
-  const onFileChangeStep4 = (id, event) => {
+  // ── OCR / backend detected data ─────────────────────────────────────
+  // Replace these values with your actual API/OCR response
+  const detectedData = ref({
+    crn: '0028-1215160-9',
+    surname: 'SANTOS',
+    givenName: 'JOSE',
+    middleName: 'CRUZ',
+    sex: 'M',
+    dob: '1960/01/28',
+    addressLine1: '28 PAYAPA ST BAGONG DIWA',
+    addressLine2: 'STO CRISTOBAL CALOOCAN CITY',
+    addressLine3: 'METRO MANILA PHILIPPINES 1800',
+  })
+
+  // ── Conflict table rows ─────────────────────────────────────────────
+  const conflictRows = computed(() => [
+    {
+      field: 'Full Name',
+      detected: `${detectedData.value.givenName} ${detectedData.value.middleName} ${detectedData.value.surname}`,
+      inserted: selectedProfile.value?.name ?? ''
+    },
+    {
+      field: 'Address',
+      detected: [detectedData.value.addressLine1, detectedData.value.addressLine2, detectedData.value.addressLine3].join(' '),
+      inserted: 'T1 U2124 LINEAR CONDOMINIUM, MALUGAY, SAN ANTONIO, MAKATI'
+    },
+    { field: 'Date Of Birth', detected: '1960-01-28', inserted: '1988-06-26' },
+    { field: 'Gender', detected: detectedData.value.sex, inserted: 'M' },
+    { field: 'Place Of Birth', detected: '', inserted: '' },
+    { field: 'Occupation', detected: '', inserted: '' },
+    { field: 'Nationality', detected: '', inserted: 'PHILIPPINES, FILIPINO' },
+  ])
+
+  const hasMissingFiles = computed(() => requirements.value.some(r => !r.file))
+
+  // ── File input refs ─────────────────────────────────────────────────
+  const setFileInputRef = (id, el) => { if (el) fileInputs.value[id] = el }
+  const triggerFileInput = (id) => { fileInputs.value[id]?.click() }
+
+  // ── Validation ──────────────────────────────────────────────────────
+  const validateFile = (file) => {
+    if (file.size > MAX_FILE_SIZE) {
+      alert(`File exceeds 5MB. Current size: ${formatFileSize(file.size)}`)
+      return false
+    }
+    if (!SUPPORTED_TYPES.includes(file.type)) {
+      alert('Unsupported format. Use jpeg, jpg, png, bmp, or pdf.')
+      return false
+    }
+    return true
+  }
+
+  // ── File change handler ─────────────────────────────────────────────
+  const onFileChange = (id, event) => {
     const file = event.target.files[0]
     if (!file) return
-    const req = requirements.value.find((r) => r.id === id)
-    if (req) { req.file = file; showVerification.value = true }
-  }
-  const removeFileStep4 = (id) => {
-    const req = requirements.value.find((r) => r.id === id)
-    if (req) {
-      req.file = null
-      const input = fileInputRefs.value[id]
-      if (input) input.value = ""
+    if (!validateFile(file)) { event.target.value = ''; return }
+
+    if (CONFLICT_IDS.includes(id)) {
+      pendingFile.value = { id, file }
+
+      // ✅ Read the file as a data URL so we can show the actual image in the modal
+      const reader = new FileReader()
+      reader.onload = (e) => {
+        pendingFilePreviewUrl.value = e.target.result
+        showConflictModal.value = true
+      }
+      reader.readAsDataURL(file)
+    } else {
+      attachFile(id, file)
     }
-    showVerification.value = false
+
+    event.target.value = ''
+  }
+
+  const removeFile = (id) => {
+    const req = requirements.value.find(r => r.id === id)
+    if (req) req.file = null
+  }
+
+  // ── Modal actions ───────────────────────────────────────────────────
+  const confirmAttachment = () => {
+    if (pendingFile.value) {
+      attachFile(pendingFile.value.id, pendingFile.value.file)
+      pendingFile.value = null
+    }
+    pendingFilePreviewUrl.value = null
+    showConflictModal.value = false
+  }
+
+  const uploadAgain = () => {
+    pendingFile.value = null
+    pendingFilePreviewUrl.value = null
+    showConflictModal.value = false
+    setTimeout(() => fileInputs.value['gov-id']?.click(), 100)
+  }
+
+  const closeModal = () => {
+    pendingFile.value = null
+    pendingFilePreviewUrl.value = null
+    showConflictModal.value = false
+  }
+
+  // ── Helpers ─────────────────────────────────────────────────────────
+  const attachFile = (id, file) => {
+    const req = requirements.value.find(r => r.id === id)
+    if (req) req.file = file
+  }
+
+  const formatFileSize = (bytes) => {
+    if (bytes === 0) return '0 Bytes'
+    const k = 1024
+    const sizes = ['Bytes', 'KB', 'MB']
+    const i = Math.floor(Math.log(bytes) / Math.log(k))
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i]
   }
 </script>
 
 
+
+
 <style scoped>
 
-  /*  DOCUMENTARIES */
-  /* General section styling */
-  .success-box {
-    text-align: center;
-  }
-
-  .success-icon {
-    font-size: 48px;
-    color: #28a745;
-    margin-bottom: 12px;
-  }
-
-  .section-description {
-    color: #718096;
-    font-size: 0.9rem;
-    margin-bottom: 16px;
-  }
-
-  .payment-section {
-    margin: 20px 0;
-  }
-
-  .option {
-    margin: 6px 0;
-  }
-
-  .summary {
-    margin-top: 20px;
-    border-top: 1px solid #ddd;
-    padding-top: 12px;
-  }
-
-    .summary table {
-      width: 100%;
-      border-collapse: collapse;
-    }
-
-    .summary th, .summary td {
-      border: 1px solid #ddd;
-      padding: 8px;
-    }
-
-    .summary .total-row {
-      background-color: #f1f1f1;
-    }
-
-  .payment-actions {
-    margin-top: 20px;
-  }
-
-  .agree-btn {
-    background: #28a745;
-    color: #fff;
-    padding: 8px 14px;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-  }
-
-  .cancel-btn {
-    background: #dc3545;
-    color: #fff;
-    padding: 8px 14px;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-  }
-
-  /* Modal */
-  .modal-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0,0,0,0.5);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 1000;
-  }
-
-  .modal-box {
-    background: #fff;
-    padding: 24px;
-    border-radius: 8px;
-    width: 600px;
-    max-height: 80vh;
-    overflow-y: auto;
-  }
-
-  .modal-title {
-    font-size: 1.2rem;
-    font-weight: bold;
-    margin-bottom: 12px;
-  }
-
-  .modal-body ul {
-    margin-left: 20px;
-    margin-bottom: 16px;
-  }
-
-  .modal-actions {
-    display: flex;
-    justify-content: flex-end;
-    gap: 12px;
-    margin-top: 16px;
-  }
-
-
+  /* DOCUMENTARIES DESIGN */
+  /* ── Documentary Requirements ───────────────────────────────────── */
+  /* ── Page / Section ─────────────────────────────── */
   .pds-section {
-    margin: 20px 0;
-    padding: 16px;
     background: #fff;
-    border-radius: 6px;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    border: 1px solid #dde3ec;
+    border-radius: 4px;
+    padding: 20px 28px 22px;
   }
 
-  .pds-section-header {
-    margin-bottom: 12px;
+  /* ── Appointment title ────────────────────────────────────────── */
+  .appt-title {
+    font-size: 14px;
+    font-weight: 700;
+    color: #222;
+    margin-bottom: 14px;
   }
 
-  .pds-section-title {
-    font-size: 1.2rem;
+  .hname {
+    color: #1a6fc4;
+    font-weight: 700;
+    text-decoration: none;
+  }
+
+  /* ── File notice banner ───────────────────────────────────────── */
+  .file-notice {
+    background: #fdf8ec;
+    border: 1px solid #f0d99a;
+    color: #7a5c00;
+    font-size: 11.5px;
+    text-align: center;
+    padding: 7px 12px;
+    border-radius: 3px;
+    margin-bottom: 18px;
+  }
+
+  /* ── Labels ───────────────────────────────────────────────────── */
+  .section-label {
+    font-size: 12.5px;
     font-weight: 600;
     color: #333;
+    margin-bottom: 14px;
   }
 
-  /* Notice banner */
-  .file-notice {
-    background-color: #fff3cd; /* light yellow */
-    color: #856404;
-    padding: 10px 14px;
-    border: 1px solid #ffeeba;
-    border-radius: 4px;
-    margin-bottom: 16px;
-    font-size: 14px;
-  }
-
-  /* Labels */
-  .section-label {
-    font-weight: 500;
-    margin-bottom: 8px;
-    display: block;
+  .required {
+    color: #d32f2f;
+    margin-left: 1px;
   }
 
   .req-item {
-    margin-bottom: 16px;
+    margin-bottom: 4px;
   }
 
-  /* Upload zone */
+  .req-item__label {
+    display: block;
+    font-size: 12px;
+    color: #555;
+    margin-bottom: 8px;
+  }
+
+  /* ── Browse button ────────────────────────────────────────────── */
   .upload-zone {
-    display: flex;
-    align-items: center;
-    gap: 10px;
+    margin-bottom: 2px;
   }
 
   .browse-btn {
-    background-color: #007bff; /* Blue */
+    background: #1a6fc4;
     color: #fff;
     border: none;
-    padding: 6px 14px;
-    border-radius: 4px;
+    border-radius: 3px;
+    font-size: 12px;
+    padding: 6px 16px;
     cursor: pointer;
     font-weight: 500;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    transition: background-color 0.2s ease;
   }
 
     .browse-btn:hover {
-      background-color: #0056b3;
+      background: #155fa0;
     }
 
-  .file-name {
-    color: #666;
+  /* ── File display row ─────────────────────────────────────────── */
+  .file-display {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    border: 1px solid #dce3ec;
+    border-radius: 3px;
+    padding: 5px 10px;
+    margin-top: 7px;
+    background: #f8fafc;
+    max-width: 420px;
   }
 
-  .file-name--filled {
-    font-weight: 600;
-    color: #333;
+  .file-name {
+    flex: 1;
+    font-size: 12px;
+    color: #444;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
   .remove-btn {
     background: none;
     border: none;
-    color: #d9534f;
-    font-size: 18px;
+    color: #d32f2f;
     cursor: pointer;
+    padding: 0 2px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    transition: color 0.2s ease;
   }
 
     .remove-btn:hover {
-      color: #b52b27;
+      color: #b71c1c;
     }
 
   .hidden-input {
     display: none;
   }
 
-  /* Divider line */
+  /* ── Divider ──────────────────────────────────────────────────── */
   .divider {
     border: none;
-    border-bottom: 1px solid #ddd;
-    margin: 12px 0;
+    border-top: 1px solid #e8edf3;
+    margin: 14px 0 10px;
   }
 
-  /* Verification modal/panel */
-  .verification-panel {
-    border: 1px solid #ccc;
-    padding: 16px;
-    margin-top: 20px;
-    background: #f9f9f9;
+  /* ── Modal overlay ────────────────────────────────────────────── */
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* ── Modal box ────────────────────────────────────────────────── */
+  .modal-box {
+    background: #fff;
     border-radius: 6px;
+    width: 520px;
+    max-width: 96vw;
+    max-height: 92vh;
+    overflow-y: auto;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.22);
   }
 
-    .verification-panel h4 {
-      margin-bottom: 8px;
-      font-weight: 600;
-    }
-
-  /* Payment summary table */
-  .summary {
-    margin-top: 20px;
-    border-top: 1px solid #ddd;
-    padding-top: 12px;
+  /* ── Modal warning banner ─────────────────────────────────────── */
+  .modal-banner {
+    background: #fdf8ec;
+    border-bottom: 1px solid #f0d99a;
+    color: #7a5c00;
+    font-size: 12.5px;
+    text-align: center;
+    padding: 11px 18px;
+    border-radius: 6px 6px 0 0;
   }
 
-    .summary table {
-      width: 100%;
-      border-collapse: collapse;
+  /* ── Modal body ───────────────────────────────────────────────── */
+  .modal-body {
+    padding: 16px 20px 8px;
+  }
+
+  /* ── Conflict table ───────────────────────────────────────────── */
+  .conflict-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12.5px;
+    margin-bottom: 6px;
+  }
+
+    .conflict-table thead th {
+      text-align: left;
+      font-weight: 700;
+      color: #333;
+      padding: 5px 12px 9px;
+      border-bottom: 1px solid #e0e0e0;
     }
 
-    .summary th, .summary td {
-      border: 1px solid #ddd;
-      padding: 8px;
+      .conflict-table thead th:first-child {
+        width: 24%;
+      }
+
+    .conflict-table tbody td {
+      padding: 7px 12px;
+      vertical-align: top;
+      border-bottom: 0.5px solid #f0f0f0;
+      color: #555;
+      font-size: 12px;
+      line-height: 1.45;
     }
 
-    .summary tr:last-child {
-      background-color: #f1f1f1; /* highlight total row */
-      font-weight: bold;
+      .conflict-table tbody td.field-name {
+        font-weight: 600;
+        color: #333;
+        white-space: nowrap;
+      }
+
+  /* ── Actual uploaded ID image preview ─────────────────────────── */
+  .id-preview-wrap {
+    width: 80%;
+    margin: 14px auto 16px;
+    border-radius: 6px;
+    overflow: hidden;
+    border: 1px solid #ccc;
+    background: #f0f0f0;
+    min-height: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .id-preview-img {
+    width: 100%;
+    display: block;
+    border-radius: 5px;
+  }
+
+  .id-preview-placeholder {
+    font-size: 12px;
+    color: #999;
+    padding: 20px;
+  }
+
+  /* ── Modal action buttons ─────────────────────────────────────── */
+  .modal-actions {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    padding: 6px 20px 20px;
+  }
+
+  .btn-confirm {
+    background: #388e3c;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    font-size: 13px;
+    font-weight: 600;
+    padding: 9px 24px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+  }
+
+    .btn-confirm:hover {
+      background: #2e7d32;
     }
 
+  .btn-reupload {
+    background: #d32f2f;
+    color: #fff;
+    border: none;
+    border-radius: 3px;
+    font-size: 13px;
+    font-weight: 600;
+    padding: 9px 24px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+  }
 
+    .btn-reupload:hover {
+      background: #b71c1c;
+    }
 
   /* ── Layout ──────────────────────────────────────────────────────── */
   .app-layout {
@@ -1557,110 +1731,457 @@
     .modal-card {
       padding: 24px 20px;
     }
-    /* ── Documentary Requirements ───────────────────────────────────── */
-    .file-notice {
-      background: #fffbeb;
-      border: 1px solid #f6ad55;
-      border-radius: 8px;
-      padding: 8px 14px;
-      font-size: 0.8rem;
-      color: #92400e;
-      margin-bottom: 20px;
-      text-align: center;
-    }
 
-    .section-label {
-      font-size: 0.87rem;
-      font-weight: 600;
-      color: #1a202c;
-      margin-bottom: 14px;
-    }
-
-    .required {
-      color: #e24b4a;
-    }
-
-    .req-item {
-      margin-bottom: 16px;
-    }
-
-    .req-item__label {
-      display: block;
-      font-size: 0.82rem;
-      color: #718096;
-      margin-bottom: 6px;
-    }
-
-    .upload-zone {
-      border: 1.5px dashed #d1d9e6;
-      border-radius: 8px;
-      padding: 10px 14px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      cursor: pointer;
-      transition: border-color 0.15s, background 0.15s;
+    /* step  5  */
+    /* ── Section wrapper ──────────────────────────────────────────── */
+    .pds-section {
       background: #fff;
+      border: 1px solid #dde3ec;
+      border-radius: 4px;
+      padding: 20px 28px 28px;
     }
 
-      .upload-zone:hover {
-        border-color: #06195e;
-        background: #f0f4ff;
-      }
-
-    .upload-zone--filled {
-      border-color: #22c55e;
-      border-style: solid;
-      background: #f0fdf4;
+    /* ── Appointment title ────────────────────────────────────────── */
+    .appt-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: #222;
+      margin-bottom: 20px;
     }
 
-    .browse-btn {
-      background: #06195e;
-      color: #fff;
-      border: none;
-      border-radius: 6px;
-      padding: 6px 14px;
-      font-size: 0.8rem;
+    .name-highlight {
+      color: #1a6fc4;
+      font-weight: 700;
+    }
+
+    /* ── Group label ──────────────────────────────────────────────── */
+    .group-label {
+      font-size: 12.5px;
       font-weight: 600;
+      color: #333;
+      margin-bottom: 8px;
+    }
+
+    /* ── Payment group spacing ────────────────────────────────────── */
+    .payment-group {
+      margin-bottom: 22px;
+    }
+
+    /* ── Radio card ───────────────────────────────────────────────── */
+    .radio-card {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      border: 1px solid #dde3ec;
+      border-radius: 3px;
+      padding: 10px 14px;
+      margin-bottom: 6px;
       cursor: pointer;
-      white-space: nowrap;
-      font-family: inherit;
+      background: #fff;
       transition: background 0.15s;
     }
 
-      .browse-btn:hover {
-        background: #04134a;
+      .radio-card:hover {
+        background: #f5f8fd;
       }
 
-    .file-name {
-      font-size: 0.8rem;
-      color: #a0aec0;
+      .radio-card.selected {
+        background: #eef4fd;
+        border-color: #aac8f0;
+      }
+
+      .radio-card input[type="radio"] {
+        margin-top: 3px;
+        accent-color: #1a6fc4;
+        flex-shrink: 0;
+      }
+
+    .radio-card__content {
       flex: 1;
     }
 
-    .file-name--filled {
-      color: #16a34a;
+    .radio-card__title {
+      font-size: 12.5px;
+      font-weight: 600;
+      color: #222;
+      margin-bottom: 2px;
+    }
+
+    .radio-card__sub {
+      font-size: 11.5px;
+      color: #666;
+      margin: 0;
+      line-height: 1.5;
+    }
+
+    /* ── Summary table ────────────────────────────────────────────── */
+    .summary-section {
+      margin-top: 6px;
+    }
+
+    .summary-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12.5px;
+      margin-bottom: 16px;
+    }
+
+      .summary-table thead th {
+        text-align: left;
+        font-weight: 600;
+        color: #555;
+        font-size: 12px;
+        padding: 8px 12px;
+        border: 1px solid #dde3ec;
+        background: #f7f9fc;
+      }
+
+      .summary-table tbody td {
+        padding: 8px 12px;
+        border: 1px solid #dde3ec;
+        color: #333;
+        font-size: 12.5px;
+      }
+
+      .summary-table .text-right {
+        text-align: right;
+      }
+
+      .summary-table .total-row td {
+        background: #f7f9fc;
+        font-size: 12.5px;
+      }
+
+    /* ── Proceed button ───────────────────────────────────────────── */
+    .pay-actions {
+      display: flex;
+      justify-content: flex-end;
+      margin-top: 8px;
+    }
+
+    .btn-proceed {
+      background: #1a6fc4;
+      color: #fff;
+      border: none;
+      border-radius: 3px;
+      font-size: 12.5px;
+      font-weight: 600;
+      padding: 8px 22px;
+      cursor: pointer;
+    }
+
+      .btn-proceed:hover {
+        background: #155fa0;
+      }
+
+    /* ── Status panel ─────────────────────────────────────────────── */
+    .status-panel {
+      margin-top: 24px;
+      border-top: 1px solid #e8edf3;
+      padding-top: 22px;
+    }
+
+    .status-intro {
+      font-size: 12.5px;
+      color: #555;
+      margin-bottom: 14px;
+    }
+
+    .status-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 20px;
+    }
+
+      .status-table td {
+        padding: 10px 0;
+        border-bottom: 1px solid #eee;
+        font-size: 13px;
+      }
+
+    .st-label {
+      color: #555;
+      font-weight: 500;
+      width: 200px;
+    }
+
+    .st-value {
+      color: #222;
+      text-align: right;
+    }
+
+    .st-initiated {
+      color: #1a6fc4;
       font-weight: 600;
     }
 
-    .remove-btn {
-      font-size: 18px;
-      line-height: 1;
-      color: #a0aec0;
-      cursor: pointer;
-      padding: 0 2px;
-      background: none;
-      border: none;
-      font-family: inherit;
-      transition: color 0.15s;
+    .st-green {
+      color: #2e7d32;
+      font-weight: 600;
     }
 
-      .remove-btn:hover {
-        color: #e24b4a;
+    .guidelines-title {
+      font-size: 12.5px;
+      font-weight: 600;
+      color: #333;
+      margin-bottom: 8px;
+    }
+
+    .guidelines-list {
+      font-size: 12px;
+      color: #444;
+      padding-left: 20px;
+      line-height: 1.7;
+      margin-bottom: 14px;
+    }
+
+      .guidelines-list li {
+        margin-bottom: 4px;
       }
 
-    .hidden-input {
-      display: none;
+    .guidelines-link {
+      font-size: 12px;
+      color: #555;
+      margin-bottom: 16px;
+    }
+
+    .link-blue {
+      color: #1a6fc4;
+      text-decoration: underline;
+      cursor: pointer;
+    }
+
+    .status-nav {
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+      margin-top: 16px;
+    }
+
+    .btn-back-pay {
+      background: #fff;
+      color: #555;
+      border: 1px solid #bbb;
+      border-radius: 3px;
+      font-size: 12px;
+      padding: 6px 20px;
+      cursor: pointer;
+    }
+
+      .btn-back-pay:hover {
+        background: #f0f0f0;
+      }
+
+    .btn-pay-now {
+      background: #1a6fc4;
+      color: #fff;
+      border: none;
+      border-radius: 3px;
+      font-size: 12px;
+      font-weight: 600;
+      padding: 6px 20px;
+      cursor: pointer;
+    }
+
+      .btn-pay-now:hover {
+        background: #155fa0;
+      }
+
+    /* ── Modal overlay ────────────────────────────────────────────── */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.45);
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* ── Modal box ────────────────────────────────────────────────── */
+    .modal-box {
+      background: #fff;
+      border-radius: 6px;
+      width: 580px;
+      max-width: 96vw;
+      max-height: 88vh;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+    }
+
+    .modal-small {
+      width: 340px;
+    }
+
+    /* ── Modal title ──────────────────────────────────────────────── */
+    .modal-title {
+      font-size: 15px;
+      font-weight: 700;
+      color: #222;
+      text-align: center;
+      padding: 18px 22px 0;
+      margin: 0;
+    }
+
+    /* ── Modal scrollable body ────────────────────────────────────── */
+    .modal-scroll-body {
+      overflow-y: auto;
+      padding: 14px 24px 10px;
+      flex: 1;
+    }
+
+    .modal-remind {
+      font-size: 12.5px;
+      color: #333;
+      margin-bottom: 8px;
+      margin-top: 12px;
+    }
+
+    .modal-list {
+      font-size: 12px;
+      color: #444;
+      padding-left: 20px;
+      line-height: 1.7;
+      margin-bottom: 6px;
+    }
+
+      .modal-list li {
+        margin-bottom: 4px;
+      }
+
+    /* ── Modal footer ─────────────────────────────────────────────── */
+    .modal-foot {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      padding: 12px 22px 18px;
+      border-top: 1px solid #eee;
+    }
+
+    .modal-foot--center {
+      justify-content: center;
+      border-top: none;
+      padding-top: 6px;
+    }
+
+    .btn-cancel {
+      background: #fff;
+      color: #555;
+      border: 1px solid #bbb;
+      border-radius: 3px;
+      font-size: 12.5px;
+      padding: 7px 22px;
+      cursor: pointer;
+    }
+
+      .btn-cancel:hover {
+        background: #f0f0f0;
+      }
+
+    .btn-agree {
+      background: #1a6fc4;
+      color: #fff;
+      border: none;
+      border-radius: 3px;
+      font-size: 12.5px;
+      font-weight: 600;
+      padding: 7px 22px;
+      cursor: pointer;
+    }
+
+      .btn-agree:hover {
+        background: #155fa0;
+      }
+
+    /* ── Payment Success Modal ────────────────────────────────────── */
+    .success-icon-wrap {
+      display: flex;
+      justify-content: center;
+      padding: 22px 0 8px;
+    }
+
+    .success-sub {
+      font-size: 13px;
+      color: #555;
+      text-align: center;
+      margin: 0 0 14px;
+    }
+
+    /* ── DFA ePayment Receipt Modal ───────────────────────────────── */
+    .dfa-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 18px 22px 12px;
+      border-bottom: 1px solid #eee;
+    }
+
+    .dfa-seal {
+      width: 44px;
+      height: 44px;
+      flex-shrink: 0;
+    }
+
+    .dfa-dept {
+      font-size: 12px;
+      font-weight: 700;
+      color: #222;
+      margin: 0;
+    }
+
+    .dfa-epay {
+      font-size: 12px;
+      color: #1a6fc4;
+      font-weight: 600;
+      margin: 0;
+    }
+
+    .epay-intro {
+      font-size: 12px;
+      color: #666;
+      padding: 10px 22px 4px;
+      margin: 0;
+    }
+
+    .epay-table {
+      width: 100%;
+      border-collapse: collapse;
+      padding: 0 22px;
+      font-size: 13px;
+    }
+
+      .epay-table td {
+        padding: 10px 22px;
+        border-bottom: 1px solid #f0f0f0;
+      }
+
+    .ep-label {
+      color: #555;
+      font-size: 12.5px;
+    }
+
+    .ep-value {
+      color: #222;
+      text-align: right;
+      font-size: 13px;
+    }
+
+    .ep-bold {
+      font-weight: 700;
+    }
+
+    .ep-green {
+      color: #2e7d32;
+      font-weight: 700;
+    }
+
+    .not-receipt {
+      font-size: 12px;
+      color: #e0900a;
+      text-align: center;
+      padding: 12px 22px 4px;
+      margin: 0;
     }
   }
 </style>

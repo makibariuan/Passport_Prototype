@@ -64,7 +64,6 @@
 *::before,
 *::after {
   @apply box-border m-0;
-  font-weight: inherit; /* Change from font-normal to inherit */
 }
 
 html {

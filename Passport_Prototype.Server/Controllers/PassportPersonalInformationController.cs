@@ -31,7 +31,7 @@ public class PassportPersonalInformationsController : ControllerBase
             Birthdate = dto.Birthdate,
             Gender = dto.Gender,
             Nationality = dto.Nationality,
-            //CivilStatusId = dto.CivilStatusId,
+            CivilStatusId = dto.CivilStatus,
             hasPSABirthcert = dto.HasPSABirthcert,
             isBirthLegitimate = dto.IsBirthLegitimate,
             BirthCountry = dto.BirthCountry,
@@ -70,10 +70,10 @@ public class PassportPersonalInformationsController : ControllerBase
     }
 
     // READ BY ID
-    [HttpGet("{id}")]
-    public async Task<IActionResult> GetById(int id)
+    [HttpGet("{userId}")]
+    public async Task<IActionResult> GetById(int userId)
     {
-        var passportPersonalInformation = await _context.PassportPersonalInformation.FindAsync(id);
+        var passportPersonalInformation = await _context.PassportPersonalInformation.FirstOrDefaultAsync(p => p.UserId == userId);
 
         if (passportPersonalInformation == null)
             return NotFound();
@@ -91,21 +91,21 @@ public class PassportPersonalInformationsController : ControllerBase
             return NotFound();
 
         // Manual mapping
-        if (dto.FirstName != null) passportPersonalInformation.FirstName = dto.FirstName;
-        if (dto.MiddleName != null) passportPersonalInformation.MiddleName = dto.MiddleName;
-        if (dto.LastName != null) passportPersonalInformation.LastName = dto.LastName;
-        if (dto.Suffix != null) passportPersonalInformation.Suffix = dto.Suffix;
-        if (dto.Birthdate.HasValue) passportPersonalInformation.Birthdate = dto.Birthdate.Value;
-        if (dto.Gender != null) passportPersonalInformation.Gender = dto.Gender;
-        if (dto.Nationality != null) passportPersonalInformation.Nationality = dto.Nationality;
-        //if (dto.CivilStatusId != null) passportPersonalInformation.CivilStatusId = dto.CivilStatusId;
-        if (dto.HasPSABirthcert.HasValue) passportPersonalInformation.hasPSABirthcert = dto.HasPSABirthcert.Value;
-        if (dto.IsBirthLegitimate.HasValue) passportPersonalInformation.isBirthLegitimate = dto.IsBirthLegitimate.Value;
-        if (dto.BirthCountry != null) passportPersonalInformation.BirthCountry = dto.BirthCountry;
-        if (dto.BirthRegion != null) passportPersonalInformation.BirthRegion = dto.BirthRegion;
-        if (dto.BirthProvince != null) passportPersonalInformation.BirthProvince = dto.BirthProvince;
-        if (dto.BirthCity != null) passportPersonalInformation.BirthCity = dto.BirthCity;
-        if (dto.BirthBarangay != null) passportPersonalInformation.BirthBarangay = dto.BirthBarangay;
+        passportPersonalInformation.FirstName = dto.FirstName;
+        passportPersonalInformation.MiddleName = dto.MiddleName;
+        passportPersonalInformation.LastName = dto.LastName;
+        passportPersonalInformation.Suffix = dto.Suffix;
+        passportPersonalInformation.Birthdate = dto.Birthdate.Value;
+        passportPersonalInformation.Gender = dto.Gender;
+        passportPersonalInformation.Nationality = dto.Nationality;
+        passportPersonalInformation.CivilStatusId = dto.CivilStatus;
+        passportPersonalInformation.hasPSABirthcert = dto.HasPSABirthcert.Value;
+        passportPersonalInformation.isBirthLegitimate = dto.IsBirthLegitimate.Value;
+        passportPersonalInformation.BirthCountry = dto.BirthCountry;
+        passportPersonalInformation.BirthRegion = dto.BirthRegion;
+        passportPersonalInformation.BirthProvince = dto.BirthProvince;
+        passportPersonalInformation.BirthCity = dto.BirthCity;
+        passportPersonalInformation.BirthBarangay = dto.BirthBarangay;
 
         await _context.SaveChangesAsync();
 

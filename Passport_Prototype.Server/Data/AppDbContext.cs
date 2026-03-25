@@ -19,6 +19,8 @@ namespace OnlineRegistration.Server.Data
         // --- PASSPORT PROTOTYPE TABLES ---
         public DbSet<PassportPersonalInformation> PassportPersonalInformation { get; set; }
         public DbSet<Family> Family { get; set; }
+        public DbSet<Application> Applications { get; set; }
+
         // --- LEGACY/OTHER TABLES ---
         public DbSet<CitizenIDApplication> CitizenIDApplications { get; set; }
         public DbSet<EmployeeIDApplication> EmployeeIDApplications { get; set; }

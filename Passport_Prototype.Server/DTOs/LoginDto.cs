@@ -32,6 +32,11 @@ namespace OnlineRegistration.Server.DTOs
         public string Email { get; set; } = string.Empty;
     }
 
+    public class InitiateRegistrationDto
+    {
+        public string Email { get; set; }
+    }
+
 
 }
 //public class LoginResponse

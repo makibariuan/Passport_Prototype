@@ -27,7 +27,7 @@ namespace Passport_Prototype.Server.DTOs
         public string Nationality { get; set; } = null!;
 
         [Required]
-        public string CivilStatusId { get; set; } = null!;
+        public string CivilStatus { get; set; } = null!;
 
         [Required]
         public bool HasPSABirthcert { get; set; }
@@ -67,7 +67,7 @@ namespace Passport_Prototype.Server.DTOs
 
         public string? Nationality { get; set; }
 
-        public string? CivilStatusId { get; set; }
+        public string? CivilStatus { get; set; }
 
         public bool? HasPSABirthcert { get; set; }
 
