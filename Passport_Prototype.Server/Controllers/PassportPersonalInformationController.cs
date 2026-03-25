@@ -95,11 +95,11 @@ public class PassportPersonalInformationsController : ControllerBase
         passportPersonalInformation.MiddleName = dto.MiddleName;
         passportPersonalInformation.LastName = dto.LastName;
         passportPersonalInformation.Suffix = dto.Suffix;
-        passportPersonalInformation.Birthdate = dto.Birthdate.Value;
+        passportPersonalInformation.Birthdate = dto.Birthdate;
         passportPersonalInformation.Gender = dto.Gender;
         passportPersonalInformation.Nationality = dto.Nationality;
         passportPersonalInformation.CivilStatusId = dto.CivilStatus;
-        passportPersonalInformation.hasPSABirthcert = dto.HasPSABirthcert.Value;
+        passportPersonalInformation.hasPSABirthcert = dto.HasPSABirthcert ?? false;
         passportPersonalInformation.BirthLegitimacy = dto.BirthLegitimacy;
         passportPersonalInformation.BirthCountry = dto.BirthCountry;
         passportPersonalInformation.BirthRegion = dto.BirthRegion;
