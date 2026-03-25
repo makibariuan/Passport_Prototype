@@ -1,5 +1,7 @@
 <template>
+  <!--<LeftMenu @navigate="onNavigate" class="leftMenu" />-->
   <LeftMenu @navigate="onNavigate" class="leftMenu" />
+
   <Header class="header" />
 
   <div class="dashboard-content">
@@ -38,7 +40,8 @@
 
 <script setup>
   import { ref, onMounted, computed } from "vue";
-  import LeftMenu from "./LeftMenuHR.vue";
+  import LeftMenu from "./LeftMenu.vue";
+
   //import Header from "./Header.vue";
   import { useAuthStore } from "@/stores/auth";
   import api from "@/api";
