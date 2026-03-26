@@ -468,7 +468,7 @@ namespace OnlineRegistration.Server.Controllers
             {
                 _afisQueue.Enqueue(new AfisJob
                 {
-                    PersonId = registryEntry.Id,
+                    PersonId = registryEntry.PersonID,
                     FingerPosition = fp.Key,
                     Base64Image = fp.Value
                 });
