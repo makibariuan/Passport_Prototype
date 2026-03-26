@@ -66,6 +66,6 @@ namespace Passport_Prototype.Server.Models
         public bool? isPaid { get; set; }
 
         [Required]
-        public string? ApplicationStatus { get; set; }
+        public int? ApplicationStatus { get; set; }
     }
 }
