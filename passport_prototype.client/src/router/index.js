@@ -19,6 +19,7 @@ import AttendanceManagement from "@/components/HR/AttendanceManagement.vue";
 import CreateApplication from "@/components/CreateApplication.vue";
 import ApplicationAssessment from "@/components/ApplicationAssessment.vue";
 import ApplicationHistory from "@/components/ApplicationHistory.vue";
+import ManageExistingApplication from "@/components/ManageExistingApplication.vue";
 
 /*
   DEV MODE — auth guard disabled, navigate freely to any route.
@@ -61,7 +62,7 @@ import ApplicationHistory from "@/components/ApplicationHistory.vue";
 
 const routes = [
   // ── Public / Auth ──────────────────────────────────────────────
-  { path: "/", name: "Login", component: DashboardUser },
+  { path: "/", name: "Login", component: AuthPage },
   { path: "/login", redirect: "/" },
   { path: "/confirm-email", name: "ConfirmEmail", component: EmailConfirm },
   { path: "/reset-password", name: "ResetPassword", component: ResetPassword },
@@ -78,6 +79,11 @@ const routes = [
   { path: "/persons-profile", name: "PersonsDataSheet", component: PersonsDataSheet },
   { path: "/application/new", name: "Application", component: CreateApplication },
   { path: "/application/history", name: "ApplicationHistory", component: ApplicationHistory },
+  {
+    path: "/application/manage",
+    name: "ManageExistingApplicationHistory",
+    component: ManageExistingApplication,
+  },
 
   // ── Management ─────────────────────────────────────────────────
   { path: "/manage-employee-ids", name: "ManageEmployeeIDs", component: DetailsPage },

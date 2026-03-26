@@ -166,32 +166,32 @@ onMounted(fetchPersonal);
   gap: 4px;
 }
 
-  .nav-menu li {
-    padding: 2px 5px;
-    cursor: pointer;
-    border-radius: 8px;
-    transition: all 0.2s ease;
-    font-size: 0.95rem;
-    color: rgba(255, 255, 255, 0.85);
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    white-space: nowrap;
-    border-left: 3px solid transparent;
-  }
+.nav-menu li {
+  padding: 2px 5px;
+  cursor: pointer;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+  font-size: 0.95rem;
+  color: rgba(255, 255, 255, 0.85);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  white-space: nowrap;
+  border-left: 3px solid transparent;
+}
 
-    .nav-menu li:hover {
-      background: #2563eb;
-      color: white;
-      transform: translateX(4px);
-    }
+.nav-menu li:hover {
+  background: #2563eb;
+  color: white;
+  transform: translateX(4px);
+}
 
-    .nav-menu li.active {
-      background: #1d4ed8;
-      color: white;
-      border-left-color: #93c5fd;
-      font-weight: 600;
-    }
+.nav-menu li.active {
+  background: #1d4ed8;
+  color: white;
+  border-left-color: #93c5fd;
+  font-weight: 600;
+}
 
 .nav-icon {
   width: 18px;
@@ -223,24 +223,24 @@ onMounted(fetchPersonal);
   text-overflow: ellipsis;
 }
 
-  .logout-button {
-    padding: 12px;
-    cursor: pointer;
-    border-radius: 8px;
-    background: rgba(0, 0, 0, 0.1);
-    color: #fca5a5;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    display: flex;
-    justify-content: center;
-    font-weight: 700;
-    font-size: 0.85rem;
-    text-transform: uppercase;
-    transition: all 0.2s ease;
-  }
+.logout-button {
+  padding: 12px;
+  cursor: pointer;
+  border-radius: 8px;
+  background: rgba(0, 0, 0, 0.1);
+  color: #fca5a5;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  display: flex;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  transition: all 0.2s ease;
+}
 
-    .logout-button:hover {
-      background: #ef4444;
-      color: white;
-      border-color: #ef4444;
-    }
+.logout-button:hover {
+  background: #ef4444;
+  color: white;
+  border-color: #ef4444;
+}
 </style>
