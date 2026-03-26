@@ -4,7 +4,7 @@
     <!--<Header title="Application" class="header" />-->
 
     <div class="dashboard-content">
-      <h2 class="page-title">Application for</h2>
+      <h2 class="page-title">Passport Application</h2>
 
       <!-- ═══════════════════════════════════════════════════════════ -->
       <!-- PRE-STEP 0 — Terms & Conditions                           -->
