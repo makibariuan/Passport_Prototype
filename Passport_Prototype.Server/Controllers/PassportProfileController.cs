@@ -11,11 +11,11 @@ namespace Passport_Prototype.Server.Controllers
 
     [ApiController]
     [Route("/api/[controller]")]
-    
+
     public class PassportProfileController : ControllerBase
     {
         private readonly AppDbContext _context;
-        public PassportProfileController (AppDbContext context){
+        public PassportProfileController(AppDbContext context) {
             _context = context;
         }
 
@@ -102,6 +102,7 @@ namespace Passport_Prototype.Server.Controllers
 
                 return Ok(new { Personal = personal, Family = dto.Family, Contact = contact, Work = work });
             }
+
             catch (Exception ex)
             {
                 await transaction.RollbackAsync();
@@ -151,7 +152,7 @@ namespace Passport_Prototype.Server.Controllers
 
         // GET all profiles by userId (nested objects)
         [HttpGet("Family")]
-        public async Task<IActionResult> GetAllProfilesByUserId()
+        public async Task<IActionResult> GetFamilyProfilesByUserId()
         {
             var userIdString = User.FindFirstValue("id");
 
@@ -189,6 +190,52 @@ namespace Passport_Prototype.Server.Controllers
                     Work = work
                 });
             }
+
+            return Ok(profiles);
+        }
+
+        [HttpGet("Profiles")]
+        public async Task<IActionResult> GetAllProfilesByUserId()
+        {
+            var userIdString = User.FindFirstValue("id");
+
+            if (!int.TryParse(userIdString, out int userId))
+                return BadRequest("Invalid user ID in claims.");
+
+            // Step 1: Get raw data from DB (ONLY simple fields)
+            var data = await _context.PassportPersonalInformation
+                .Where(p => p.UserId == userId)
+                .Select(p => new
+                {
+                    p.PassportPersonalInformationId,
+                    p.FirstName,
+                    p.MiddleName,
+                    p.LastName,
+                    p.Suffix,
+                    p.Relationship
+                })
+                .ToListAsync();
+
+            if (!data.Any())
+                return NotFound("No profiles found for this user.");
+
+            // Step 2: Transform in memory (safe)
+            var profiles = data.Select(p => new
+            {
+                p.PassportPersonalInformationId,
+
+                FullName = string.Join(" ",
+                    new[]
+                    {
+                p.FirstName,
+                p.MiddleName,
+                p.LastName,
+                p.Suffix
+                    }.Where(x => !string.IsNullOrWhiteSpace(x))
+                ),
+
+                Relationship = p.Relationship
+            });
 
             return Ok(profiles);
         }

@@ -30,7 +30,7 @@
   --vt-c-text-dark-1: var(--vt-c-white);
   --vt-c-text-dark-2: rgba(235, 235, 235, 0.64);
   /* Brand Specific */
-  --makati-navy: #004085;
+  --makati-navy: #3b82f6;
 }
 
 :root {
@@ -98,7 +98,7 @@ body {
 
 /* Custom focus ring using your brand Navy */
 .focus-ring-navy {
-  @apply outline-none ring-2 ring-[#004085] ring-opacity-50;
+  @apply outline-none ring-2 ring-[#3b82f6] ring-opacity-50;
 }
 
 /* Optional: Keep these only if you haven't moved them to auth.css yet, 

@@ -7,18 +7,14 @@ namespace Passport_Prototype.Server.DTOs
         [Required]
         public int PassportPersonalInformationId { get; set; }
 
-        [Required]
         public string? Relationship { get; set; }
 
-        [Required]
         public bool? IsAlive { get; set; }
 
-        [Required]
         public string FirstName { get; set; } = null!;
 
         public string? MiddleName { get; set; }
 
-        [Required]
         public string LastName { get; set; } = null!;
 
         public string? Suffix { get; set; }
@@ -33,6 +29,10 @@ namespace Passport_Prototype.Server.DTOs
 
     public class UpdateFamilyDTO
     {
+        public int? FamilyId { get; set; }
+
+        public int? passportPersonalInformationId { get; set; }
+
         public string? Relationship { get; set; }
 
         public bool? IsAlive { get; set; }
