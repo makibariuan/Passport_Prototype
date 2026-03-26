@@ -23,8 +23,8 @@
 
     <div class="menu-footer">
       <div class="user-info">
-        <Settings class="w-5 h-5 shrink-0" />
-        <span class="username">JUAN DELA CRUZ</span>
+        <!--<Settings class="w-5 h-5 shrink-0" />
+        <span class="username"></span>-->
 
       </div>
       <div class="logout-button" @click="logout">Logout</div>

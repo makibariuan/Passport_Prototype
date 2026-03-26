@@ -92,32 +92,41 @@ const statusClass = (status) => {
   return "";
 };
 
-const fetchApplications = async () => {
-  try {
-    const response = await axios.get(
-      "https://passport.npo-pssic.com:91/api/Application/GetApplicationsWithUserInfo",
-    );
+  const fetchApplications = async () => {
+    try {
+      const response = await axios.get(
+        "https://localhost:5000/api/Application/GetApplicationsWithUserInfo"
+      );
 
-    tableData.value = response.data.map((item) => ({
-      id: item.id,
-      number: item.number,
-      type: item.type,
-      date: formatDate(item.date),
-      name: item.name || "N/A",
-      status: item.status,
-    }));
+      // Log the entire response data to the console
+      console.log("API Response:", response.data);
 
-    await nextTick();
+      tableData.value = response.data.map((item) => {
+        // Safely construct full name
+        const fullName = [item.firstName, item.middleName, item.lastName]
+          .filter(Boolean) // remove null/undefined/empty
+          .join(" ") || "N/A";
 
-    // if using DataTables
-    if (table) {
-      table.clear().rows.add(tableData.value).draw();
+        return {
+          id: item.enrollmentId,
+          number: item.enrollmentAccessCode,
+          type: item.appType,
+          date: formatDate(item.schedule),
+          name: fullName,
+          status: item.applicationStatus,
+        };
+      });
+
+      await nextTick();
+
+      // If using DataTables
+      if (table) {
+        table.clear().rows.add(tableData.value).draw();
+      }
+    } catch (error) {
+      console.error("Error fetching applications:", error);
     }
-  } catch (error) {
-    console.error("Error fetching applications:", error);
-  }
-};
-
+  };
 /* ---------------------------
      INIT TABLE
   ----------------------------*/
