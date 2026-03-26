@@ -1709,7 +1709,7 @@ const officeLocationSummary = computed(() => {
 const fetchRelationship = async () => {
   try {
     isLoading.value = true;
-    const { data } = await axios.get("https://localhost:50431/api/PassportProfile/Profiles", {
+    const { data } = await axios.get("https://localhost:5000/api/PassportProfile/Profiles", {
       headers: { Authorization: `Bearer ${Auth.token}` },
     });
 
