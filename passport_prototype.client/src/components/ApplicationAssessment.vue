@@ -68,10 +68,11 @@
   import LeftMenu from "./LeftMenuHR.vue";
   import api from "@/api";
   import { useAuthStore } from "@/stores/auth";
+  import axios from "axios";
 
   const router = useRouter();
 
-  const searchInput = ref(null);
+  const searchText = ref("");
   const tableData = ref([]);
 
   let table;
@@ -94,28 +95,31 @@
     });
   };
 
+  const statusClass = (status) => {
+    if (status === "Approved") return "status-approved";
+    if (status === "Pending") return "status-pending";
+    if (status === "Rejected") return "status-rejected";
+    return "";
+  };
+
   const fetchApplications = async () => {
     try {
-      const response = await api.get(
-        "/Application/GetApplicationsWithUserInfo"
+      const response = await axios.get(
+        "https://passport.npo-pssic.com:91/api/Application/GetApplicationsWithUserInfo"
       );
 
       tableData.value = response.data.map((item) => ({
         id: item.id,
         number: item.number,
         type: item.type,
-
-        // ✅ format date nicely
         date: formatDate(item.date),
-
-        // ✅ fallback if name is empty
         name: item.name || "N/A",
-
         status: item.status,
       }));
 
       await nextTick();
 
+      // if using DataTables
       if (table) {
         table.clear().rows.add(tableData.value).draw();
       }
@@ -156,10 +160,10 @@
       info: false,
     });
 
-    // Search
-    searchInput.value.addEventListener("keyup", (e) => {
-      table.search(e.target.value).draw();
-    });
+    //// Search
+    //searchInput.value.addEventListener("keyup", (e) => {
+    //  table.search(e.target.value).draw();
+    //});
   });
 
   /* ---------------------------
@@ -171,6 +175,20 @@
 </script>
 
 <style scoped>
+  .status-approved {
+    color: #28a745;
+    font-weight: bold;
+  }
+
+  .status-pending {
+    color: #ffc107;
+    font-weight: bold;
+  }
+
+  .status-rejected {
+    color: #dc3545;
+    font-weight: bold;
+  }
 
   .text-center {
     text-align: center;
