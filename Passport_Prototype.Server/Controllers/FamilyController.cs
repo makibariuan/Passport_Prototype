@@ -1,16 +1,17 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using OnlineRegistration.Server.Data;
 using Passport_Prototype.Server.DTOs;
 using Passport_Prototype.Server.Models;
 using System.Security.Claims;
-using static System.Runtime.InteropServices.JavaScript.JSType;
+using System.Diagnostics;
 
 namespace Passport_Prototype.Server.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [Authorize]
     public class FamiliesController : ControllerBase
     {
         private readonly AppDbContext _context;
@@ -74,23 +75,48 @@ namespace Passport_Prototype.Server.Controllers
             return Ok(family);
         }
 
-        // UPDATE
-        [HttpPatch("{id}")]
-        public async Task<IActionResult> Update(int id, UpdateFamilyDTO dto)
+        [HttpGet("{personalId}")]
+        public async Task<IActionResult> GetFamilyByPersonalId(int personalId)
         {
-            var family = await _context.Family.FindAsync(id);
+            var family = await _context.Family
+                .Where(f => f.PassportPersonalInformationId == personalId)
+                .ToListAsync();
 
-            if (family == null)
+            if (!family.Any())
                 return NotFound();
 
-            // Manual mapping
-            family.FirstName = dto.FirstName;
-            family.MiddleName = dto.MiddleName;
-            family.LastName = dto.LastName;
-            family.Suffix = dto.Suffix;
-            family.Relationship = dto.Relationship;
-            family.isAlive = dto.IsAlive.Value;
-            family.Citizenship = dto.Citizenship;
+            return Ok(family);
+        }
+
+        // UPDATE
+        [HttpPatch]
+        public async Task<IActionResult> Update([FromBody]List<UpdateFamilyDTO> dtos)
+        {
+            var personalInfoId = dtos[0].passportPersonalInformationId;
+
+            var families = await _context.Family
+                .Where(f => f.PassportPersonalInformationId == personalInfoId)
+                .ToListAsync();
+
+            if (families == null || !families.Any())
+                return NotFound($"No family records found. id = {personalInfoId}");
+
+            foreach (var dto in dtos)
+            {
+                var family = families.FirstOrDefault(f => f.FamilyId == dto.FamilyId);
+
+                if (family == null)
+                    continue; // or return NotFound($"Family with ID {dto.Id} not found");
+
+                // Manual mapping
+                family.FirstName = dto.FirstName;
+                family.MiddleName = dto.MiddleName;
+                family.LastName = dto.LastName;
+                family.Suffix = dto.Suffix;
+                family.Relationship = dto.Relationship;
+                family.isAlive = dto.IsAlive ?? false; // safe handling
+                family.Citizenship = dto.Citizenship;
+            }
 
             await _context.SaveChangesAsync();
 

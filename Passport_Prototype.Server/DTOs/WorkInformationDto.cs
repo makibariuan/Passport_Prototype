@@ -20,10 +20,8 @@ namespace Passport_Prototype.Server.DTOs
 
         public string? OfficePostalCode { get; set; }
 
-        //[Phone]
         public string? OfficeMobileNumber { get; set; }
 
-        //[Phone]
         public string? OfficeLandlineNumber { get; set; }
     }
 }
