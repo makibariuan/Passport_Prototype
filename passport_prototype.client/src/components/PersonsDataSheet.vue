@@ -213,10 +213,10 @@
                       >
                       <select v-model="user.civilStatusID" class="pds-input">
                         <option disabled value="">— Select Civil Status —</option>
-                        <option>Single</option>
-                        <option>Married</option>
-                        <option>Widowed</option>
-                        <option>Legally Separated</option>
+                        <option value="Single">Single</option>
+                        <option value="Married">Married</option>
+                        <option value="Widowed">Widowed</option>
+                        <option value="Legally Separated">Legally Separated</option>
                       </select>
                     </div>
 
