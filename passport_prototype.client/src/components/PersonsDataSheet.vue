@@ -1727,9 +1727,13 @@ const fetchRelationship = async () => {
     });
 
     // Map accountRelationship → relationship so the template renders it
-    profiles.value = Array.isArray(data)
-      ? data.map((p) => ({ id: p.id, relationship: p.accountRelationship ?? p.relationship }))
-      : [];
+   profiles.value = Array.isArray(data)
+  ? data.map((p) => ({
+      id: p.passportPersonalInformationId, 
+      relationship: p.relationship,
+      fullName: p.fullName,
+    }))
+  : [];
 
     if (profiles.value.length > 0) {
       selectedProfileId.value = profiles.value[0].id;
