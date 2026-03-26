@@ -1838,8 +1838,7 @@ const closePaymentSuccess = () => {
   // Handle proceed action
   const proceedWithProfile = () => {
     if (!selectedProfile.value) return;
-    console.log("Selected Profile ID:", selectedProfile.value);
-    // You can emit this ID or set it in a store to use later
+    preStep.value = "appointmentNotice";
   };
 </script>
 
