@@ -41,6 +41,7 @@ import { User, Users, Calendar, FileSearch, BookText, CheckSquare, Settings } fr
 import { useAuthStore } from "@/stores/auth";
 import { ref, computed, onMounted } from "vue";
 import axios from "axios";
+import { BACKEND_DOMAIN } from "@/configs/config";
 
 const Auth = useAuthStore();
 
@@ -52,7 +53,7 @@ const user = ref({
 const fetchPersonal = async () => {
   try {
     const { data } = await axios.get(
-      "https://localhost:5000/api/PassportPersonalInformations/My-Profile",
+      `${BACKEND_DOMAIN}/api/PassportPersonalInformations/My-Profile`,
       {
         headers: {
           Authorization: `Bearer ${Auth.token}`,
@@ -106,7 +107,7 @@ onMounted(fetchPersonal);
   left: 0;
   height: 100vh;
   width: 280px;
-  background: #06195e;
+  background: #3b82f6;
   display: flex;
   flex-direction: column;
   color: white;
@@ -171,24 +172,24 @@ onMounted(fetchPersonal);
   border-radius: 8px;
   transition: all 0.2s ease;
   font-size: 0.95rem;
-  color: rgba(255, 255, 255, 0.75);
+  color: rgba(255, 255, 255, 0.85);
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 4px;
   white-space: nowrap;
   border-left: 3px solid transparent;
 }
 
 .nav-menu li:hover {
-  background: #243e90;
+  background: #2563eb;
   color: white;
   transform: translateX(4px);
 }
 
 .nav-menu li.active {
-  background: #243e90;
+  background: #1d4ed8;
   color: white;
-  border-left-color: #60a5fa;
+  border-left-color: #93c5fd;
   font-weight: 600;
 }
 
@@ -226,8 +227,8 @@ onMounted(fetchPersonal);
   padding: 12px;
   cursor: pointer;
   border-radius: 8px;
-  background: rgba(255, 255, 255, 0.05);
-  color: #ffbaba;
+  background: rgba(0, 0, 0, 0.1);
+  color: #fca5a5;
   border: 1px solid rgba(255, 255, 255, 0.1);
   display: flex;
   justify-content: center;
@@ -238,8 +239,8 @@ onMounted(fetchPersonal);
 }
 
 .logout-button:hover {
-  background: #c53030;
+  background: #ef4444;
   color: white;
-  border-color: #c53030;
+  border-color: #ef4444;
 }
 </style>

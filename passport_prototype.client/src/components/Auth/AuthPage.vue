@@ -33,7 +33,8 @@
         <h3 class="info-header">OFFICE OF CONSULAR AFFAIRS</h3>
         <h2 class="info-title">Passport Online Registration & Application System</h2>
         <p class="info-disclaimer">
-          It is advisable NOT to purchase outbound travel tickets until your passports are actually in your possession...
+          It is advisable NOT to purchase outbound travel tickets until your passports are actually
+          in your possession...
         </p>
         <div class="contact-info">
           <span><i class="fas fa-phone"></i> +632 8234 3488</span>
@@ -65,11 +66,13 @@
             <button :class="{ active: !hasMiddleName }" @click="hasMiddleName = false">No</button>
           </div>
 
-          <input v-if="hasMiddleName"
-                 v-model="middleName"
-                 type="text"
-                 placeholder="Middle Name"
-                 style="margin-top: 8px;" />
+          <input
+            v-if="hasMiddleName"
+            v-model="middleName"
+            type="text"
+            placeholder="Middle Name"
+            style="margin-top: 8px"
+          />
         </div>
 
         <div class="form-field">
@@ -85,34 +88,46 @@
         <div class="input-with-action">
           <input v-model="email" type="email" placeholder="Email Address" />
           <button @click="sendVerificationCode" class="action-btn" :disabled="isLoading">
-            {{ isLoading ? 'Sending...' : 'Send verification code' }}
+            {{ isLoading ? "Sending..." : "Send verification code" }}
           </button>
         </div>
 
         <div class="form-field">
-          <label style="padding-top: 30px;">Verification Code</label>
+          <label style="padding-top: 30px">Verification Code</label>
           <div class="otp-wrapper">
-            <input v-model="otp"
-                   type="text"
-                   maxlength="6"
-                   class="otp-hidden-input"
-                   autocomplete="one-time-code" />
+            <input
+              v-model="otp"
+              type="text"
+              maxlength="6"
+              class="otp-hidden-input"
+              autocomplete="one-time-code"
+            />
 
             <div class="otp-slots-container">
-              <div v-for="i in 6" :key="i" class="otp-slot" :class="{ 'filled': otp.length >= i, 'verified-slot': isEmailVerified }">
-                {{ otp[i-1] || '' }}
+              <div
+                v-for="i in 6"
+                :key="i"
+                class="otp-slot"
+                :class="{ filled: otp.length >= i, 'verified-slot': isEmailVerified }"
+              >
+                {{ otp[i - 1] || "" }}
               </div>
             </div>
           </div>
 
-          <div class="otp-action-bar" style="margin-top: 10px; display: flex; gap: 10px; align-items: center;">
-            <button @click="verifyOtpCode"
-                    class="action-btn verify-btn"
-                    :disabled="otp.length < 6 || isLoading || isEmailVerified">
-              {{ isEmailVerified ? 'Verified ✓' : 'Verify Code' }}
+          <div
+            class="otp-action-bar"
+            style="margin-top: 10px; display: flex; gap: 10px; align-items: center"
+          >
+            <button
+              @click="verifyOtpCode"
+              class="action-btn verify-btn"
+              :disabled="otp.length < 6 || isLoading || isEmailVerified"
+            >
+              {{ isEmailVerified ? "Verified ✓" : "Verify Code" }}
             </button>
 
-            <span v-if="otpError" class="error-text" style="color: #d9534f; font-size: 0.85rem;">
+            <span v-if="otpError" class="error-text" style="color: #d9534f; font-size: 0.85rem">
               {{ otpError }}
             </span>
           </div>
@@ -137,33 +152,37 @@
           <span>Read and Accept <a href="#">Terms of Service</a></span>
         </div>
 
-        <button @click="handleRegister"
-                class="submit-register-btn"
-                :disabled="!canRegister || isLoading"
-                :class="{ 'btn-disabled': !canRegister }">
-          {{ isLoading ? 'Processing...' : 'Sign Up' }}
+        <button
+          @click="handleRegister"
+          class="submit-register-btn"
+          :disabled="!canRegister || isLoading"
+          :class="{ 'btn-disabled': !canRegister }"
+        >
+          {{ isLoading ? "Processing..." : "Sign Up" }}
         </button>
       </section>
     </main>
 
-    <DialogBox :show="showOtpDialog"
-               title="Login Verification"
-               @close="showOtpDialog = false">
+    <DialogBox :show="showOtpDialog" title="Login Verification" @close="showOtpDialog = false">
       <div class="otp-dialog-content">
         <p>A 6-digit verification code has been sent to your email.</p>
-        <div class="otp-wrapper" style="margin: 20px 0;">
-          <input v-model="otp"
-                 type="text"
-                 maxlength="6"
-                 placeholder="000000"
-                 class="otp-input-simple" />
+        <div class="otp-wrapper" style="margin: 20px 0">
+          <input
+            v-model="otp"
+            type="text"
+            maxlength="6"
+            placeholder="000000"
+            class="otp-input-simple"
+          />
         </div>
-        <button @click="handleVerifyLoginOtp"
-                class="action-btn"
-                :disabled="otp.length < 6 || isLoading">
-          {{ isLoading ? 'Verifying...' : 'Verify & Sign In' }}
+        <button
+          @click="handleVerifyLoginOtp"
+          class="action-btn"
+          :disabled="otp.length < 6 || isLoading"
+        >
+          {{ isLoading ? "Verifying..." : "Verify & Sign In" }}
         </button>
-        <p v-if="otpError" class="error-text" style="color: #d9534f; margin-top: 10px;">
+        <p v-if="otpError" class="error-text" style="color: #d9534f; margin-top: 10px">
           {{ otpError }}
         </p>
       </div>
@@ -183,72 +202,70 @@
 </template>
 
 <script setup>
-  // NOTE: Assuming these components are available in the project structure
-  import Captcha from '@/components/Auth/Captcha.vue'
-  import { ref, computed, watch, nextTick, onMounted, onUnmounted } from "vue";
-  import { useRouter, useRoute } from "vue-router";
-  import api from "@/api";
-  import { useAuthStore } from "@/stores/auth";
-  import DialogBox from "@/components/DialogBox.vue";
-  import LoadingDialog from "@/components/LoadingDialog.vue";
-  import TermsOfService from "@/components/TermsOfService.vue";
-  import AuthHeader from "@/components/Auth/AuthHeader.vue"
+// NOTE: Assuming these components are available in the project structure
+import Captcha from "@/components/Auth/Captcha.vue";
+import { ref, computed, watch, nextTick, onMounted, onUnmounted } from "vue";
+import { useRouter, useRoute } from "vue-router";
+import api from "@/api";
+import { useAuthStore } from "@/stores/auth";
+import DialogBox from "@/components/DialogBox.vue";
+import LoadingDialog from "@/components/LoadingDialog.vue";
+import TermsOfService from "@/components/TermsOfService.vue";
+import AuthHeader from "@/components/Auth/AuthHeader.vue";
 
-  // Using @vueuse/head for script injection
-  import { useHead } from '@vueuse/head';
+// Using @vueuse/head for script injection
+import { useHead } from "@vueuse/head";
 
-  useHead({
-    script: [
-      {
-        src: 'https://www.google.com/recaptcha/api.js',
-        async: true,
-        defer: true,
-      },
-    ],
-  });
+useHead({
+  script: [
+    {
+      src: "https://www.google.com/recaptcha/api.js",
+      async: true,
+      defer: true,
+    },
+  ],
+});
 
-  function onSubmit(token) {
-    document.getElementById("demo-form").submit();
-  }
+function onSubmit(token) {
+  document.getElementById("demo-form").submit();
+}
 
-  // Router & Auth
-  const router = useRouter();
-  const route = useRoute();
-  const auth = useAuthStore();
+// Router & Auth
+const router = useRouter();
+const route = useRoute();
+const auth = useAuthStore();
 
-  const hasMiddleName = ref(true) // Default to "Yes"
-  const middleName = ref('')
+const hasMiddleName = ref(true); // Default to "Yes"
+const middleName = ref("");
 
-  // captcha verification
-  const captchaVerified = ref(false);
-  const captchaKey = ref(0);
+// captcha verification
+const captchaVerified = ref(false);
+const captchaKey = ref(0);
 
-  // terms of service
-  const showTerms = ref(false);
-  const isTermsAccepted = ref(false);
+// terms of service
+const showTerms = ref(false);
+const isTermsAccepted = ref(false);
 
-  const currentPST = ref("");
+const currentPST = ref("");
 
-  const updatePST = () => {
-    const options = {
-      weekday: 'long',
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-      second: '2-digit',
-      hour12: true
-    };
-    currentPST.value = new Date().toLocaleString('en-US', options);
+const updatePST = () => {
+  const options = {
+    weekday: "long",
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+    hour12: true,
   };
+  currentPST.value = new Date().toLocaleString("en-US", options);
+};
 
-  onMounted(() => {
-    updatePST();
-    timer = setInterval(updatePST, 1000);
-  });
-
-  const isProcessingLogin = ref(false);
+onMounted(() => {
+  updatePST();
+  timer = setInterval(updatePST, 1000);
+});
 
   // Login/Register State
   const isLogin = ref(true);
@@ -262,178 +279,177 @@
   const showPassword = ref(false); // Dont forget to leave to false
   const showConfirm = ref(false);
 
-  // OTP animation and countdown reference
+// OTP animation and countdown reference
 
-  const cooldownSeconds = 60;
-  const countdown = ref(10);
-  const resendAttempts = ref(0);
-  const maxAttempts = 3;
-  const radius = 45;
-  const circumference = 2 * Math.PI * radius;
+const cooldownSeconds = 60;
+const countdown = ref(10);
+const resendAttempts = ref(0);
+const maxAttempts = 3;
+const radius = 45;
+const circumference = 2 * Math.PI * radius;
 
-  const strokeDashoffset = computed(() => {
-    return circumference - (countdown.value / cooldownSeconds) * circumference;
-  });
+const strokeDashoffset = computed(() => {
+  return circumference - (countdown.value / cooldownSeconds) * circumference;
+});
 
-  let timer = null;
+let timer = null;
 
-  const lastName = ref("");
-  const firstName = ref("");
+const lastName = ref("");
+const firstName = ref("");
 
-  // 🔥 NEW: Employee registration state
-  const isEmployee = ref(false);
+// 🔥 NEW: Employee registration state
+const isEmployee = ref(false);
 
-  // Dialogs
-  const showDialog = ref(false);
-  const dialogTitle = ref("");
-  const dialogMessage = ref("");
-  const showForgotDialog = ref(false);
-  const showOtpDialog = ref(false);
-  const forgotEmail = ref("");
-  const otpError = ref("");
-  const isLoading = ref(false);
-  const resendLoading = ref(false);
-  const showResend = ref(false);
+// Dialogs
+const showDialog = ref(false);
+const dialogTitle = ref("");
+const dialogMessage = ref("");
+const showForgotDialog = ref(false);
+const showOtpDialog = ref(false);
+const forgotEmail = ref("");
+const otpError = ref("");
+const isLoading = ref(false);
+const resendLoading = ref(false);
+const showResend = ref(false);
 
-  const otpArray = ref(['', '', '', '', '', '']);
+const otpArray = ref(["", "", "", "", "", ""]);
 
-  // Computed
-  const passwordMismatch = computed(() => confirmPassword.value && password.value !== confirmPassword.value);
-  const canLogin = computed(() => username.value && loginPassword.value);
+// Computed
+const passwordMismatch = computed(
+  () => confirmPassword.value && password.value !== confirmPassword.value,
+);
+const canLogin = computed(() => username.value && loginPassword.value);
 
-  // 🔥 UPDATED: Checks that employeeID is filled IF isEmployee is true.
-  const isEmployeeIdRequired = computed(() => !isEmployee.value || !!employeeID.value);
+// 🔥 UPDATED: Checks that employeeID is filled IF isEmployee is true.
+const isEmployeeIdRequired = computed(() => !isEmployee.value || !!employeeID.value);
 
-  // 🔥 UPDATED: Check if all registration fields are valid/provided.
-  const canRegister = computed(() => {
-    const isNameOrIdValid = isEmployee.value ? !!employeeID.value : !!firstName.value;
+// 🔥 UPDATED: Check if all registration fields are valid/provided.
+const canRegister = computed(() => {
+  const isNameOrIdValid = isEmployee.value ? !!employeeID.value : !!firstName.value;
 
-    const baseValid = (
-      isNameOrIdValid && // Check that either employeeID or firstName is filled
-      lastName.value &&
-      email.value &&
-      isEmailVerified.value &&
-      isPasswordValid.value &&
-      !passwordMismatch.value &&
-      isTermsAccepted.value &&
-      captchaVerified.value
-    );
-    return baseValid;
-  });
+  const baseValid =
+    isNameOrIdValid && // Check that either employeeID or firstName is filled
+    lastName.value &&
+    email.value &&
+    isEmailVerified.value &&
+    isPasswordValid.value &&
+    !passwordMismatch.value &&
+    isTermsAccepted.value &&
+    captchaVerified.value;
+  return baseValid;
+});
 
-  const isEmailVerified = ref(false); // Track if OTP was accepted
+const isEmailVerified = ref(false); // Track if OTP was accepted
 
-  // password validation
-  // Individual checks
-  const hasUppercase = computed(() => /[A-Z]/.test(password.value));
-  const hasLowercase = computed(() => /[a-z]/.test(password.value));
-  const hasNumber = computed(() => /[0-9]/.test(password.value));
-  const noSpaces = computed(() => !/\s/.test(password.value));
-  const minLength = computed(() => password.value.length >= 8);
+// password validation
+// Individual checks
+const hasUppercase = computed(() => /[A-Z]/.test(password.value));
+const hasLowercase = computed(() => /[a-z]/.test(password.value));
+const hasNumber = computed(() => /[0-9]/.test(password.value));
+const noSpaces = computed(() => !/\s/.test(password.value));
+const minLength = computed(() => password.value.length >= 8);
 
-  const isPasswordValid = computed(() =>
+const isPasswordValid = computed(
+  () =>
     hasUppercase.value &&
     hasLowercase.value &&
     hasNumber.value &&
     noSpaces.value &&
-    minLength.value
-  );
+    minLength.value,
+);
 
-  const validatePassword = () => {
-    // UI update handled by computed properties
-  };
+const validatePassword = () => {
+  // UI update handled by computed properties
+};
 
+// Forgot Password
+const openForgotPasswordDialog = () => {
+  forgotEmail.value = username.value || "";
+  showForgotDialog.value = true;
+};
 
-  // Forgot Password
-  const openForgotPasswordDialog = () => {
-    forgotEmail.value = username.value || "";
-    showForgotDialog.value = true;
-  };
+const handleForgotPassword = async () => {
+  if (!forgotEmail.value) return;
+  try {
+    isLoading.value = true;
+    await api.post("/auth/forgot-password", { email: forgotEmail.value });
+    dialogTitle.value = "Success";
+    dialogMessage.value = "✅ Check your email for password reset instructions.";
+    showDialog.value = true;
+  } catch (err) {
+    dialogTitle.value = "Error";
+    dialogMessage.value = err.response?.data?.message || "Something went wrong.";
+    showDialog.value = true;
+  } finally {
+    isLoading.value = false;
+    showForgotDialog.value = false;
+  }
+};
 
+watch(isLogin, (newVal) => {
+  if (newVal) {
+    // Switched to Login
+    username.value = "";
+    loginPassword.value = "";
+    otp.value = "";
+    forgotEmail.value = "";
+    otpError.value = "";
+  } else {
+    // Switched to Registration
+    resetRegistrationForm();
+  }
+});
 
-  const handleForgotPassword = async () => {
-    if (!forgotEmail.value) return;
-    try {
-      isLoading.value = true;
-      await api.post("/auth/forgot-password", { email: forgotEmail.value });
-      dialogTitle.value = "Success";
-      dialogMessage.value = "✅ Check your email for password reset instructions.";
-      showDialog.value = true;
-    } catch (err) {
-      dialogTitle.value = "Error";
-      dialogMessage.value = err.response?.data?.message || "Something went wrong.";
-      showDialog.value = true;
-    } finally {
-      isLoading.value = false;
-      showForgotDialog.value = false;
-    }
-  };
+const onCaptchaVerified = (status) => {
+  captchaVerified.value = status;
+};
 
-  watch(isLogin, (newVal) => {
-    if (newVal) {
-      // Switched to Login
-      username.value = "";
-      loginPassword.value = "";
-      otp.value = "";
-      forgotEmail.value = "";
-      otpError.value = "";
-    } else {
-      // Switched to Registration
-      resetRegistrationForm();
-    }
-  });
+const resetRegistrationForm = () => {
+  employeeID.value = "";
+  birthday.value = "";
+  firstName.value = "";
+  lastName.value = "";
+  email.value = "";
+  password.value = "";
+  confirmPassword.value = "";
+  isEmployee.value = false; // 🔥 UPDATED: Reset employee state
+  govIDType.value = "";
+  govIDNumber.value = "";
+  removeID();
+  isTermsAccepted.value = false;
+  captchaVerified.value = false;
+  showTerms.value = false;
+  captchaKey.value++; // refresh CAPTCHA
+};
 
-  const onCaptchaVerified = (status) => {
-    captchaVerified.value = status;
-  };
+// --- New Error State ---
+const fieldErrors = ref({
+  email: false,
+  employeeID: false,
+  firstName: false,
+  lastName: false,
+  password: false,
+  birthday: false, // Added for BirthDate validation
+});
 
-
-  const resetRegistrationForm = () => {
-    employeeID.value = "";
-    birthday.value = "";
-    firstName.value = "";
-    lastName.value = "";
-    email.value = "";
-    password.value = "";
-    confirmPassword.value = "";
-    isEmployee.value = false; // 🔥 UPDATED: Reset employee state
-    govIDType.value = "";
-    govIDNumber.value = "";
-    removeID();
-    isTermsAccepted.value = false;
-    captchaVerified.value = false;
-    showTerms.value = false;
-    captchaKey.value++; // refresh CAPTCHA
-  };
-
-  // --- New Error State ---
-  const fieldErrors = ref({
+const clearErrors = () => {
+  fieldErrors.value = {
     email: false,
     employeeID: false,
     firstName: false,
     lastName: false,
     password: false,
-    birthday: false // Added for BirthDate validation
-  });
-
-  const clearErrors = () => {
-    fieldErrors.value = {
-      email: false,
-      employeeID: false,
-      firstName: false,
-      lastName: false,
-      password: false,
-      birthday: false
-    };
+    birthday: false,
   };
+};
 
-  watch(otp, (newVal) => {
-    if (!newVal) {
-      otpError.value = ""; // clear error if otp is empty
-    }
-  });
+watch(otp, (newVal) => {
+  if (!newVal) {
+    otpError.value = ""; // clear error if otp is empty
+  }
+});
 
-  onMounted(() => {
+onMounted(() => {
   const endTime = localStorage.getItem("otpCooldownEnd");
 
   if (endTime) {
@@ -450,30 +466,30 @@
   }
 });
 
-  onUnmounted(() => {
-    if (timer) clearInterval(timer);
-  });
+onUnmounted(() => {
+  if (timer) clearInterval(timer);
+});
 
-  // OTP animation for countdown 1//
+// OTP animation for countdown 1//
 
-    // Show resend after 60 seconds
-  const startCooldown = () => {
+// Show resend after 60 seconds
+const startCooldown = () => {
   showResend.value = false;
   countdown.value = 60;
 
   if (timer) clearInterval(timer);
 
-   timer = setInterval(() => {
-      countdown.value--;
+  timer = setInterval(() => {
+    countdown.value--;
 
-      if (countdown.value <= 0) {
-        clearInterval(timer);
-        showResend.value = true; // 🔥 button appears after 60s
-      }
-    }, 1000);
-  };
+    if (countdown.value <= 0) {
+      clearInterval(timer);
+      showResend.value = true; // 🔥 button appears after 60s
+    }
+  }, 1000);
+};
 
-  const updateCountdown = () => {
+const updateCountdown = () => {
   const endTime = localStorage.getItem("otpCooldownEnd");
   if (!endTime) return;
 
@@ -489,8 +505,8 @@
   }
 };
 
-  const handleVerifyOtp = async () => {
-  const fullOtp = otpArray.value.join('');
+const handleVerifyOtp = async () => {
+  const fullOtp = otpArray.value.join("");
 
   if (!fullOtp) return;
 
@@ -510,6 +526,20 @@
     auth.login({ token: res.data.token });
     showOtpDialog.value = false;
 
+    // Role-based redirection
+    const role = parseInt(auth.userRole);
+    if (role === 5 || role === 6) {
+      router.push("/dashboard");
+    }
+    else if (role === 4) {
+      router.push("/applicationassessment");
+    }
+    else if (role === 1) {
+      router.push("/dashboard-admin");
+    } else {
+      router.push("/");
+    }
+
   } catch (err) {
     // Set the error message returned from backend
     otpError.value =
@@ -518,13 +548,13 @@
       err.message ||
       "Invalid or expired OTP";
 
-      console.log (err);
+    console.log(err);
   } finally {
     isLoading.value = false;
   }
 };
 
-  const handleResendOtp = async () => {
+const handleResendOtp = async () => {
   if (resendAttempts.value >= maxAttempts) {
     otpError.value = "Maximum resend attempts reached.";
     return;
@@ -535,259 +565,259 @@
 
   try {
     await api.post("/auth/resend-otp", {
-      email: username.value
+      email: username.value,
     });
 
     resendAttempts.value++;
     startCooldown();
-
   } catch (err) {
-    otpError.value =
-      err.response?.data?.message || "Failed to resend OTP";
+    otpError.value = err.response?.data?.message || "Failed to resend OTP";
   } finally {
     resendLoading.value = false;
   }
 };
 
-
-
-  // Handle typing in a box
-  const handleOtpInput = (event, index) => {
-    const value = event.target.value;
-    // Ensure only numbers
-    if (!/^\d$/.test(value)) {
-      otpArray.value[index] = '';
-      return;
-    }
-
-    // Move to next input
-    if (value && index < 5) {
-      const nextInput = document.getElementById(`otp-${index + 1}`);
-      nextInput?.focus();
-    }
-  };
-
-  // Handle backspace
-  const handleOtpDelete = (event, index) => {
-    if (!otpArray.value[index] && index > 0) {
-      const prevInput = document.getElementById(`otp-${index - 1}`);
-      prevInput?.focus();
-    }
-  };
-
-  // Handle pasting the whole code
-  const handleOtpPaste = (event) => {
-    const pasteData = event.clipboardData.getData('text').slice(0, 6);
-    if (!/^\d+$/.test(pasteData)) return;
-
-    const digits = pasteData.split('');
-    digits.forEach((d, i) => {
-      if (i < 6) otpArray.value[i] = d;
-    });
-
-    // Focus the last filled box or the 6th box
-    const targetIndex = digits.length === 6 ? 5 : digits.length;
-    document.getElementById(`otp-${targetIndex}`)?.focus();
-  };
-
-  // --- File Methods ---
-  function triggerValidIDUpload() {
-    documentTypeToUpload.value = 'ValidID';
-    if (requiredDocFile.value) requiredDocFile.value.click();
+// Handle typing in a box
+const handleOtpInput = (event, index) => {
+  const value = event.target.value;
+  // Ensure only numbers
+  if (!/^\d$/.test(value)) {
+    otpArray.value[index] = "";
+    return;
   }
 
-  // ------------------ Upload Handler ------------------
-  /**
+  // Move to next input
+  if (value && index < 5) {
+    const nextInput = document.getElementById(`otp-${index + 1}`);
+    nextInput?.focus();
+  }
+};
+
+// Handle backspace
+const handleOtpDelete = (event, index) => {
+  if (!otpArray.value[index] && index > 0) {
+    const prevInput = document.getElementById(`otp-${index - 1}`);
+    prevInput?.focus();
+  }
+};
+
+// Handle pasting the whole code
+const handleOtpPaste = (event) => {
+  const pasteData = event.clipboardData.getData("text").slice(0, 6);
+  if (!/^\d+$/.test(pasteData)) return;
+
+  const digits = pasteData.split("");
+  digits.forEach((d, i) => {
+    if (i < 6) otpArray.value[i] = d;
+  });
+
+  // Focus the last filled box or the 6th box
+  const targetIndex = digits.length === 6 ? 5 : digits.length;
+  document.getElementById(`otp-${targetIndex}`)?.focus();
+};
+
+// --- File Methods ---
+function triggerValidIDUpload() {
+  documentTypeToUpload.value = "ValidID";
+  if (requiredDocFile.value) requiredDocFile.value.click();
+}
+
+// ------------------ Upload Handler ------------------
+/**
  * Reads the file, extracts extension and converts to Base64
  */
-  async function handleGenericFileSelection(event) {
-    const file = event.target.files[0];
-    if (!file) return;
+async function handleGenericFileSelection(event) {
+  const file = event.target.files[0];
+  if (!file) return;
 
-    idFileExtension.value = file.name.substring(file.name.lastIndexOf('.'));
-    validIDOriginalName.value = file.name;
+  idFileExtension.value = file.name.substring(file.name.lastIndexOf("."));
+  validIDOriginalName.value = file.name;
 
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      idImageBase64.value = e.target.result.split(',')[1];
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    idImageBase64.value = e.target.result.split(",")[1];
+  };
+  reader.readAsDataURL(file);
+  event.target.value = null;
+}
+
+function removeID() {
+  idImageBase64.value = "";
+  idFileExtension.value = "";
+  validIDOriginalName.value = null;
+}
+
+// ------------------ Delete Logic ------------------
+async function deleteFile(docType, fileKey) {
+  if (!fileKey) return;
+
+  isLoading.value = true;
+  dialogTitle.value = "Deleting";
+  showDialog.value = true;
+
+  try {
+    // Registration files are always temporary until the user is created
+    await api.delete(`/employee/deleteupload?fileKey=${fileKey}`);
+
+    if (docType === "ValidID") {
+      validIDFileKey.value = null;
+      validIDOriginalName.value = null;
+    }
+
+    dialogTitle.value = "Success";
+    dialogMessage.value = "ID removed successfully.";
+  } catch (err) {
+    dialogTitle.value = "Error";
+    dialogMessage.value = "Failed to remove the file.";
+  } finally {
+    isLoading.value = false;
+  }
+}
+
+// --- API Integration Functions ---
+
+// 1. Send Verification Code (Initiate)
+const sendVerificationCode = async () => {
+  if (!email.value) {
+    alert("Please enter an email address.");
+    return;
+  }
+
+  isLoading.value = true;
+  try {
+    // Matches [HttpPost("initiate-registration")]
+    const response = await api.post("Auth/initiate-registration", {
+      email: email.value,
+    });
+    alert(response.data.message);
+    // Start your countdown timer here
+  } catch (err) {
+    console.error("Full Error Object:", err); // Look at this in F12 Chrome DevTools
+    console.log("Status Code:", err.response?.status);
+    alert(err.response?.data?.message || "Failed to send code.");
+  } finally {
+    isLoading.value = false;
+  }
+};
+
+// 2. Verify OTP (Before filling the rest of the form)
+const verifyOtpCode = async () => {
+  if (otp.value.length !== 6) {
+    otpError.value = "Please enter the 6-digit code.";
+    return;
+  }
+
+  isLoading.value = true;
+  otpError.value = "";
+
+  try {
+    // Matches your [HttpPost("verify-registration-otp")]
+    const response = await api.post("/auth/verify-registration-otp", {
+      email: email.value,
+      verificationCode: otp.value,
+    });
+
+    isEmailVerified.value = true;
+    alert("Email Verified! You can now complete your registration.");
+  } catch (err) {
+    otpError.value = err.response?.data?.message || "Invalid or expired code.";
+    isEmailVerified.value = false;
+  } finally {
+    isLoading.value = false;
+  }
+};
+
+// 3. Final Sign Up (Complete)
+const handleRegister = async () => {
+  if (!canRegister.value) return;
+
+  isLoading.value = true;
+  try {
+    const payload = {
+      email: email.value,
+      password: password.value,
+      firstName: firstName.value,
+      middleName: hasMiddleName.value ? middleName.value : "",
+      lastName: lastName.value,
+      suffix: "", // Add a ref if you want to capture this
+      verificationCode: otp.value,
+      // The other fields (Gender, BirthCity, etc.) can be omitted
+      // or sent as null since the DTO is now nullable.
     };
-    reader.readAsDataURL(file);
-    event.target.value = null;
+
+    console.log("Sending Clean Payload:", payload);
+    const response = await api.put("/Auth/complete-registration", payload);
+
+    alert("Registration Successful!");
+    router.push("/login");
+  } catch (err) {
+    console.error("Registration Error:", err.response?.data);
+    alert(err.response?.data?.message || "Registration failed.");
+  } finally {
+    isLoading.value = false;
+  }
+};
+
+// 4. Login Logic
+const handleLogin = async () => {
+  if (!username.value || !loginPassword.value) {
+    alert("Please enter credentials.");
+    return;
   }
 
-  function removeID() {
-    idImageBase64.value = "";
-    idFileExtension.value = "";
-    validIDOriginalName.value = null;
+  isLoading.value = true;
+  otp.value = ""; // Clear old OTP input
+  otpError.value = "";
+
+  try {
+    const response = await api.post("/auth/login", {
+      email: username.value,
+      password: loginPassword.value,
+    });
+
+    console.log("Login API Success, showing dialog...");
+    showOtpDialog.value = true;
+    console.log("Current showOtpDialog state:", showOtpDialog.value);
+  } catch (err) {
+    alert(err.response?.data?.message || "Login failed.");
+  } finally {
+    isLoading.value = false;
   }
+};
 
-  // ------------------ Delete Logic ------------------
-  async function deleteFile(docType, fileKey) {
-    if (!fileKey) return;
+const handleVerifyLoginOtp = async () => {
+  if (otp.value.length !== 6) return;
 
-    isLoading.value = true;
-    dialogTitle.value = "Deleting";
-    showDialog.value = true;
+  isLoading.value = true;
+  otpError.value = "";
 
-    try {
-      // Registration files are always temporary until the user is created
-      await api.delete(`/employee/deleteupload?fileKey=${fileKey}`);
+  try {
+    // This calls your backend endpoint that checks LoginOtp and LoginOtpExpiry
+    const response = await api.post("/auth/verify-otp", {
+      email: username.value,
+      verificationCode: otp.value,
+    });
 
-      if (docType === 'ValidID') {
-        validIDFileKey.value = null;
-        validIDOriginalName.value = null;
-      }
+    // 1. Save the token to your Pinia store
+    auth.login({
+      token: response.data.token,
+      user: response.data.user,
+    });
 
-      dialogTitle.value = "Success";
-      dialogMessage.value = "ID removed successfully.";
-    } catch (err) {
-      dialogTitle.value = "Error";
-      dialogMessage.value = "Failed to remove the file.";
-    } finally {
-      isLoading.value = false;
-    }
-  }
-
-
-  // --- API Integration Functions ---
-
-  // 1. Send Verification Code (Initiate)
-  const sendVerificationCode = async () => {
-    if (!email.value) {
-      alert("Please enter an email address.");
-      return;
-    }
-
-    isLoading.value = true;
-    try {
-      // Matches [HttpPost("initiate-registration")]
-      const response = await api.post("Auth/initiate-registration", {
-        email: email.value
-      });
-      alert(response.data.message);
-      // Start your countdown timer here
-    } catch (err) {
-      console.error("Full Error Object:", err); // Look at this in F12 Chrome DevTools
-      console.log("Status Code:", err.response?.status);
-      alert(err.response?.data?.message || "Failed to send code.");
-    } finally {
-      isLoading.value = false;
-    }
-  };
-
-  // 2. Verify OTP (Before filling the rest of the form)
-  const verifyOtpCode = async () => {
-    if (otp.value.length !== 6) {
-      otpError.value = "Please enter the 6-digit code.";
-      return;
-    }
-
-    isLoading.value = true;
-    otpError.value = "";
-
-    try {
-      // Matches your [HttpPost("verify-registration-otp")]
-      const response = await api.post("/auth/verify-registration-otp", {
-        email: email.value,
-        verificationCode: otp.value
-      });
-
-      isEmailVerified.value = true;
-      alert("Email Verified! You can now complete your registration.");
-    } catch (err) {
-      otpError.value = err.response?.data?.message || "Invalid or expired code.";
-      isEmailVerified.value = false;
-    } finally {
-      isLoading.value = false;
-    }
-  };
-
-  // 3. Final Sign Up (Complete)
-  const handleRegister = async () => {
-    if (!canRegister.value) return;
-
-    isLoading.value = true;
-    try {
-      const payload = {
-        email: email.value,
-        password: password.value,
-        firstName: firstName.value,
-        middleName: hasMiddleName.value ? middleName.value : "",
-        lastName: lastName.value,
-        suffix: "", // Add a ref if you want to capture this
-        verificationCode: otp.value,
-        // The other fields (Gender, BirthCity, etc.) can be omitted 
-        // or sent as null since the DTO is now nullable.
-      };
-
-      console.log("Sending Clean Payload:", payload);
-      const response = await api.put("/Auth/complete-registration", payload);
-
-      alert("Registration Successful!");
-      router.push("/login");
-    } catch (err) {
-      console.error("Registration Error:", err.response?.data);
-      alert(err.response?.data?.message || "Registration failed.");
-    } finally {
-      isLoading.value = false;
-    }
-  };
-
-  // 4. Login Logic
-  const handleLogin = async () => {
-    if (!username.value || !loginPassword.value) {
-      alert("Please enter credentials.");
-      return;
-    }
-
-    isLoading.value = true;
-    otp.value = ""; // Clear old OTP input
-    otpError.value = "";
-
-    try {
-      const response = await api.post("/auth/login", {
-        email: username.value,
-        password: loginPassword.value
-      });
-
-      console.log("Login API Success, showing dialog...");
-      showOtpDialog.value = true;
-      console.log("Current showOtpDialog state:", showOtpDialog.value);
-    } catch (err) {
-      alert(err.response?.data?.message || "Login failed.");
-    } finally {
-      isLoading.value = false;
-    }
-  };
-
-  const handleVerifyLoginOtp = async () => {
-    if (otp.value.length !== 6) return;
-
-    isLoading.value = true;
-    otpError.value = "";
-
-    try {
-      // This calls your backend endpoint that checks LoginOtp and LoginOtpExpiry
-      const response = await api.post("/auth/verify-otp", {
-        email: username.value,
-        verificationCode: otp.value
-      });
-
-      // 1. Save the token to your Pinia store
-      auth.login({
-        token: response.data.token,
-        user: response.data.user
-      });
-
-      // 2. Hide OTP dialog and start the full-screen loading sequence
       showOtpDialog.value = false;
-      isProcessingLogin.value = true;
+      alert("Login Successful!");
 
-      // 3. Brief delay for the "Hourglass" effect before redirecting
-      
-      router.push("/profile");
-      
-
+      // 2. Redirect based on user role (matching your store logic)
+      const role = parseInt(auth.userRole);
+      if (role === 1) {
+        router.push("/dashboard-admin");
+      }
+      else if (role === 4) {
+        router.push("/applicationassessment");
+      }
+      else {
+        router.push("/dashboard");
+      }
     } catch (err) {
       otpError.value = err.response?.data?.message || "Invalid or expired OTP.";
     } finally {
@@ -797,13 +827,11 @@
 </script>
 
 <style>
-  /* Add this outside of any scoped blocks to test */
-  .otp-dialog-content,
-  [class*="dialog"],
-  [class*="modal"] {
-    z-index: 9999 !important;
-    position: relative;
-  }
+/* Add this outside of any scoped blocks to test */
+.otp-dialog-content,
+[class*="dialog"],
+[class*="modal"] {
+  z-index: 9999 !important;
+  position: relative;
+}
 </style>
-
-

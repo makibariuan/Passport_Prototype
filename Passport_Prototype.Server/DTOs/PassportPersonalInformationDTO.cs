@@ -98,6 +98,8 @@ namespace Passport_Prototype.Server.DTOs
 
     public class UpdatePassportPersonalInformationDTO
     {
+        public int? PassportPersonalInformationId { get; set; }
+
         public string? FirstName { get; set; }
 
         public string? MiddleName { get; set; }

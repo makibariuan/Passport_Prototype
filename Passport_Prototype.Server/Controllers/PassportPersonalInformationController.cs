@@ -75,18 +75,23 @@ public class PassportPersonalInformationsController : ControllerBase
         return Ok(passportPersonalInformation);
     }
 
+    [HttpGet("{personalId}")]
+    public async Task<IActionResult> GetByPersonalId(int personalId)
+    {
+        var personal = await _context.PassportPersonalInformation
+            .FirstOrDefaultAsync(p => p.PassportPersonalInformationId == personalId);
+
+        if (personal == null)
+            return NotFound();
+
+        return Ok(personal);
+    }
+
     // UPDATE
-    [HttpPatch("Update-Profile")]
+    [HttpPatch]
     public async Task<IActionResult> Update(UpdatePassportPersonalInformationDTO dto)
     {
-        var userIdString = User.FindFirstValue("id");
-
-        if (!int.TryParse(userIdString, out int userId))
-        {
-            throw new Exception("Invalid user ID in claims.");
-        }
-
-        var passportPersonalInformation = await _context.PassportPersonalInformation.FirstOrDefaultAsync(p => p.UserId == userId && p.Relationship == null);
+        var passportPersonalInformation = await _context.PassportPersonalInformation.FirstOrDefaultAsync(p => p.PassportPersonalInformationId == dto.PassportPersonalInformationId);
 
         if (passportPersonalInformation == null)
             return NotFound();

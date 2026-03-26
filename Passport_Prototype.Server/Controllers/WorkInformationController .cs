@@ -1,9 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using OnlineRegistration.Server.Data;
-using OnlineRegistration.Server.Models;
 using Passport_Prototype.Server.DTOs;
 using Passport_Prototype.Server.Models;
+using System.Security.Claims;
 
 namespace Passport_Prototype.Server.Controllers
 {
@@ -56,6 +56,29 @@ namespace Passport_Prototype.Server.Controllers
             return Ok(data);
         }
 
+        [HttpGet("My-Work")]
+        public async Task<IActionResult> GetMyWork()
+        {
+            var userIdString = User.FindFirstValue("id");
+
+            if (!int.TryParse(userIdString, out int userId))
+                return BadRequest("Invalid user ID.");
+
+            var personal = await _context.PassportPersonalInformation
+                .FirstOrDefaultAsync(p => p.UserId == userId && p.Relationship == null);
+
+            if (personal == null)
+                return NotFound();
+
+            var work = await _context.WorkInformation
+                .FirstOrDefaultAsync(w => w.PassportPersonalInformationId == personal.PassportPersonalInformationId);
+
+            if (work == null)
+                return NotFound();
+
+            return Ok(work);
+        }
+
         // READ BY ID
         [HttpGet("{personalId}")]
         public async Task<IActionResult> GetById(int personalId)
@@ -71,11 +94,11 @@ namespace Passport_Prototype.Server.Controllers
         }
 
         // UPDATE
-        [HttpPatch("{personalId}")]
-        public async Task<IActionResult> Update(int personalId, WorkInformationDto dto)
+        [HttpPatch]
+        public async Task<IActionResult> Update(WorkInformationDto dto)
         {
             var entity = await _context.WorkInformation
-                .FirstOrDefaultAsync(w => w.PassportPersonalInformationId == personalId);
+                .FirstOrDefaultAsync(w => w.PassportPersonalInformationId == dto.PassportPersonalInformationId);
 
             if (entity == null)
                 return NotFound();

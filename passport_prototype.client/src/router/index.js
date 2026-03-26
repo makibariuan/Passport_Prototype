@@ -16,9 +16,11 @@ import ManageCitizenPage from "@/components/ManageCitizenPage.vue";
 import AdjudicationDetailsPage from "@/components/HR/AdjudicationDetailsPage.vue";
 import BiometricTest from "@/components/BiometricTest.vue";
 import AttendanceManagement from "@/components/HR/AttendanceManagement.vue";
+import IDDetails from "@/components/Employee/IDDetails.vue";
 import CreateApplication from "@/components/CreateApplication.vue";
 import ApplicationAssessment from "@/components/ApplicationAssessment.vue";
-import ApplicationHistory from "@/components/ApplicationHistory.vue";
+import UserAdjudication from "@/components/UserAdjudication.vue";
+
 
 /*
   DEV MODE — auth guard disabled, navigate freely to any route.
@@ -77,7 +79,7 @@ const routes = [
   { path: "/profile", name: "PersonalDataSheet", component: PersonalDataSheet },
   { path: "/persons-profile", name: "PersonsDataSheet", component: PersonsDataSheet },
   { path: "/application/new", name: "Application", component: CreateApplication },
-  { path: "/application/history", name: "ApplicationHistory", component: ApplicationHistory },
+  { path: "/id-details", name: "IDDetails", component: IDDetails },
 
   // ── Management ─────────────────────────────────────────────────
   { path: "/manage-employee-ids", name: "ManageEmployeeIDs", component: DetailsPage },
@@ -97,11 +99,12 @@ const routes = [
   { path: "/:pathMatch(.*)*", redirect: "/" },
 
   // ── Application-Assessment ──────────────────────────────────────────────────
-  {
-    path: "/applicationassessment",
-    name: "ApplicationAssessment",
-    component: ApplicationAssessment,
-  },
+  { path: "/applicationassessment", name: "ApplicationAssessment", component: ApplicationAssessment },
+  // ── User-Adjusdication ──────────────────────────────────────────────────
+
+  { path: "/UserAbjudication", name: "UserAbjudication", component: UserAdjudication },
+
+
 ];
 
 const router = createRouter({
