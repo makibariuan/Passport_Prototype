@@ -20,6 +20,7 @@ import CreateApplication from "@/components/CreateApplication.vue";
 import ApplicationAssessment from "@/components/ApplicationAssessment.vue";
 import ApplicationHistory from "@/components/ApplicationHistory.vue";
 import ManageExistingApplication from "@/components/ManageExistingApplication.vue";
+import PrivacyPolicy from "@/components/PrivacyPolicy.vue";
 
 /*
   DEV MODE — auth guard disabled, navigate freely to any route.
@@ -79,6 +80,7 @@ const routes = [
   { path: "/persons-profile", name: "PersonsDataSheet", component: PersonsDataSheet },
   { path: "/application/new", name: "Application", component: CreateApplication },
   { path: "/application/history", name: "ApplicationHistory", component: ApplicationHistory },
+  { path: "/privacy-policy", name: "PrivacyPolicy", component: PrivacyPolicy },
   {
     path: "/application/manage",
     name: "ManageExistingApplicationHistory",
