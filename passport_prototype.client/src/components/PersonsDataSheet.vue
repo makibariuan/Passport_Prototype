@@ -1823,7 +1823,7 @@ const fetchPersonal = async () => {
   try {
     isLoading.value = true;
     const { data } = await axios.get(
-      `https://localhost:5000/api/PassportPersonalInformations/${selectedProfileId.value}`,
+      `https://localhost:5000/api/PassportPersonalInformations/${selectedProfileId.value ? selectedProfileId.value : profiles.value[0].id}`,
       { headers: { Authorization: `Bearer ${Auth.token}` } },
     );
 
