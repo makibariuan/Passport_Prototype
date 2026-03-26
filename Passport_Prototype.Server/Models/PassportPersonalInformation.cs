@@ -11,17 +11,14 @@ namespace Passport_Prototype.Server.Models
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int PassportPersonalInformationId { get; set; }
 
-        [Required]
         public int UserId { get; set; }
 
-        [Required]
         [MaxLength(255)]
         public string? FirstName { get; set; }
 
         [MaxLength(255)]
         public string? MiddleName { get; set; }
 
-        [Required]
         [MaxLength(255)]
         public string? LastName { get; set; }
 
