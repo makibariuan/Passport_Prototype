@@ -1,8 +1,9 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using OnlineRegistration.Server.Data;
 using Passport_Prototype.Server.DTOs;
 using Passport_Prototype.Server.Models;
-using Microsoft.EntityFrameworkCore;
 using SeniorCitizen.Server.Models;
 
 namespace Passport_Prototype.Server.Controllers
@@ -122,6 +123,7 @@ namespace Passport_Prototype.Server.Controllers
         }
 
         [HttpGet("GetApplicationsWithUserInfo")]
+        [AllowAnonymous]
         public async Task<IActionResult> GetApplicationsWithUserInfo()
         {
             var result = await (

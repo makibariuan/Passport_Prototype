@@ -24,9 +24,8 @@
     <div class="menu-footer">
       <div class="user-info">
         <Settings class="w-5 h-5 shrink-0" />
-        <span class="username">
-          {{ fullName }}
-        </span>
+        <span class="username">JUAN DELA CRUZ</span>
+
       </div>
       <div class="logout-button" @click="logout">Logout</div>
     </div>
@@ -35,16 +34,10 @@
 
 <script setup>
   import { useRouter, useRoute } from "vue-router";
-  import { User, LayoutDashboard, Users, Calendar, FileSearch, BookText, CheckSquare, Settings } from "@lucide/vue";
-  import { useAuthStore } from "@/stores/auth";
-  import { ref, computed, onMounted } from "vue";
-  import axios from "axios";
-
-  const Auth = useAuthStore();
+  import { LayoutDashboard, Settings } from "@lucide/vue";
 
   const router = useRouter();
   const route = useRoute();
-  const auth = useAuthStore();
 
   const navItems = [
     { icon: LayoutDashboard, label: "Application Assessment", path: "/applicationassessment" },
@@ -58,42 +51,8 @@
 
   const logout = () => {
     localStorage.removeItem("menu_open_states");
-    auth.logout?.();
     router.push("/login");
   };
-
-  const isLoading = ref(false);
-
-  const user = ref({
-    surname: "",
-    firstName: ""
-  });
-
-  const fetchPersonal = async () => {
-    try {
-      const { data } = await axios.get(
-        "https://localhost:5000/api/PassportPersonalInformations/My-Profile",
-        {
-          headers: {
-            Authorization: `Bearer ${Auth.token}`
-          }
-        }
-      );
-
-      user.value.firstName = data.firstName ?? "";
-      user.value.surname = data.lastName ?? "";
-
-    } catch (err) {
-      console.log(err);
-    }
-  };
-
-  const fullName = computed(() =>
-    `${user.value.firstName} ${user.value.surname}`.trim().toUpperCase()
-  );
-
-  onMounted(fetchPersonal);
-
 </script>
 
 
