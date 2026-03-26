@@ -81,7 +81,7 @@ namespace Passport_Prototype.Server.Controllers
                 PaymentMethod = dto.PaymentMethod,
                 DeliveryOption = dto.DeliveryOption,
                 isPaid = false,
-                ApplicationStatus = "Pending"
+                ApplicationStatus = 0
             };
 
             // 4. Create Registry Entry
@@ -164,12 +164,15 @@ namespace Passport_Prototype.Server.Controllers
                     isForeignPassportHolder = app.isForeignPassportHolder,
                     isCourtesyLane = app.isCourtesyLane,
                     DocumentType = app.DocumentType,
+                    //
                     IdDocumentIdNumber = app.IdDocumentIdNumber,
                     ValidIdPath = app.ValidIdPath,
                     CertificatePath = app.CertificatePath,
                     ProcessingType = app.ProcessingType,
+
                     PaymentMethod = app.PaymentMethod,
                     DeliveryOption = app.DeliveryOption,
+
                     isPaid = app.isPaid,
                     ApplicationStatus = app.ApplicationStatus,
                     // Add more application fields if needed
