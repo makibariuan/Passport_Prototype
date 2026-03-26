@@ -59,8 +59,8 @@ namespace Passport_Prototype.Server.Controllers
             string validIdKey = await SaveTempFile(dto.ValidId);
             string certificateKey = await SaveTempFile(dto.Certificate);
 
-            string validIdPath = await _fileService.FinalizeUpload(validIdKey, dto.UserId);
-            string certificatePath = await _fileService.FinalizeUpload(certificateKey, dto.UserId);
+            string validIdPath = await _fileService.FinalizeUpload(validIdKey, (int)dto.UserId!);
+            string certificatePath = await _fileService.FinalizeUpload(certificateKey, (int)dto.UserId);
 
             // 2. Generate a Shared Application Code
             string sharedCode = GenerateApplicationCode();
@@ -119,7 +119,8 @@ namespace Passport_Prototype.Server.Controllers
             // 3. Create Passport Application Entity
             var application = new Application
             {
-                PassportPersonalInformationId = dto.Pa,
+                UserId = dto.UserId,
+                PassportPersonalInformationId = (int)dto.PassportPersonalInformationId!,
                 Region = dto.Region,
                 Country = dto.Country,
                 Site = dto.Site,
@@ -145,7 +146,7 @@ namespace Passport_Prototype.Server.Controllers
             // 4. Create Registry Entry
             var registryEntry = new EnrollmentRegistryID
             {
-                PersonID = dto.UserId,
+                PersonID = (int)dto.UserId!,
                 ApplicationCode = sharedCode,
                 ApplicationType = 2, 
 

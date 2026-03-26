@@ -5,7 +5,10 @@ namespace Passport_Prototype.Server.DTOs
     public class CreateApplicationDTO
     {
         [Required]
-        public int UserId { get; set; }
+        public int? UserId { get; set; }
+
+        [Required]
+        public int? PassportPersonalInformationId { get; set; }
 
         public string Region { get; set; } = null!;
 
