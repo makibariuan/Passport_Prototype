@@ -260,11 +260,11 @@
   const tabs = ["Adjudication"];
   const activeTab = ref("Adjudication");
 
-  const auth = useAuthStore();
-  const personId = computed(() => auth.userId); // logged in user’s ID
-  const personEmail = computed(() => auth.email);
-  const firstName = computed(() => auth.firstName);
-  const lastName = computed(() => auth.lastName);
+  //const auth = useAuthStore();
+  //const personId = computed(() => auth.userId); // logged in user’s ID
+  //const personEmail = computed(() => auth.email);
+  //const firstName = computed(() => auth.firstName);
+  //const lastName = computed(() => auth.lastName);
 
   // --- Added for Layout (Required for LeftMenu) ---
   const current = ref("Employee ID");
@@ -919,6 +919,8 @@
 
   // 5. Modal Logic
   const openAdjudication = async (emp) => {
+
+    console.log(emp);
     adjCurrent.value = null;
     adjHit.value = null;
     isLoading.value = true;
