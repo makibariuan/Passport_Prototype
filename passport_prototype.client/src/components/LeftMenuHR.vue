@@ -41,6 +41,7 @@
 
   const navItems = [
     { icon: LayoutDashboard, label: "Application Assessment", path: "/applicationassessment" },
+    { icon: LayoutDashboard, label: "Abjusdication", path: "/UserAbjudication" },
   ];
 
   const isActive = (path) => route.path === path;
