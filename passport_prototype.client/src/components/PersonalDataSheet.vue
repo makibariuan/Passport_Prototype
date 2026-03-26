@@ -1353,6 +1353,7 @@ const showValidationErrors = ref(false);
 // ─────────────────────────────────────────────
 const user = ref({
   // Personal
+  passportPersonalInformationId: 0,
   lastName: "",
   firstName: "",
   middleName: "",
@@ -1725,6 +1726,7 @@ const fetchPersonal = async () => {
       { headers: { Authorization: `Bearer ${Auth.token}` } },
     );
 
+    user.value.passportPersonalInformationId = data.passportPersonalInformationId;
     user.value.lastName = data.lastName ?? "";
     user.value.firstName = data.firstName ?? "";
     user.value.middleName = data.middleName ?? "";
@@ -1874,6 +1876,7 @@ const updatePersonal = async () => {
   try {
     isLoading.value = true;
     const payload = {
+      passportPersonalInformationId: user.value.personalInfoId,
       lastName: user.value.lastName,
       firstName: user.value.firstName,
       middleName: hasMiddleName.value ? user.value.middleName : null,
