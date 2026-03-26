@@ -67,7 +67,7 @@
                @error="(e) => e.target.src = 'https://via.placeholder.com/150'" />
 
           <div class="pass-status-tag" :class="statusClass(selectedApp.status).replace('status-', '')">
-            {{ selectedApp.status.toUpperCase() }}
+            {{ getStatusLabel(selectedApp.status).toUpperCase() }}
           </div>
         </div>
 
@@ -249,13 +249,15 @@ onMounted(async () => {
 
   await nextTick();
 
+  // Replace the columns array inside your onMounted:
   table = new window.DataTable("#assessmentTable", {
     data: tableData.value,
     columns: [
       {
         data: "number",
-        className: "app-number", // Applies the class to the <td>
+        className: "app-number",
         render: function (data) {
+          // Restoring the clickable logic for the first column
           return `<span class="clickable-code view-details-trigger">${data}</span>`;
         }
       },
@@ -265,11 +267,17 @@ onMounted(async () => {
       {
         data: "status",
         render: function (data) {
-          let cls = "";
-          if (data.includes("Pending")) cls = "init"; // Match your badge CSS
-          else if (data.includes("Progress")) cls = "progress";
-          else if (data.includes("Approved")) cls = "approved";
-          return `<span class="badge ${cls}">${data}</span>`;
+          const label = getStatusLabel(data);
+          const cls = statusClass(data).replace('status-', '');
+          // Note: statusClass already handles the logic for approved/pending/rejected
+
+          // Fallback logic for class names to match your badge CSS
+          let badgeCls = 'default';
+          if (cls === 'approved') badgeCls = 'approved';
+          if (cls === 'pending') badgeCls = 'init';
+          if (cls === 'rejected') badgeCls = 'rejected';
+
+          return `<span class="badge ${badgeCls}">${label}</span>`;
         },
       },
     ],
@@ -796,6 +804,17 @@ const onNavigate = (path) => {
   .code-text {
     font-family: 'Courier New', Courier, monospace;
     color: #003366 !important;
+  }
+
+  .badge.rejected {
+    background: #fee2e2;
+    color: #991b1b;
+  }
+
+  /* Also ensure the Dialog status tag handles the class correctly */
+  .pass-status-tag.rejected {
+    background: #fee2e2;
+    color: #991b1b;
   }
 
 /* ===== RESPONSIVE ===== */
