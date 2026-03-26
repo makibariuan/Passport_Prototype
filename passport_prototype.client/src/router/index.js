@@ -21,7 +21,8 @@ import ApplicationAssessment from "@/components/ApplicationAssessment.vue";
 import ApplicationHistory from "@/components/ApplicationHistory.vue";
 import ManageExistingApplication from "@/components/ManageExistingApplication.vue";
 import PrivacyPolicy from "@/components/PrivacyPolicy.vue";
-
+import UserAdjudication from "@/components/UserAdjudication.vue";
+import IDDetails from "@/components/Employee/IDDetails.vue";
 /*
   DEV MODE — auth guard disabled, navigate freely to any route.
   To re-enable auth, uncomment the beforeEach block at the bottom.
@@ -87,6 +88,8 @@ const routes = [
     component: ManageExistingApplication,
   },
 
+  { path: "/id-details", name: "IDDetails", component: IDDetails },
+
   // ── Management ─────────────────────────────────────────────────
   { path: "/manage-employee-ids", name: "ManageEmployeeIDs", component: DetailsPage },
   { path: "/manage-kit-users", name: "ManageKitUsers", component: ManageKitUserPage },
@@ -110,6 +113,8 @@ const routes = [
     name: "ApplicationAssessment",
     component: ApplicationAssessment,
   },
+
+  { path: "/user-adjudication", name: "UserAdjudication", component: UserAdjudication },
 ];
 
 const router = createRouter({

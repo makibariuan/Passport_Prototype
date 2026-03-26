@@ -8,6 +8,7 @@ using SeniorCitizen.Server.Models;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Formats.Png;
 using SixLabors.ImageSharp.PixelFormats;
+using System.Security.Claims;
 using ZXing;
 using ZXing.Common;
 
@@ -37,8 +38,16 @@ namespace Passport_Prototype.Server.Controllers
         }
         
         [HttpPost]
+        [Authorize]
         public async Task<IActionResult> CreateApplication([FromForm] CreateApplicationDTO dto)
         {
+            var userIdString = User.FindFirstValue("id");
+
+            if (!int.TryParse(userIdString, out int UserId))
+            {
+                throw new Exception("Invalid user ID in claims.");
+            }
+
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
@@ -59,8 +68,8 @@ namespace Passport_Prototype.Server.Controllers
             string validIdKey = await SaveTempFile(dto.ValidId);
             string certificateKey = await SaveTempFile(dto.Certificate);
 
-            string validIdPath = await _fileService.FinalizeUpload(validIdKey, (int)dto.UserId!);
-            string certificatePath = await _fileService.FinalizeUpload(certificateKey, (int)dto.UserId);
+            string validIdPath = await _fileService.FinalizeUpload(validIdKey, UserId!);
+            string certificatePath = await _fileService.FinalizeUpload(certificateKey, UserId);
 
             // 2. Generate a Shared Application Code
             string sharedCode = GenerateApplicationCode();
@@ -119,7 +128,7 @@ namespace Passport_Prototype.Server.Controllers
             // 3. Create Passport Application Entity
             var application = new Application
             {
-                UserId = dto.UserId,
+                UserId = UserId,
                 PassportPersonalInformationId = (int)dto.PassportPersonalInformationId!,
                 Region = dto.Region,
                 Country = dto.Country,
@@ -146,7 +155,7 @@ namespace Passport_Prototype.Server.Controllers
             // 4. Create Registry Entry
             var registryEntry = new EnrollmentRegistryID
             {
-                PersonID = (int)dto.UserId!,
+                PersonID = UserId!,
                 ApplicationCode = sharedCode,
                 ApplicationType = 2, 
 
@@ -191,31 +200,126 @@ namespace Passport_Prototype.Server.Controllers
             var result = await (
                 from app in _context.Applications
 
-                join user in _context.Users
-                    on app.UserId equals user.Id
-
-                join ppi in _context.PassportPersonalInformation
-                    on user.Id equals ppi.UserId
+                join enrollment in _context.EnrollmentRegistries
+                  on app.ApplicationId equals enrollment.Id
 
                 select new
                 {
-                    id = app.ApplicationId,
-                    number = app.ApplicationId.ToString(),
+                    // Enrollment Registry fields
+                    EnrollmentId = enrollment.Id,
+                    EnrollmentAccessCode = enrollment.ApplicationCode,
 
-                    type = app.ApplicationType,
+                    PersonID = enrollment.PersonID,
+                    FirstName = enrollment.FirstName,
+                    MiddleName = enrollment.MiddleName,
+                    LastName = enrollment.LastName,
+                    BirthDate = enrollment.BirthDate,
+                    Email = enrollment.Email,
+                    EmployeeID = enrollment.EmployeeID,
+                    DepartmentName = enrollment.DepartmentName,
+                    Designation = enrollment.Designation,
+                    CitizenType = enrollment.CitizenType,
+                    EnrollmentStatus = enrollment.Status,
+                    EnrollmentCreatedAt = enrollment.CreatedAt,
+                    Photo = enrollment.Photo,
+                    Signature = enrollment.Signature,
+                    // Add more enrollment fields if needed
 
-                    date = app.Schedule,
+                    // Application fields
+                    ApplicationId = app.ApplicationId,
+                    UserId = app.UserId,
+                    Region = app.Region,
+                    Country = app.Country,
+                    Site = app.Site,
+                    Schedule = app.Schedule,
+                    AppType = app.ApplicationType,
+                    CitizenshipBasis = app.CitizenshipBasis,
+                    isForeignPassportHolder = app.isForeignPassportHolder,
+                    isCourtesyLane = app.isCourtesyLane,
+                    DocumentType = app.DocumentType,
+                    //
+                    IdDocumentIdNumber = app.IdDocumentIdNumber,
+                    ValidIdPath = app.ValidIdPath,
+                    CertificatePath = app.CertificatePath,
+                    ProcessingType = app.ProcessingType,
 
-                    name = $"{user.FirstName} {user.LastName}",
+                    PaymentMethod = app.PaymentMethod,
+                    DeliveryOption = app.DeliveryOption,
 
-                    status = app.ApplicationStatus
+                    isPaid = app.isPaid,
+                    ApplicationStatus = app.ApplicationStatus,
+                    // Add more application fields if needed
                 }
             ).ToListAsync();
 
             return Ok(result);
         }
 
+        [HttpGet("My-Applications")]
+        [Authorize]
+        public async Task<IActionResult> GetMyApplications()
+        {
+            var userIdString = User.FindFirstValue("id");
 
+            if (!int.TryParse(userIdString, out int userId))
+                return BadRequest("Invalid user ID in claims.");
+
+            var applications = await (
+                from app in _context.Applications
+                join ppi in _context.PassportPersonalInformation
+                    on app.PassportPersonalInformationId equals ppi.PassportPersonalInformationId into ppiJoin
+                from ppi in ppiJoin.DefaultIfEmpty() // LEFT JOIN to allow missing profiles
+                where app.UserId == userId
+                select new
+                {
+                    applicationId = app.ApplicationId,
+                    status = (int?)app.ApplicationStatus,
+                    barcodePath = app.ApplicationBarCodePath ?? "",
+                    barcode = app.ApplicationBarCodePath ?? "",
+                    profileName = ppi != null
+                        ? $"{ppi.FirstName} {(ppi.MiddleName ?? "")} {ppi.LastName} {(ppi.Suffix ?? "")}".Trim()
+                        : "No Profile",
+                    schedule = app.Schedule
+                }
+            ).ToListAsync();
+
+            return Ok(applications);
+        }
+
+        [HttpGet("{applicationId}")]
+        [Authorize]
+        public async Task<IActionResult> GetApplicationById(int applicationId)
+        {
+            var userIdString = User.FindFirstValue("id");
+
+            if (!int.TryParse(userIdString, out int userId))
+                return BadRequest("Invalid user ID in claims.");
+
+            var application = await (
+                from app in _context.Applications
+                join ppi in _context.PassportPersonalInformation
+                    on app.PassportPersonalInformationId equals ppi.PassportPersonalInformationId into ppiJoin
+                from ppi in ppiJoin.DefaultIfEmpty() // LEFT JOIN
+                where app.ApplicationId == applicationId && app.UserId == userId
+                select new
+                {
+                    applicationId = app.ApplicationId,
+                    status = (int?)app.ApplicationStatus,
+                    barcodePath = app.ApplicationBarCodePath ?? "",
+                    barcode = app.ApplicationBarCodePath ?? "",
+                    profileName = ppi != null
+                        ? $"{ppi.FirstName} {(ppi.MiddleName ?? "")} {ppi.LastName} {(ppi.Suffix ?? "")}".Trim()
+                        : "No Profile",
+                    site = app.Site ?? "",
+                    schedule = app.Schedule
+                }
+            ).FirstOrDefaultAsync();
+
+            if (application == null)
+                return NotFound();
+
+            return Ok(application);
+        }
     }
 
 }
