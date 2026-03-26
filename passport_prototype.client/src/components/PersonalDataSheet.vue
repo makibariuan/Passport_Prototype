@@ -1959,6 +1959,101 @@ const updateFamily = async () => {
   }
 };
 
+const updateContact = async () => {
+  try {
+    isLoading.value = true;
+
+    const payload = {
+      id: contact.value.id,
+      passportPersonalInformationId: user.value.personalInfoId,
+
+      // Address
+      currentStreet: address.value.street,
+      currentAddressAbroad: address.value.abroad,
+      currentCountry: address.value.country,
+      currentRegion: address.value.country === "PH" ? address.value.region : null,
+      currentProvince: address.value.country === "PH" ? address.value.province : null,
+      currentCityMunicipality:
+        address.value.country === "PH" ? address.value.municipality : address.value.city,
+      currentBarangay: address.value.country === "PH" ? address.value.barangay : null,
+      currentPostalCode: address.value.postal,
+
+      // Contact numbers (stored as full formatted strings, matching fetch pattern)
+      personalMobileNumber:
+        contact.value.mobilePrefix || contact.value.mobileNumber
+          ? `${contact.value.mobileCountry} ${contact.value.mobilePrefix}${contact.value.mobileNumber}`.trim()
+          : null,
+      personalLandlineNumber: contact.value.landlineNumber
+        ? `${contact.value.landlineCountry} ${contact.value.landlineNumber}`.trim()
+        : null,
+    };
+
+    await axios.patch("https://localhost:5000/api/ContactInformation", payload, {
+      headers: { Authorization: `Bearer ${Auth.token}` },
+    });
+
+    dialogTitle.value = "Success";
+    dialogMessage.value = "Contact info saved.";
+    showDialog.value = true;
+  } catch (err) {
+    console.log("updateContact error:", err);
+    dialogTitle.value = "Error";
+    dialogMessage.value = "Failed to save contact info.";
+    showDialog.value = true;
+  } finally {
+    isLoading.value = false;
+  }
+};
+
+const updateWork = async () => {
+  try {
+    isLoading.value = true;
+
+    const payload = {
+      id: work.value.id,
+      passportPersonalInformationId: user.value.personalInfoId,
+
+      // Job details
+      occupation: work.value.occupation,
+      employer: work.value.employer,
+      officeAddress: work.value.officeAddress,
+
+      // Office location
+      officeCountry: work.value.officeCountry,
+      officeRegion: work.value.officeCountry === "PH" ? work.value.officeRegion : null,
+      officeProvince: work.value.officeCountry === "PH" ? work.value.officeProvince : null,
+      officeCityMunicipality:
+        work.value.officeCountry === "PH" ? work.value.officeMunicipality : work.value.officeCity,
+      officeBarangay: work.value.officeCountry === "PH" ? work.value.officeBarangay : null,
+      officePostalCode: work.value.postalCode,
+
+      // Work contact numbers
+      officeMobileNumber:
+        work.value.workMobilePrefix || work.value.workMobileNumber
+          ? `${work.value.workMobileCountry} ${work.value.workMobilePrefix}${work.value.workMobileNumber}`.trim()
+          : null,
+      officeLandlineNumber: work.value.workLandlineNumber
+        ? `${work.value.workLandlineCountry} ${work.value.workLandlineNumber}`.trim()
+        : null,
+    };
+
+    await axios.patch("https://localhost:5000/api/WorkInformation", payload, {
+      headers: { Authorization: `Bearer ${Auth.token}` },
+    });
+
+    dialogTitle.value = "Success";
+    dialogMessage.value = "Work info saved.";
+    showDialog.value = true;
+  } catch (err) {
+    console.log("updateWork error:", err);
+    dialogTitle.value = "Error";
+    dialogMessage.value = "Failed to save work info.";
+    showDialog.value = true;
+  } finally {
+    isLoading.value = false;
+  }
+};
+
 // ─────────────────────────────────────────────
 // SAVE DISPATCHER
 // ─────────────────────────────────────────────
@@ -1966,15 +2061,8 @@ const save = () => {
   showValidationErrors.value = true;
   if (activeTab.value === "Personal") updatePersonal();
   else if (activeTab.value === "Family") updateFamily();
-  else if (activeTab.value === "Contact") {
-    dialogTitle.value = "Info";
-    dialogMessage.value = "Contact save is not yet connected to the API.";
-    showDialog.value = true;
-  } else if (activeTab.value === "Work") {
-    dialogTitle.value = "Info";
-    dialogMessage.value = "Work save is not yet connected to the API.";
-    showDialog.value = true;
-  }
+  else if (activeTab.value === "Contact") updateContact();
+  else if (activeTab.value === "Work") updateWork();
 };
 
 // ─────────────────────────────────────────────
