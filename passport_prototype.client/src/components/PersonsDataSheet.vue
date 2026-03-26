@@ -1806,7 +1806,7 @@ const fetchRelationship = async () => {
       : [];
 
     if (profiles.value.length > 0) {
-      selectedProfileId.value = profiles.value[0].id;
+      selectedProfileId.value = profiles.value[1].id;
     }
   } catch (err) {
     console.log("fetchRelationship error:", err);
@@ -1823,7 +1823,7 @@ const fetchPersonal = async () => {
   try {
     isLoading.value = true;
     const { data } = await axios.get(
-      `https://localhost:5000/api/PassportPersonalInformations/${selectedProfileId.value ? selectedProfileId.value : profiles.value[0].id}`,
+      `https://localhost:5000/api/PassportPersonalInformations/${selectedProfileId.value}`,
       { headers: { Authorization: `Bearer ${Auth.token}` } },
     );
 
