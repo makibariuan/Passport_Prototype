@@ -4,8 +4,6 @@ namespace Passport_Prototype.Server.DTOs
 {
     public class CreateApplicationDTO
     {
-        [Required]
-        public int? UserId { get; set; }
 
         [Required]
         public int? PassportPersonalInformationId { get; set; }
@@ -44,8 +42,6 @@ namespace Passport_Prototype.Server.DTOs
 
         public bool isPaid { get; set; }
 
-        public string ApplicationStatus { get; set; } = null!;
+        public int ApplicationStatus { get; set; } = 1;
     }
-
-
 }

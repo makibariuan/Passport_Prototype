@@ -8,6 +8,7 @@ using SeniorCitizen.Server.Models;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Formats.Png;
 using SixLabors.ImageSharp.PixelFormats;
+using System.Security.Claims;
 using ZXing;
 using ZXing.Common;
 
@@ -37,8 +38,16 @@ namespace Passport_Prototype.Server.Controllers
         }
         
         [HttpPost]
+        [Authorize]
         public async Task<IActionResult> CreateApplication([FromForm] CreateApplicationDTO dto)
         {
+            var userIdString = User.FindFirstValue("id");
+
+            if (!int.TryParse(userIdString, out int UserId))
+            {
+                throw new Exception("Invalid user ID in claims.");
+            }
+
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
@@ -59,8 +68,8 @@ namespace Passport_Prototype.Server.Controllers
             string validIdKey = await SaveTempFile(dto.ValidId);
             string certificateKey = await SaveTempFile(dto.Certificate);
 
-            string validIdPath = await _fileService.FinalizeUpload(validIdKey, (int)dto.UserId!);
-            string certificatePath = await _fileService.FinalizeUpload(certificateKey, (int)dto.UserId);
+            string validIdPath = await _fileService.FinalizeUpload(validIdKey, UserId!);
+            string certificatePath = await _fileService.FinalizeUpload(certificateKey, UserId);
 
             // 2. Generate a Shared Application Code
             string sharedCode = GenerateApplicationCode();
@@ -119,7 +128,7 @@ namespace Passport_Prototype.Server.Controllers
             // 3. Create Passport Application Entity
             var application = new Application
             {
-                UserId = dto.UserId,
+                UserId = UserId,
                 PassportPersonalInformationId = (int)dto.PassportPersonalInformationId!,
                 Region = dto.Region,
                 Country = dto.Country,
@@ -146,7 +155,7 @@ namespace Passport_Prototype.Server.Controllers
             // 4. Create Registry Entry
             var registryEntry = new EnrollmentRegistryID
             {
-                PersonID = (int)dto.UserId!,
+                PersonID = UserId!,
                 ApplicationCode = sharedCode,
                 ApplicationType = 2, 
 
