@@ -16,10 +16,9 @@ import ManageCitizenPage from "@/components/ManageCitizenPage.vue";
 import AdjudicationDetailsPage from "@/components/HR/AdjudicationDetailsPage.vue";
 import BiometricTest from "@/components/BiometricTest.vue";
 import AttendanceManagement from "@/components/HR/AttendanceManagement.vue";
-import IDDetails from "@/components/Employee/IDDetails.vue";
 import CreateApplication from "@/components/CreateApplication.vue";
 import ApplicationAssessment from "@/components/ApplicationAssessment.vue";
-
+import ApplicationHistory from "@/components/ApplicationHistory.vue";
 
 /*
   DEV MODE — auth guard disabled, navigate freely to any route.
@@ -62,7 +61,7 @@ import ApplicationAssessment from "@/components/ApplicationAssessment.vue";
 
 const routes = [
   // ── Public / Auth ──────────────────────────────────────────────
-  { path: "/", name: "Login", component: AuthPage },
+  { path: "/", name: "Login", component: DashboardUser },
   { path: "/login", redirect: "/" },
   { path: "/confirm-email", name: "ConfirmEmail", component: EmailConfirm },
   { path: "/reset-password", name: "ResetPassword", component: ResetPassword },
@@ -78,7 +77,7 @@ const routes = [
   { path: "/profile", name: "PersonalDataSheet", component: PersonalDataSheet },
   { path: "/persons-profile", name: "PersonsDataSheet", component: PersonsDataSheet },
   { path: "/application/new", name: "Application", component: CreateApplication },
-  { path: "/id-details", name: "IDDetails", component: IDDetails },
+  { path: "/application/history", name: "ApplicationHistory", component: ApplicationHistory },
 
   // ── Management ─────────────────────────────────────────────────
   { path: "/manage-employee-ids", name: "ManageEmployeeIDs", component: DetailsPage },
@@ -98,8 +97,11 @@ const routes = [
   { path: "/:pathMatch(.*)*", redirect: "/" },
 
   // ── Application-Assessment ──────────────────────────────────────────────────
-  { path: "/applicationassessment", name: "ApplicationAssessment", component: ApplicationAssessment },
-
+  {
+    path: "/applicationassessment",
+    name: "ApplicationAssessment",
+    component: ApplicationAssessment,
+  },
 ];
 
 const router = createRouter({

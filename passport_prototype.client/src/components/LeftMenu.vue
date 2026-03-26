@@ -41,6 +41,7 @@ import { User, Users, Calendar, FileSearch, BookText, CheckSquare, Settings } fr
 import { useAuthStore } from "@/stores/auth";
 import { ref, computed, onMounted } from "vue";
 import axios from "axios";
+import { BACKEND_DOMAIN } from "@/configs/config";
 
 const Auth = useAuthStore();
 
@@ -52,7 +53,7 @@ const user = ref({
 const fetchPersonal = async () => {
   try {
     const { data } = await axios.get(
-      "https://localhost:5000/api/PassportPersonalInformations/My-Profile",
+      `${BACKEND_DOMAIN}/api/PassportPersonalInformations/My-Profile`,
       {
         headers: {
           Authorization: `Bearer ${Auth.token}`,

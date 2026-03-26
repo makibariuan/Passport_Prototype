@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using OnlineRegistration.Server.Data;
 using Passport_Prototype.Server.DTOs;
 using Passport_Prototype.Server.Models;
+using System.Security.Claims;
 
 namespace Passport_Prototype.Server.Controllers
 {
@@ -54,6 +55,29 @@ namespace Passport_Prototype.Server.Controllers
             return Ok(data);
         }
 
+        [HttpGet("My-Contact")]
+        public async Task<IActionResult> GetMyContact()
+        {
+            var userIdString = User.FindFirstValue("id");
+
+            if (!int.TryParse(userIdString, out int userId))
+                return BadRequest("Invalid user ID.");
+
+            var personal = await _context.PassportPersonalInformation
+                .FirstOrDefaultAsync(p => p.UserId == userId && p.Relationship == null);
+
+            if (personal == null)
+                return NotFound();
+
+            var contact = await _context.ContactInformation
+                .FirstOrDefaultAsync(c => c.PassportPersonalInformationId == personal.PassportPersonalInformationId);
+
+            if (contact == null)
+                return NotFound();
+
+            return Ok(contact);
+        }
+
         // READ BY ID (UserID)
         [HttpGet("{personalId}")]
         public async Task<IActionResult> GetByUserId(int personalId)
@@ -68,11 +92,11 @@ namespace Passport_Prototype.Server.Controllers
         }
 
         // UPDATE
-        [HttpPatch("{personalId}")]
-        public async Task<IActionResult> Update(int personalId, ContactInformationDto dto)
+        [HttpPatch]
+        public async Task<IActionResult> Update(ContactInformationDto dto)
         {
             var entity = await _context.ContactInformation
-                .FirstOrDefaultAsync(c => c.PassportPersonalInformationId == personalId);
+                .FirstOrDefaultAsync(c => c.PassportPersonalInformationId == dto.PassportPersonalInformationId);
 
             if (entity == null)
                 return NotFound();

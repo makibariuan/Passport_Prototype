@@ -728,217 +728,402 @@
               </div>
               <!-- /FAMILY TAB -->
 
-              <!-- ═══════════════════════════════════════════ -->
+
+              
               <!-- CONTACT TAB                                -->
               <!-- ═══════════════════════════════════════════ -->
               <div v-else-if="activeTab === 'Contact'">
-                <div style="margin-bottom: 30px">
-                  <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 20px">
-                    <p style="margin: 0; font-weight: bold; white-space: nowrap">
-                      Personal Contact & Address
-                    </p>
-                  </div>
+                <div class="form-wrapper">
 
-                  <div style="display: flex; flex-direction: column; gap: 12px">
-                    <label class="form-row">
-                      <span>Current Address</span>
-                      <input class="auth-input" v-model="address.street" />
-                    </label>
-                    <label class="form-row">
-                      <span>Address Abroad</span>
-                      <input class="auth-input" v-model="address.abroad" />
-                    </label>
-                    <label class="form-row">
-                      <span>Current Country</span>
-                      <select class="auth-select" v-model="address.country">
-                        <option value="">Select Country</option>
-                      </select>
-                    </label>
-                    <label class="form-row">
-                      <span>Current Region</span>
-                      <select class="auth-select" v-model="address.region">
-                        <option value="">Select Region</option>
-                      </select>
-                    </label>
-                    <label class="form-row">
-                      <span>Current Province</span>
-                      <select class="auth-select" v-model="address.province">
-                        <option value="">Select Province</option>
-                      </select>
-                    </label>
-                    <label class="form-row">
-                      <span>Current Municipality</span>
-                      <select class="auth-select" v-model="address.municipality">
-                        <option value="">Select Municipality</option>
-                      </select>
-                    </label>
-                    <label class="form-row">
-                      <span>Current Barangay</span>
-                      <select class="auth-select" v-model="address.barangay">
-                        <option value="">Select Barangay</option>
-                      </select>
-                    </label>
-                    <label class="form-row">
-                      <span>Current Postal Code</span>
-                      <input class="auth-input" v-model="address.postal" />
-                    </label>
-                  </div>
-
-                  <!-- Personal Mobile -->
-                  <label class="form-row" style="margin-top: 24px">
-                    <span>Personal Mobile</span>
-                    <div class="phone-input-group">
-                      <select class="phone-flag" v-model="contact.mobileCountry">
-                        <option value="+63">🇵🇭 +63</option>
-                        <option value="+1">🇺🇸 +1</option>
-                        <option value="+44">🇬🇧 +44</option>
-                      </select>
-                      <input
-                        class="auth-input phone-prefix"
-                        placeholder="906"
-                        v-model="contact.mobilePrefix"
-                        maxlength="4"
-                      />
-                      <input
-                        class="auth-input phone-number"
-                        placeholder="1234567"
-                        v-model="contact.mobileNumber"
-                      />
+                  <!-- SECTION: Current Address -->
+                  <div class="pds-section">
+                    <div class="pds-section-header">
+                      <div class="section-icon-wrap contact">
+                        <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                          <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                          <path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                        </svg>
+                      </div>
+                      <div>
+                        <h3 class="pds-section-title">Current Address</h3>
+                        <p class="pds-section-sub">Your residential address details</p>
+                      </div>
                     </div>
-                  </label>
 
-                  <!-- Personal Landline -->
-                  <label class="form-row" style="margin-top: 16px">
-                    <span>Personal Landline</span>
-                    <div class="phone-input-group">
-                      <select class="phone-flag" v-model="contact.landlineCountry">
-                        <option value="+63">🇵🇭 +63</option>
-                        <option value="+1">🇺🇸 +1</option>
-                        <option value="+44">🇬🇧 +44</option>
-                      </select>
-                      <input
-                        class="auth-input phone-number"
-                        placeholder="02-123-4567"
-                        v-model="contact.landlineNumber"
-                      />
+                    <div class="pds-field-grid">
+                      <!-- Street / Unit / Building -->
+                      <div class="pds-field contact-full">
+                        <label class="pds-label">Street / Unit / Building<span class="required-star">*</span></label>
+                        <input v-model="address.street" class="pds-input" placeholder="e.g. 123 Rizal St., Unit 4B" />
+                      </div>
+
+                      <!-- Address Abroad -->
+                      <div class="pds-field contact-full">
+                        <label class="pds-label">Address Abroad <span class="pds-optional">(if applicable)</span></label>
+                        <input v-model="address.abroad" class="pds-input" placeholder="Foreign address if currently abroad" />
+                      </div>
+
+                      <!-- Country -->
+                      <div class="pds-field">
+                        <label class="pds-label">Country<span class="required-star">*</span></label>
+                        <div class="pds-flag-select">
+                          <span class="pds-flag-preview">{{ selectedAddressCountryFlag }}</span>
+                          <select v-model="address.country" class="pds-input pds-flag-input" @change="onAddressCountryChange">
+                            <option value="">— Select Country —</option>
+                            <option v-for="c in birthCountries" :key="c.code" :value="c.code">
+                              {{ c.flag }} {{ c.name }}
+                            </option>
+                          </select>
+                        </div>
+                      </div>
+
+                      <!-- Region (PH only) -->
+                      <div class="pds-field" v-if="address.country === 'PH'">
+                        <label class="pds-label">Region<span class="required-star">*</span></label>
+                        <select v-model="address.region" class="pds-input" @change="onAddressRegionChange">
+                          <option value="">— Select Region —</option>
+                          <option v-for="r in phRegions" :key="r.code" :value="r.code">{{ r.name }}</option>
+                        </select>
+                      </div>
+
+                      <!-- Province (PH only) -->
+                      <div class="pds-field" v-if="address.country === 'PH' && address.region">
+                        <label class="pds-label">Province<span class="required-star">*</span></label>
+                        <select v-model="address.province" class="pds-input" @change="onAddressProvinceChange">
+                          <option value="">— Select Province —</option>
+                          <option v-for="p in filteredAddressProvinces" :key="p.code" :value="p.code">{{ p.name }}</option>
+                        </select>
+                      </div>
+
+                      <!-- Municipality (PH only) -->
+                      <div class="pds-field" v-if="address.country === 'PH' && address.province">
+                        <label class="pds-label">City / Municipality<span class="required-star">*</span></label>
+                        <select v-model="address.municipality" class="pds-input" @change="onAddressMunicipalityChange">
+                          <option value="">— Select City / Municipality —</option>
+                          <option v-for="c in filteredAddressCities" :key="c.code" :value="c.code">{{ c.name }}</option>
+                        </select>
+                      </div>
+
+                      <!-- Barangay (PH only) -->
+                      <div class="pds-field" v-if="address.country === 'PH' && address.municipality">
+                        <label class="pds-label">Barangay</label>
+                        <select v-model="address.barangay" class="pds-input">
+                          <option value="">— Select Barangay —</option>
+                          <option v-for="b in filteredAddressBarangays" :key="b.code" :value="b.code">{{ b.name }}</option>
+                        </select>
+                      </div>
+
+                      <!-- Foreign city (non-PH) -->
+                      <div class="pds-field" v-if="address.country && address.country !== 'PH'">
+                        <label class="pds-label">City / Town</label>
+                        <input v-model="address.city" class="pds-input" placeholder="Enter city or town" />
+                      </div>
+
+                      <!-- Postal Code -->
+                      <div class="pds-field">
+                        <label class="pds-label">Postal Code</label>
+                        <input v-model="address.postal" class="pds-input" placeholder="e.g. 1200" maxlength="10" />
+                      </div>
                     </div>
-                  </label>
 
+                    <!-- Address breadcrumb -->
+                    <div v-if="addressLocationSummary" class="pds-location-crumb">
+                      📍 {{ addressLocationSummary }}
+                    </div>
+                  </div>
+                  <!-- /SECTION: Current Address -->
+                  <!-- SECTION: Phone Numbers -->
+                  <div class="pds-section">
+                    <div class="pds-section-header">
+                      <div class="section-icon-wrap phone">
+                        <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                          <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 8V5z" />
+                        </svg>
+                      </div>
+                      <div>
+                        <h3 class="pds-section-title">Contact Numbers</h3>
+                        <p class="pds-section-sub">Personal mobile and landline</p>
+                      </div>
+                    </div>
+
+                    <div class="contact-phone-grid">
+                      <!-- Personal Mobile -->
+                      <div class="phone-card">
+                        <div class="phone-card-label">
+                          <span class="phone-type-badge mobile">📱 Mobile</span>
+                        </div>
+                        <div class="phone-input-row">
+                          <select class="phone-country-select" v-model="contact.mobileCountry">
+                            <option value="+63">🇵🇭 +63</option>
+                            <option value="+1">🇺🇸 +1</option>
+                            <option value="+44">🇬🇧 +44</option>
+                            <option value="+61">🇦🇺 +61</option>
+                            <option value="+81">🇯🇵 +81</option>
+                            <option value="+82">🇰🇷 +82</option>
+                            <option value="+65">🇸🇬 +65</option>
+                          </select>
+                          <input class="pds-input phone-segment"
+                                 placeholder="906"
+                                 v-model="contact.mobilePrefix"
+                                 maxlength="4" />
+                          <span class="phone-dash">—</span>
+                          <input class="pds-input phone-main"
+                                 placeholder="1234567"
+                                 v-model="contact.mobileNumber"
+                                 maxlength="8" />
+                        </div>
+                        <div class="phone-preview" v-if="contact.mobilePrefix || contact.mobileNumber">
+                          {{ contact.mobileCountry }} {{ contact.mobilePrefix }}{{ contact.mobileNumber }}
+                        </div>
+                      </div>
+
+                      <!-- Personal Landline -->
+                      <div class="phone-card">
+                        <div class="phone-card-label">
+                          <span class="phone-type-badge landline">☎️ Landline</span>
+                        </div>
+                        <div class="phone-input-row">
+                          <select class="phone-country-select" v-model="contact.landlineCountry">
+                            <option value="+63">🇵🇭 +63</option>
+                            <option value="+1">🇺🇸 +1</option>
+                            <option value="+44">🇬🇧 +44</option>
+                            <option value="+61">🇦🇺 +61</option>
+                            <option value="+81">🇯🇵 +81</option>
+                          </select>
+                          <input class="pds-input phone-main"
+                                 placeholder="02-8123-4567"
+                                 v-model="contact.landlineNumber" />
+                        </div>
+                        <div class="phone-preview" v-if="contact.landlineNumber">
+                          {{ contact.landlineCountry }} {{ contact.landlineNumber }}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <!-- /SECTION: Phone Numbers -->
+                  <!-- Save -->
                   <div class="button-group-row">
-                    <button @click="save" class="btn" style="margin-left: auto; width: 200px">
+                    <button @click="save" class="btn save-btn" style="margin-left: auto; width: 200px">
+                      <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+                      </svg>
                       Save Progress
                     </button>
                   </div>
+
                 </div>
               </div>
               <!-- /CONTACT TAB -->
-
               <!-- ═══════════════════════════════════════════ -->
+
               <!-- WORK TAB                                   -->
               <!-- ═══════════════════════════════════════════ -->
               <div v-else-if="activeTab === 'Work'">
                 <div class="form-wrapper">
-                  <div style="margin-bottom: 30px">
-                    <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 20px">
-                      <p style="margin: 0; font-weight: bold; white-space: nowrap">
-                        Work Information
-                      </p>
+
+                  <!-- SECTION: Job Details -->
+                  <div class="pds-section">
+                    <div class="pds-section-header">
+                      <div class="section-icon-wrap work">
+                        <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                          <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                        </svg>
+                      </div>
+                      <div>
+                        <h3 class="pds-section-title">Job Details</h3>
+                        <p class="pds-section-sub">Your current occupation and employer</p>
+                      </div>
                     </div>
 
-                    <div style="display: flex; flex-direction: column; gap: 12px">
-                      <label class="form-row">
-                        <span>Occupation</span>
-                        <input class="auth-input" v-model="work.occupation" />
-                      </label>
-                      <label class="form-row">
-                        <span>Office Address</span>
-                        <input class="auth-input" v-model="work.officeAddress" />
-                      </label>
-                      <label class="form-row">
-                        <span>Office Country</span>
-                        <select class="auth-select" v-model="work.officeCountry">
-                          <option value="">Select Country</option>
-                        </select>
-                      </label>
-                      <label class="form-row">
-                        <span>Office Region</span>
-                        <select class="auth-select" v-model="work.officeRegion">
-                          <option value="">Select Region</option>
-                        </select>
-                      </label>
-                      <label class="form-row">
-                        <span>Office Province</span>
-                        <select class="auth-select" v-model="work.officeProvince">
-                          <option value="">Select Province</option>
-                        </select>
-                      </label>
-                      <label class="form-row">
-                        <span>Office Municipality</span>
-                        <select class="auth-select" v-model="work.officeMunicipality">
-                          <option value="">Select Municipality</option>
-                        </select>
-                      </label>
-                      <label class="form-row">
-                        <span>Office Barangay</span>
-                        <select class="auth-select" v-model="work.officeBarangay">
-                          <option value="">Select Barangay</option>
-                        </select>
-                      </label>
-                      <label class="form-row">
-                        <span>Office Postal Code</span>
-                        <input class="auth-input" v-model="work.postalCode" />
-                      </label>
-                    </div>
-
-                    <!-- Work Mobile -->
-                    <label class="form-row" style="margin-top: 24px">
-                      <span>Work Mobile</span>
-                      <div class="phone-input-group">
-                        <select class="phone-flag" v-model="contact.mobileCountry">
-                          <option value="+63">🇵🇭 +63</option>
-                          <option value="+1">🇺🇸 +1</option>
-                          <option value="+44">🇬🇧 +44</option>
-                        </select>
-                        <input
-                          class="auth-input phone-prefix"
-                          placeholder="906"
-                          v-model="contact.mobilePrefix"
-                          maxlength="4"
-                        />
-                        <input
-                          class="auth-input phone-number"
-                          placeholder="1234567"
-                          v-model="contact.mobileNumber"
-                        />
+                    <div class="pds-field-grid">
+                      <div class="pds-field contact-full">
+                        <label class="pds-label">Occupation / Job Title</label>
+                        <input v-model="work.occupation" class="pds-input" placeholder="e.g. Software Engineer, Teacher, Nurse" />
                       </div>
-                    </label>
 
-                    <!-- Work Landline -->
-                    <label class="form-row" style="margin-top: 16px">
-                      <span>Work Landline</span>
-                      <div class="phone-input-group">
-                        <select class="phone-flag" v-model="contact.landlineCountry">
-                          <option value="+63">🇵🇭 +63</option>
-                          <option value="+1">🇺🇸 +1</option>
-                          <option value="+44">🇬🇧 +44</option>
-                        </select>
-                        <input
-                          class="auth-input phone-number"
-                          placeholder="02-123-4567"
-                          v-model="contact.landlineNumber"
-                        />
+                      <div class="pds-field contact-full">
+                        <label class="pds-label">Employer / Company Name</label>
+                        <input v-model="work.employer" class="pds-input" placeholder="e.g. Acme Corporation" />
                       </div>
-                    </label>
 
-                    <div class="button-group-row">
-                      <button @click="save" class="btn" style="margin-left: auto; width: 200px">
-                        Save Progress
-                      </button>
+                      <div class="pds-field contact-full">
+                        <label class="pds-label">Office Address</label>
+                        <input v-model="work.officeAddress" class="pds-input" placeholder="e.g. 10th Floor, BGC Tower, Taguig" />
+                      </div>
                     </div>
                   </div>
+                  <!-- /SECTION: Job Details -->
+                  <!-- SECTION: Office Location -->
+                  <div class="pds-section">
+                    <div class="pds-section-header">
+                      <div class="section-icon-wrap office-loc">
+                        <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                          <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-2 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                        </svg>
+                      </div>
+                      <div>
+                        <h3 class="pds-section-title">Office Location</h3>
+                        <p class="pds-section-sub">Where your office is located</p>
+                      </div>
+                    </div>
+
+                    <div class="pds-field-grid">
+                      <!-- Country -->
+                      <div class="pds-field">
+                        <label class="pds-label">Country</label>
+                        <div class="pds-flag-select">
+                          <span class="pds-flag-preview">{{ selectedOfficeCountryFlag }}</span>
+                          <select v-model="work.officeCountry" class="pds-input pds-flag-input" @change="onOfficeCountryChange">
+                            <option value="">— Select Country —</option>
+                            <option v-for="c in birthCountries" :key="c.code" :value="c.code">
+                              {{ c.flag }} {{ c.name }}
+                            </option>
+                          </select>
+                        </div>
+                      </div>
+
+                      <!-- Region (PH only) -->
+                      <div class="pds-field" v-if="work.officeCountry === 'PH'">
+                        <label class="pds-label">Region</label>
+                        <select v-model="work.officeRegion" class="pds-input" @change="onOfficeRegionChange">
+                          <option value="">— Select Region —</option>
+                          <option v-for="r in phRegions" :key="r.code" :value="r.code">{{ r.name }}</option>
+                        </select>
+                      </div>
+
+                      <!-- Province (PH only) -->
+                      <div class="pds-field" v-if="work.officeCountry === 'PH' && work.officeRegion">
+                        <label class="pds-label">Province</label>
+                        <select v-model="work.officeProvince" class="pds-input" @change="onOfficeProvinceChange">
+                          <option value="">— Select Province —</option>
+                          <option v-for="p in filteredOfficeProvinces" :key="p.code" :value="p.code">{{ p.name }}</option>
+                        </select>
+                      </div>
+
+                      <!-- Municipality (PH only) -->
+                      <div class="pds-field" v-if="work.officeCountry === 'PH' && work.officeProvince">
+                        <label class="pds-label">City / Municipality</label>
+                        <select v-model="work.officeMunicipality" class="pds-input" @change="onOfficeMunicipalityChange">
+                          <option value="">— Select City / Municipality —</option>
+                          <option v-for="c in filteredOfficeCities" :key="c.code" :value="c.code">{{ c.name }}</option>
+                        </select>
+                      </div>
+
+                      <!-- Barangay (PH only) -->
+                      <div class="pds-field" v-if="work.officeCountry === 'PH' && work.officeMunicipality">
+                        <label class="pds-label">Barangay</label>
+                        <select v-model="work.officeBarangay" class="pds-input">
+                          <option value="">— Select Barangay —</option>
+                          <option v-for="b in filteredOfficeBarangays" :key="b.code" :value="b.code">{{ b.name }}</option>
+                        </select>
+                      </div>
+
+                      <!-- Foreign city (non-PH) -->
+                      <div class="pds-field" v-if="work.officeCountry && work.officeCountry !== 'PH'">
+                        <label class="pds-label">City / Town</label>
+                        <input v-model="work.officeCity" class="pds-input" placeholder="Enter city or town" />
+                      </div>
+
+                      <!-- Postal Code -->
+                      <div class="pds-field">
+                        <label class="pds-label">Postal Code</label>
+                        <input v-model="work.postalCode" class="pds-input" placeholder="e.g. 1634" maxlength="10" />
+                      </div>
+                    </div>
+
+                    <!-- Office breadcrumb -->
+                    <div v-if="officeLocationSummary" class="pds-location-crumb">
+                      🏢 {{ officeLocationSummary }}
+                    </div>
+                  </div>
+                  <!-- /SECTION: Office Location -->
+                  <!-- SECTION: Work Contact Numbers -->
+                  <div class="pds-section">
+                    <div class="pds-section-header">
+                      <div class="section-icon-wrap phone">
+                        <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                          <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 8V5z" />
+                        </svg>
+                      </div>
+                      <div>
+                        <h3 class="pds-section-title">Work Contact Numbers</h3>
+                        <p class="pds-section-sub">Work mobile and office landline</p>
+                      </div>
+                    </div>
+
+                    <div class="contact-phone-grid">
+                      <!-- Work Mobile -->
+                      <div class="phone-card">
+                        <div class="phone-card-label">
+                          <span class="phone-type-badge mobile">📱 Work Mobile</span>
+                        </div>
+                        <div class="phone-input-row">
+                          <select class="phone-country-select" v-model="work.workMobileCountry">
+                            <option value="+63">🇵🇭 +63</option>
+                            <option value="+1">🇺🇸 +1</option>
+                            <option value="+44">🇬🇧 +44</option>
+                            <option value="+61">🇦🇺 +61</option>
+                            <option value="+81">🇯🇵 +81</option>
+                            <option value="+82">🇰🇷 +82</option>
+                            <option value="+65">🇸🇬 +65</option>
+                          </select>
+                          <input class="pds-input phone-segment"
+                                 placeholder="906"
+                                 v-model="work.workMobilePrefix"
+                                 maxlength="4" />
+                          <span class="phone-dash">—</span>
+                          <input class="pds-input phone-main"
+                                 placeholder="1234567"
+                                 v-model="work.workMobileNumber"
+                                 maxlength="8" />
+                        </div>
+                        <div class="phone-preview" v-if="work.workMobilePrefix || work.workMobileNumber">
+                          {{ work.workMobileCountry }} {{ work.workMobilePrefix }}{{ work.workMobileNumber }}
+                        </div>
+                      </div>
+
+                      <!-- Work Landline -->
+                      <div class="phone-card">
+                        <div class="phone-card-label">
+                          <span class="phone-type-badge landline">☎️ Office Landline</span>
+                        </div>
+                        <div class="phone-input-row">
+                          <select class="phone-country-select" v-model="work.workLandlineCountry">
+                            <option value="+63">🇵🇭 +63</option>
+                            <option value="+1">🇺🇸 +1</option>
+                            <option value="+44">🇬🇧 +44</option>
+                            <option value="+61">🇦🇺 +61</option>
+                          </select>
+                          <input class="pds-input phone-main"
+                                 placeholder="02-8123-4567"
+                                 v-model="work.workLandlineNumber" />
+                        </div>
+                        <div class="phone-preview" v-if="work.workLandlineNumber">
+                          {{ work.workLandlineCountry }} {{ work.workLandlineNumber }}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <!-- /SECTION: Work Contact Numbers -->
+                  <!-- Save -->
+                  <div class="button-group-row">
+                    <button @click="save" class="btn save-btn" style="margin-left: auto; width: 200px">
+                      <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+                      </svg>
+                      Save Progress
+                    </button>
+                  </div>
+
                 </div>
               </div>
               <!-- /WORK TAB -->
+
             </div>
           </transition>
         </div>
