@@ -252,6 +252,7 @@ onMounted(async () => {
 
   await nextTick();
 
+  // Replace the columns array inside your onMounted:
   table = new window.DataTable("#assessmentTable", {
     data: tableData.value,
     columns: [
