@@ -134,8 +134,9 @@
   #app {
     display: flex;
     flex-direction: column;
-    min-height: 100vh;
+    height: 100vh;
     width: 100%;
+    overflow: hidden;
   }
 
   .main-content {
@@ -143,6 +144,7 @@
     width: 100%;
     /* Standardized background for all pages */
     background: var(--bg-gray);
+    overflow-y: auto;
   }
 
   /* 2. Modernized Dialog Overlay */

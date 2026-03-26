@@ -1,8 +1,7 @@
 <template>
   <div class="layout">
     <!-- LEFT MENU -->
-    <LeftMenu @navigate="onNavigate" class="leftMenu" />
-
+    <!--<LeftMenu @navigate="onNavigate" class="leftMenu" />-->
     <!-- MAIN CONTENT -->
     <div class="main-container">
       <div class="content-card">
@@ -31,7 +30,9 @@
 
             <tbody>
               <tr v-for="item in tableData" :key="item.id">
-                <td class="app-number">{{ item.number }}</td>
+                <td class="app-number">
+                  <span class="clickable-code">{{ item.number }}</span>
+                </td>
 
                 <td>
                   <span class="badge type">{{ item.type }}</span>
@@ -53,19 +54,96 @@
       </div>
     </div>
   </div>
+
+  <DialogBox :show="showDetails" title="Application Details" @close="showDetails = false">
+    <div v-if="selectedApp" class="visitor-details-pass">
+      <div class="pass-body">
+        <div class="pass-visual">
+          <label class="pass-label">DOCUMENT PREVIEW</label>
+          <img :src="getFullImageUrl(selectedApp.validIdPath)"
+               class="pass-id-image"
+               alt="Valid ID"
+               @error="(e) => e.target.src = 'https://via.placeholder.com/150'" />
+
+          <div class="pass-status-tag" :class="statusClass(selectedApp.status).replace('status-', '')">
+            {{ selectedApp.status.toUpperCase() }}
+          </div>
+        </div>
+
+        <div class="pass-info-grid">
+          <div class="info-item full-width">
+            <label>Full Name</label>
+            <p>{{ selectedApp.name }}</p>
+          </div>
+
+          <div class="info-item">
+            <label>Access Code</label>
+            <p class="code-text">{{ selectedApp.number }}</p>
+          </div>
+
+          <div class="info-item">
+            <label>Application Type</label>
+            <p><span class="badge type">{{ selectedApp.type }}</span></p>
+          </div>
+
+          <div class="info-item">
+            <label>Schedule</label>
+            <p>{{ selectedApp.date }}</p>
+          </div>
+
+          <div class="info-item">
+            <label>Citizen Type</label>
+            <p>{{ selectedApp.raw.citizenType || 'N/A' }}</p>
+          </div>
+
+          <div class="info-item full-width">
+            <label>Country / Site</label>
+            <p>{{ selectedApp.raw.country || 'N/A' }} — {{ selectedApp.raw.site || 'N/A' }}</p>
+          </div>
+
+          <div class="info-item">
+            <label>Courtesy Lane</label>
+            <p>{{ selectedApp.isCourtesyLane ? 'YES' : 'NO' }}</p>
+          </div>
+
+          <div class="info-item">
+            <label>Payment Status</label>
+            <p :class="selectedApp.isPaid ? 'status-approved' : 'status-rejected'">
+              {{ selectedApp.isPaid ? 'PAID' : 'UNPAID' }}
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div class="pass-footer">
+        <button @click="showDetails = false" class="close-details-btn">Close Details</button>
+      </div>
+    </div>
+  </DialogBox>
 </template>
 
 <script setup>
 import { ref, onMounted, nextTick } from "vue";
 import { useRouter } from "vue-router";
-import LeftMenu from "./LeftMenuHR.vue";
-import axios from "axios";
+//import LeftMenu from "./LeftMenuHR.vue";
+  import axios from "axios";
+
+  import DialogBox from "@/components/DialogBox.vue";
 
 const router = useRouter();
 
 const tableData = ref([]);
 
-let table;
+  let table;
+
+  const showDetails = ref(false);
+  const selectedApp = ref(null);
+
+  const openDetails = (item) => {
+    // Find the original raw data from tableData if you need fields not in the table
+    selectedApp.value = item;
+    showDetails.value = true;
+  };
 
 /* ---------------------------
      FETCH DATA FROM API
@@ -102,9 +180,8 @@ const statusClass = (status) => {
       console.log("API Response:", response.data);
 
       tableData.value = response.data.map((item) => {
-        // Safely construct full name
         const fullName = [item.firstName, item.middleName, item.lastName]
-          .filter(Boolean) // remove null/undefined/empty
+          .filter(Boolean)
           .join(" ") || "N/A";
 
         return {
@@ -114,6 +191,12 @@ const statusClass = (status) => {
           date: formatDate(item.schedule),
           name: fullName,
           status: item.applicationStatus,
+          isCourtesyLane: item.isCourtesyLane,
+          isPaid: item.isPaid,
+          // Add the image paths here
+          validIdPath: item.validIdPath,
+          certificatePath: item.certificatePath,
+          raw: item
         };
       });
 
@@ -127,6 +210,16 @@ const statusClass = (status) => {
       console.error("Error fetching applications:", error);
     }
   };
+
+  const getFullImageUrl = (path) => {
+    if (!path) return 'https://via.placeholder.com/150';
+    let cleanPath = path.replace(/\\/g, '/');
+    // Strip wwwroot if it exists in the path string
+    cleanPath = cleanPath.replace(/^wwwroot\//, '').replace(/^\/wwwroot\//, '');
+
+    const API_BASE_URL = 'https://localhost:5000'; // Match your Application API port
+    return `${API_BASE_URL}${cleanPath.startsWith('/') ? '' : '/'}${cleanPath}`;
+  };
 /* ---------------------------
      INIT TABLE
   ----------------------------*/
@@ -138,7 +231,13 @@ onMounted(async () => {
   table = new window.DataTable("#assessmentTable", {
     data: tableData.value,
     columns: [
-      { data: "number" },
+      {
+        data: "number",
+        className: "app-number", // Applies the class to the <td>
+        render: function (data) {
+          return `<span class="clickable-code view-details-trigger">${data}</span>`;
+        }
+      },
       { data: "type" },
       { data: "date" },
       { data: "name" },
@@ -146,17 +245,30 @@ onMounted(async () => {
         data: "status",
         render: function (data) {
           let cls = "";
-          if (data.includes("Init")) cls = "init";
+          if (data.includes("Pending")) cls = "init"; // Match your badge CSS
           else if (data.includes("Progress")) cls = "progress";
           else if (data.includes("Approved")) cls = "approved";
-
-          return `<span class="${cls}">${data}</span>`;
+          return `<span class="badge ${cls}">${data}</span>`;
         },
       },
     ],
     pageLength: 5,
     lengthChange: false,
     info: false,
+  });
+
+  // Add this right after: table = new window.DataTable(...)
+  const tableElement = document.querySelector('#assessmentTable');
+
+  tableElement.addEventListener('click', (e) => {
+    // Check if the clicked element is our trigger span
+    if (e.target.classList.contains('view-details-trigger')) {
+      // Get the row data from DataTables
+      const rowData = table.row(e.target.closest('tr')).data();
+      if (rowData) {
+        openDetails(rowData);
+      }
+    }
   });
 
   //// Search
@@ -216,20 +328,29 @@ const onNavigate = (path) => {
 }
 
 /* ===== MAIN ===== */
-.main-container {
-  margin-left: 260px;
-  width: 80%;
-  padding: 25px;
-  overflow-y: auto;
-}
+  .main-container {
+    /* margin: 0 auto;  <- Remove or keep, but the below is more robust */
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    width: 100%;
+    padding: 25px;
+    /* Add this to prevent padding from pushing the width past 100% */
+    box-sizing: border-box;
+    /* Prevent the horizontal scroll */
+    overflow-x: hidden;
+  }
 
-/* ===== CARD ===== */
-.content-card {
-  background: #fff;
-  border-radius: 16px;
-  padding: 20px 25px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
-}
+  .content-card {
+    background: #fff;
+    border-radius: 16px;
+    padding: 20px 25px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+    /* Use max-width instead of width: 100% to ensure it doesn't overflow */
+    width: 100%;
+    max-width: 1200px;
+    box-sizing: border-box;
+  }
 
 /* ===== HEADER ===== */
 .header {
@@ -266,9 +387,11 @@ const onNavigate = (path) => {
 }
 
 /* ===== TABLE ===== */
-.table-wrapper {
-  overflow-x: auto;
-}
+  .table-wrapper {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
 
 /* FORCE table to fit container */
 .custom-table {
@@ -307,10 +430,10 @@ const onNavigate = (path) => {
 }
 
 /* APPLICATION NUMBER */
-.app-number {
-  font-weight: 600;
-  color: #2563eb;
-}
+  :deep(td.app-number) {
+    padding: 0 !important;
+    cursor: pointer !important;
+  }
 
 /* ===== BADGES ===== */
 .badge {
@@ -347,6 +470,153 @@ const onNavigate = (path) => {
   color: #555;
 }
 
+  /* Add to your <style scoped> */
+  :deep(.clickable-code) {
+    cursor: pointer !important;
+    display: inline-block;
+    width: 100%;
+    color: #2563eb !important;
+    text-decoration: underline;
+    font-weight: 700;
+    position: relative;
+    z-index: 10; /* Ensure it stays above table cell layers */
+  }
+
+  :deep(.view-details-trigger) {
+    cursor: pointer !important;
+  }
+
+  .app-details-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 10px 0;
+  }
+
+  .detail-item {
+    font-size: 0.95rem;
+    color: #374151;
+  }
+
+    .detail-item strong {
+      color: #111827;
+      width: 140px;
+      display: inline-block;
+    }
+
+  hr {
+    border: 0;
+    border-top: 1px solid #e5e7eb;
+    margin: 10px 0;
+  }
+
+  /* VMS Inspired Pass Layout */
+  .visitor-details-pass {
+    padding: 5px;
+    max-width: 650px;
+  }
+
+  .pass-body {
+    display: flex;
+    gap: 25px;
+    margin-bottom: 20px;
+  }
+
+  .pass-visual {
+    flex: 0 0 200px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .pass-label {
+    font-size: 0.7rem;
+    font-weight: 800;
+    color: #64748b;
+    letter-spacing: 1px;
+  }
+
+  .pass-id-image {
+    width: 100%;
+    aspect-ratio: 4/3;
+    object-fit: cover;
+    border-radius: 12px;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  }
+
+  .pass-info-grid {
+    flex: 1;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+  }
+
+  .info-item label {
+    display: block;
+    font-size: 0.75rem;
+    color: #94a3b8;
+    font-weight: 600;
+    margin-bottom: 2px;
+    text-transform: uppercase;
+  }
+
+  .info-item p {
+    font-weight: 600;
+    color: #1e293b;
+    margin: 0;
+    font-size: 0.95rem;
+  }
+
+  .full-width {
+    grid-column: span 2;
+  }
+
+  .pass-status-tag {
+    text-align: center;
+    padding: 8px;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    font-weight: 800;
+  }
+
+    /* Match your existing status logic to VMS colors */
+    .pass-status-tag.pending {
+      background: #fef3c7;
+      color: #92400e;
+    }
+
+    .pass-status-tag.approved {
+      background: #dcfce7;
+      color: #166534;
+    }
+
+    .pass-status-tag.rejected {
+      background: #fee2e2;
+      color: #991b1b;
+    }
+
+  .close-details-btn {
+    width: 100%;
+    padding: 12px;
+    background: #3b82f6; /* Matching your primary blue */
+    border: none;
+    border-radius: 8px;
+    font-weight: 700;
+    color: white;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+
+    .close-details-btn:hover {
+      background: #2563eb;
+    }
+
+  .code-text {
+    font-family: 'Courier New', Courier, monospace;
+    color: #003366 !important;
+  }
+
 /* ===== RESPONSIVE ===== */
 @media (max-width: 768px) {
   .leftMenu {
@@ -361,4 +631,16 @@ const onNavigate = (path) => {
     width: 180px;
   }
 }
+
+  /* ===== RESPONSIVE ===== */
+  @media (max-width: 768px) {
+    .main-container {
+      margin-left: 0; /* Ensure no margin on small screens */
+      padding: 15px;
+    }
+
+    .content-card {
+      padding: 15px;
+    }
+  }
 </style>
