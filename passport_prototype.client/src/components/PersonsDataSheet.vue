@@ -761,6 +761,7 @@
                     </div>
 
                     <div class="pds-field-grid">
+                      <!-- Street / Unit / Building -->
                       <div class="pds-field contact-full">
                         <label class="pds-label"
                           >Street / Unit / Building<span class="required-star">*</span></label
@@ -768,9 +769,12 @@
                         <input
                           v-model="address.street"
                           class="pds-input"
+                          :class="{ 'pds-input-error': showValidationErrors && !address.street }"
                           placeholder="e.g. 123 Rizal St., Unit 4B"
                         />
                       </div>
+
+                      <!-- Address Abroad -->
                       <div class="pds-field contact-full">
                         <label class="pds-label"
                           >Address Abroad <span class="pds-optional">(if applicable)</span></label
@@ -781,6 +785,8 @@
                           placeholder="Foreign address if currently abroad"
                         />
                       </div>
+
+                      <!-- Country -->
                       <div class="pds-field">
                         <label class="pds-label">Country<span class="required-star">*</span></label>
                         <div class="pds-flag-select">
@@ -788,6 +794,7 @@
                           <select
                             v-model="address.country"
                             class="pds-input pds-flag-input"
+                            :class="{ 'pds-input-error': showValidationErrors && !address.country }"
                             @change="onAddressCountryChange"
                           >
                             <option value="">— Select Country —</option>
@@ -797,11 +804,17 @@
                           </select>
                         </div>
                       </div>
+
+                      <!-- Region (PH only) -->
                       <div class="pds-field" v-if="address.country === 'PH'">
                         <label class="pds-label">Region<span class="required-star">*</span></label>
                         <select
                           v-model="address.region"
                           class="pds-input"
+                          :class="{
+                            'pds-input-error':
+                              showValidationErrors && address.country === 'PH' && !address.region,
+                          }"
                           @change="onAddressRegionChange"
                         >
                           <option value="">— Select Region —</option>
@@ -810,6 +823,8 @@
                           </option>
                         </select>
                       </div>
+
+                      <!-- Province (PH only) -->
                       <div class="pds-field" v-if="address.country === 'PH' && address.region">
                         <label class="pds-label"
                           >Province<span class="required-star">*</span></label
@@ -817,6 +832,10 @@
                         <select
                           v-model="address.province"
                           class="pds-input"
+                          :class="{
+                            'pds-input-error':
+                              showValidationErrors && address.country === 'PH' && !address.province,
+                          }"
                           @change="onAddressProvinceChange"
                         >
                           <option value="">— Select Province —</option>
@@ -829,6 +848,8 @@
                           </option>
                         </select>
                       </div>
+
+                      <!-- Municipality (PH only) -->
                       <div class="pds-field" v-if="address.country === 'PH' && address.province">
                         <label class="pds-label"
                           >City / Municipality<span class="required-star">*</span></label
@@ -836,6 +857,12 @@
                         <select
                           v-model="address.municipality"
                           class="pds-input"
+                          :class="{
+                            'pds-input-error':
+                              showValidationErrors &&
+                              address.country === 'PH' &&
+                              !address.municipality,
+                          }"
                           @change="onAddressMunicipalityChange"
                         >
                           <option value="">— Select City / Municipality —</option>
@@ -844,6 +871,8 @@
                           </option>
                         </select>
                       </div>
+
+                      <!-- Barangay (PH only) -->
                       <div
                         class="pds-field"
                         v-if="address.country === 'PH' && address.municipality"
@@ -860,6 +889,8 @@
                           </option>
                         </select>
                       </div>
+
+                      <!-- Foreign city (non-PH) -->
                       <div class="pds-field" v-if="address.country && address.country !== 'PH'">
                         <label class="pds-label">City / Town</label>
                         <input
@@ -868,6 +899,8 @@
                           placeholder="Enter city or town"
                         />
                       </div>
+
+                      <!-- Postal Code -->
                       <div class="pds-field">
                         <label class="pds-label">Postal Code</label>
                         <input
@@ -879,10 +912,12 @@
                       </div>
                     </div>
 
+                    <!-- Address breadcrumb -->
                     <div v-if="addressLocationSummary" class="pds-location-crumb">
                       📍 {{ addressLocationSummary }}
                     </div>
                   </div>
+                  <!-- /SECTION: Current Address -->
 
                   <!-- SECTION: Phone Numbers -->
                   <div class="pds-section">
@@ -908,7 +943,9 @@
                         <p class="pds-section-sub">Personal mobile and landline</p>
                       </div>
                     </div>
+
                     <div class="contact-phone-grid">
+                      <!-- Personal Mobile -->
                       <div class="phone-card">
                         <div class="phone-card-label">
                           <span class="phone-type-badge mobile">📱 Mobile</span>
@@ -945,6 +982,8 @@
                           }}{{ contact.mobileNumber }}
                         </div>
                       </div>
+
+                      <!-- Personal Landline -->
                       <div class="phone-card">
                         <div class="phone-card-label">
                           <span class="phone-type-badge landline">☎️ Landline</span>
@@ -969,6 +1008,7 @@
                       </div>
                     </div>
                   </div>
+                  <!-- /SECTION: Phone Numbers -->
 
                   <!-- Save -->
                   <div class="button-group-row">
@@ -999,6 +1039,7 @@
               <!-- ═══════════════════════════════════════════ -->
               <div v-else-if="activeTab === 'Work'">
                 <div class="form-wrapper">
+                  <!-- SECTION: Job Details -->
                   <div class="pds-section">
                     <div class="pds-section-header">
                       <div class="section-icon-wrap work">
@@ -1022,6 +1063,7 @@
                         <p class="pds-section-sub">Your current occupation and employer</p>
                       </div>
                     </div>
+
                     <div class="pds-field-grid">
                       <div class="pds-field contact-full">
                         <label class="pds-label">Occupation / Job Title</label>
@@ -1049,7 +1091,9 @@
                       </div>
                     </div>
                   </div>
+                  <!-- /SECTION: Job Details -->
 
+                  <!-- SECTION: Office Location -->
                   <div class="pds-section">
                     <div class="pds-section-header">
                       <div class="section-icon-wrap office-loc">
@@ -1073,7 +1117,9 @@
                         <p class="pds-section-sub">Where your office is located</p>
                       </div>
                     </div>
+
                     <div class="pds-field-grid">
+                      <!-- Country -->
                       <div class="pds-field">
                         <label class="pds-label">Country</label>
                         <div class="pds-flag-select">
@@ -1090,6 +1136,8 @@
                           </select>
                         </div>
                       </div>
+
+                      <!-- Region (PH only) -->
                       <div class="pds-field" v-if="work.officeCountry === 'PH'">
                         <label class="pds-label">Region</label>
                         <select
@@ -1103,6 +1151,8 @@
                           </option>
                         </select>
                       </div>
+
+                      <!-- Province (PH only) -->
                       <div
                         class="pds-field"
                         v-if="work.officeCountry === 'PH' && work.officeRegion"
@@ -1123,6 +1173,8 @@
                           </option>
                         </select>
                       </div>
+
+                      <!-- Municipality (PH only) -->
                       <div
                         class="pds-field"
                         v-if="work.officeCountry === 'PH' && work.officeProvince"
@@ -1139,6 +1191,8 @@
                           </option>
                         </select>
                       </div>
+
+                      <!-- Barangay (PH only) -->
                       <div
                         class="pds-field"
                         v-if="work.officeCountry === 'PH' && work.officeMunicipality"
@@ -1155,6 +1209,8 @@
                           </option>
                         </select>
                       </div>
+
+                      <!-- Foreign city (non-PH) -->
                       <div
                         class="pds-field"
                         v-if="work.officeCountry && work.officeCountry !== 'PH'"
@@ -1166,6 +1222,8 @@
                           placeholder="Enter city or town"
                         />
                       </div>
+
+                      <!-- Postal Code -->
                       <div class="pds-field">
                         <label class="pds-label">Postal Code</label>
                         <input
@@ -1176,11 +1234,15 @@
                         />
                       </div>
                     </div>
+
+                    <!-- Office breadcrumb -->
                     <div v-if="officeLocationSummary" class="pds-location-crumb">
                       🏢 {{ officeLocationSummary }}
                     </div>
                   </div>
+                  <!-- /SECTION: Office Location -->
 
+                  <!-- SECTION: Work Contact Numbers -->
                   <div class="pds-section">
                     <div class="pds-section-header">
                       <div class="section-icon-wrap phone">
@@ -1204,7 +1266,9 @@
                         <p class="pds-section-sub">Work mobile and office landline</p>
                       </div>
                     </div>
+
                     <div class="contact-phone-grid">
+                      <!-- Work Mobile -->
                       <div class="phone-card">
                         <div class="phone-card-label">
                           <span class="phone-type-badge mobile">📱 Work Mobile</span>
@@ -1241,6 +1305,8 @@
                           }}{{ work.workMobileNumber }}
                         </div>
                       </div>
+
+                      <!-- Work Landline -->
                       <div class="phone-card">
                         <div class="phone-card-label">
                           <span class="phone-type-badge landline">☎️ Office Landline</span>
@@ -1264,7 +1330,9 @@
                       </div>
                     </div>
                   </div>
+                  <!-- /SECTION: Work Contact Numbers -->
 
+                  <!-- Save -->
                   <div class="button-group-row">
                     <button
                       @click="save"
@@ -1830,30 +1898,64 @@ const fetchFamily = async () => {
   }
 };
 
+const parseMobile = (str) => {
+  if (!str) return { country: "+63", prefix: "", number: "" };
+  const trimmed = str.trim();
+  const spaceIdx = trimmed.indexOf(" ");
+  if (spaceIdx === -1) return { country: "+63", prefix: "", number: trimmed };
+  const country = trimmed.slice(0, spaceIdx);
+  const digits = trimmed.slice(spaceIdx + 1).replace(/\s/g, "");
+  return { country, prefix: digits.slice(0, 3), number: digits.slice(3) };
+};
+
+/**
+ * Parse a stored landline string like "+63 028123456" back into parts.
+ */
+const parseLandline = (str) => {
+  if (!str) return { country: "+63", number: "" };
+  const trimmed = str.trim();
+  const spaceIdx = trimmed.indexOf(" ");
+  if (spaceIdx === -1) return { country: "+63", number: trimmed };
+  return { country: trimmed.slice(0, spaceIdx), number: trimmed.slice(spaceIdx + 1).trim() };
+};
+
 // ─────────────────────────────────────────────
 // API — FETCH CONTACT  (uses selectedProfileId)
 // ─────────────────────────────────────────────
 const fetchContact = async () => {
-  if (!selectedProfileId.value) return;
   try {
     isLoading.value = true;
-    const { data } = await axios.get(
-      `https://localhost:5000/api/ContactInformation/${selectedProfileId.value}`,
-      { headers: { Authorization: `Bearer ${Auth.token}` } },
-    );
+    const { data } = await axios.get("https://localhost:5000/api/ContactInformation/My-Contact", {
+      headers: { Authorization: `Bearer ${Auth.token}` },
+    });
 
     contact.value.id = data.id;
-    user.value.personalInfoId = data.passportPersonalInformationId;
 
+    // personalInfoId fallback
+    if (!user.value.personalInfoId) {
+      user.value.personalInfoId = data.passportPersonalInformationId;
+    }
+
+    // ✅ Map address fields into address ref
+    address.value.street = data.currentStreet ?? "";
+    address.value.abroad = data.currentAddressAbroad ?? "";
+    address.value.country = data.currentCountry ?? "";
     address.value.region = data.currentRegion ?? "";
     address.value.province = data.currentProvince ?? "";
+    // API field: currentCityMunicipality → template: municipality
     address.value.municipality = data.currentCityMunicipality ?? "";
     address.value.barangay = data.currentBarangay ?? "";
     address.value.postal = data.currentPostalCode ?? "";
 
-    contact.value.mobileNumber = data.personalMobileNumber ?? "";
-    contact.value.landlineNumber = data.personalLandlineNumber ?? "";
-    contact.value.email = data.email ?? "";
+    // ✅ Parse phone strings back into split fields
+    const mob = parseMobile(data.personalMobileNumber);
+    contact.value.mobileCountry = mob.country;
+    contact.value.mobilePrefix = mob.prefix;
+    contact.value.mobileNumber = mob.number;
+
+    const land = parseLandline(data.personalLandlineNumber);
+    contact.value.landlineCountry = land.country;
+    contact.value.landlineNumber = land.number;
   } catch (err) {
     console.log("fetchContact error:", err);
   } finally {
@@ -1861,30 +1963,40 @@ const fetchContact = async () => {
   }
 };
 
-// ─────────────────────────────────────────────
-// API — FETCH WORK  (uses selectedProfileId)
-// ─────────────────────────────────────────────
 const fetchWork = async () => {
-  if (!selectedProfileId.value) return;
   try {
     isLoading.value = true;
-    const { data } = await axios.get(
-      `https://localhost:5000/api/WorkInformation/${selectedProfileId.value}`,
-      { headers: { Authorization: `Bearer ${Auth.token}` } },
-    );
+    const { data } = await axios.get("https://localhost:5000/api/WorkInformation/My-Work", {
+      headers: { Authorization: `Bearer ${Auth.token}` },
+    });
 
     work.value.id = data.id;
-    user.value.personalInfoId = data.passportPersonalInformationId;
+
+    // personalInfoId fallback
+    if (!user.value.personalInfoId) {
+      user.value.personalInfoId = data.passportPersonalInformationId;
+    }
 
     work.value.occupation = data.occupation ?? "";
+    work.value.employer = data.employer ?? ""; // ✅ was missing
     work.value.officeAddress = data.officeAddress ?? "";
     work.value.officeCountry = data.officeCountry ?? "";
     work.value.officeRegion = data.officeRegion ?? "";
     work.value.officeProvince = data.officeProvince ?? "";
+    // ✅ API field: officeCityMunicipality → template ref: officeMunicipality
     work.value.officeMunicipality = data.officeCityMunicipality ?? "";
+    work.value.officeBarangay = data.officeBarangay ?? "";
     work.value.postalCode = data.officePostalCode ?? "";
-    work.value.workMobileNumber = data.officeMobileNumber ?? "";
-    work.value.workLandlineNumber = data.officeLandlineNumber ?? "";
+
+    // ✅ Parse phone strings back into split fields
+    const mob = parseMobile(data.officeMobileNumber);
+    work.value.workMobileCountry = mob.country;
+    work.value.workMobilePrefix = mob.prefix;
+    work.value.workMobileNumber = mob.number;
+
+    const land = parseLandline(data.officeLandlineNumber);
+    work.value.workLandlineCountry = land.country;
+    work.value.workLandlineNumber = land.number;
   } catch (err) {
     console.log("fetchWork error:", err);
   } finally {
@@ -1981,23 +2093,24 @@ const updateFamily = async () => {
 const updateContact = async () => {
   try {
     isLoading.value = true;
-
     const payload = {
       id: contact.value.id,
       passportPersonalInformationId: user.value.personalInfoId,
 
       // Address
-      currentStreet: address.value.street,
-      currentAddressAbroad: address.value.abroad,
-      currentCountry: address.value.country,
-      currentRegion: address.value.country === "PH" ? address.value.region : null,
-      currentProvince: address.value.country === "PH" ? address.value.province : null,
+      currentStreet: address.value.street || null,
+      currentAddressAbroad: address.value.abroad || null,
+      currentCountry: address.value.country || null,
+      currentRegion: address.value.country === "PH" ? address.value.region || null : null,
+      currentProvince: address.value.country === "PH" ? address.value.province || null : null,
       currentCityMunicipality:
-        address.value.country === "PH" ? address.value.municipality : address.value.city,
-      currentBarangay: address.value.country === "PH" ? address.value.barangay : null,
-      currentPostalCode: address.value.postal,
+        address.value.country === "PH"
+          ? address.value.municipality || null
+          : address.value.city || null,
+      currentBarangay: address.value.country === "PH" ? address.value.barangay || null : null,
+      currentPostalCode: address.value.postal || null,
 
-      // Contact numbers (stored as full formatted strings, matching fetch pattern)
+      // Contact numbers — stored as full formatted strings
       personalMobileNumber:
         contact.value.mobilePrefix || contact.value.mobileNumber
           ? `${contact.value.mobileCountry} ${contact.value.mobilePrefix}${contact.value.mobileNumber}`.trim()
@@ -2006,11 +2119,9 @@ const updateContact = async () => {
         ? `${contact.value.landlineCountry} ${contact.value.landlineNumber}`.trim()
         : null,
     };
-
     await axios.patch("https://localhost:5000/api/ContactInformation", payload, {
       headers: { Authorization: `Bearer ${Auth.token}` },
     });
-
     dialogTitle.value = "Success";
     dialogMessage.value = "Contact info saved.";
     showDialog.value = true;
@@ -2027,24 +2138,25 @@ const updateContact = async () => {
 const updateWork = async () => {
   try {
     isLoading.value = true;
-
     const payload = {
       id: work.value.id,
       passportPersonalInformationId: user.value.personalInfoId,
 
       // Job details
-      occupation: work.value.occupation,
-      employer: work.value.employer,
-      officeAddress: work.value.officeAddress,
+      occupation: work.value.occupation || null,
+      employer: work.value.employer || null, // ✅ was missing
+      officeAddress: work.value.officeAddress || null,
 
       // Office location
-      officeCountry: work.value.officeCountry,
-      officeRegion: work.value.officeCountry === "PH" ? work.value.officeRegion : null,
-      officeProvince: work.value.officeCountry === "PH" ? work.value.officeProvince : null,
+      officeCountry: work.value.officeCountry || null,
+      officeRegion: work.value.officeCountry === "PH" ? work.value.officeRegion || null : null,
+      officeProvince: work.value.officeCountry === "PH" ? work.value.officeProvince || null : null,
       officeCityMunicipality:
-        work.value.officeCountry === "PH" ? work.value.officeMunicipality : work.value.officeCity,
-      officeBarangay: work.value.officeCountry === "PH" ? work.value.officeBarangay : null,
-      officePostalCode: work.value.postalCode,
+        work.value.officeCountry === "PH"
+          ? work.value.officeMunicipality || null
+          : work.value.officeCity || null,
+      officeBarangay: work.value.officeCountry === "PH" ? work.value.officeBarangay || null : null,
+      officePostalCode: work.value.postalCode || null,
 
       // Work contact numbers
       officeMobileNumber:
@@ -2055,11 +2167,9 @@ const updateWork = async () => {
         ? `${work.value.workLandlineCountry} ${work.value.workLandlineNumber}`.trim()
         : null,
     };
-
     await axios.patch("https://localhost:5000/api/WorkInformation", payload, {
       headers: { Authorization: `Bearer ${Auth.token}` },
     });
-
     dialogTitle.value = "Success";
     dialogMessage.value = "Work info saved.";
     showDialog.value = true;
@@ -2088,15 +2198,8 @@ const save = () => {
 
   if (activeTab.value === "Personal") updatePersonal();
   else if (activeTab.value === "Family") updateFamily();
-  else if (activeTab.value === "Contact") {
-    dialogTitle.value = "Info";
-    dialogMessage.value = "Contact save is not yet connected to the API.";
-    showDialog.value = true;
-  } else if (activeTab.value === "Work") {
-    dialogTitle.value = "Info";
-    dialogMessage.value = "Work save is not yet connected to the API.";
-    showDialog.value = true;
-  }
+  else if (activeTab.value === "Contact") updateContact();
+  else if (activeTab.value === "Work") updateWork();
 };
 
 // ─────────────────────────────────────────────
