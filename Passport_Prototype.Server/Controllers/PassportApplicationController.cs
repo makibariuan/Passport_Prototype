@@ -5,6 +5,11 @@ using OnlineRegistration.Server.Data;
 using Passport_Prototype.Server.DTOs;
 using Passport_Prototype.Server.Models;
 using SeniorCitizen.Server.Models;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.Formats.Png;
+using SixLabors.ImageSharp.PixelFormats;
+using ZXing;
+using ZXing.Common;
 
 namespace Passport_Prototype.Server.Controllers
 {
@@ -54,16 +59,68 @@ namespace Passport_Prototype.Server.Controllers
             string validIdKey = await SaveTempFile(dto.ValidId);
             string certificateKey = await SaveTempFile(dto.Certificate);
 
-            string validIdPath = await _fileService.FinalizeUpload(validIdKey, dto.UserId);
-            string certificatePath = await _fileService.FinalizeUpload(certificateKey, dto.UserId);
+            string validIdPath = await _fileService.FinalizeUpload(validIdKey, (int)dto.UserId!);
+            string certificatePath = await _fileService.FinalizeUpload(certificateKey, (int)dto.UserId);
 
             // 2. Generate a Shared Application Code
             string sharedCode = GenerateApplicationCode();
+
+            // 2.5 Generate Barcode
+            var barcodeWriter = new BarcodeWriterPixelData
+            {
+                Format = BarcodeFormat.CODE_128,
+                Options = new EncodingOptions
+                {
+                    Width = 300,
+                    Height = 100,
+                    Margin = 10,
+                    PureBarcode = false
+                }
+            };
+            barcodeWriter.Options.Hints.Add(EncodeHintType.CHARACTER_SET, "UTF-8");
+
+            // Ensure folder exists
+            string barcodeFolder = Path.Combine(_env.WebRootPath, "barcodes");
+            if (!Directory.Exists(barcodeFolder))
+                Directory.CreateDirectory(barcodeFolder);
+
+            // Generate barcode image
+            var pixelData = barcodeWriter.Write(sharedCode);
+
+            using var image = new Image<Rgba32>(pixelData.Width, pixelData.Height);
+
+            // Map pixels
+            image.ProcessPixelRows(accessor =>
+            {
+                for (int y = 0; y < accessor.Height; y++)
+                {
+                    var row = accessor.GetRowSpan(y);
+                    for (int x = 0; x < accessor.Width; x++)
+                    {
+                        int idx = (y * accessor.Width + x) * 4;
+                        row[x] = new Rgba32(
+                            pixelData.Pixels[idx],
+                            pixelData.Pixels[idx + 1],
+                            pixelData.Pixels[idx + 2],
+                            pixelData.Pixels[idx + 3]
+                        );
+                    }
+                }
+            });
+
+            // Save file
+            string barcodeFileName = $"{sharedCode}.png";
+            string barcodeFullPath = Path.Combine(barcodeFolder, barcodeFileName);
+            image.Save(barcodeFullPath, new PngEncoder());
+
+            // This is what you store in DB (relative path)
+            string barcodeDbPath = $"/barcodes/{barcodeFileName}";
 
             // 3. Create Passport Application Entity
             var application = new Application
             {
                 UserId = dto.UserId,
+                PassportPersonalInformationId = (int)dto.PassportPersonalInformationId!,
                 Region = dto.Region,
                 Country = dto.Country,
                 Site = dto.Site,
@@ -81,13 +138,15 @@ namespace Passport_Prototype.Server.Controllers
                 PaymentMethod = dto.PaymentMethod,
                 DeliveryOption = dto.DeliveryOption,
                 isPaid = false,
-                ApplicationStatus = "Pending"
+                ApplicationStatus = 1,
+                ApplicationCode = sharedCode,
+                ApplicationBarCodePath = barcodeDbPath
             };
 
             // 4. Create Registry Entry
             var registryEntry = new EnrollmentRegistryID
             {
-                PersonID = dto.UserId,
+                PersonID = (int)dto.UserId!,
                 ApplicationCode = sharedCode,
                 ApplicationType = 2, 
 

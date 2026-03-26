@@ -202,28 +202,40 @@ namespace Passport_Prototype.Server.Controllers
             if (!int.TryParse(userIdString, out int userId))
                 return BadRequest("Invalid user ID in claims.");
 
-            var profiles = await _context.PassportPersonalInformation
+            // Step 1: Get raw data from DB (ONLY simple fields)
+            var data = await _context.PassportPersonalInformation
                 .Where(p => p.UserId == userId)
                 .Select(p => new
                 {
                     p.PassportPersonalInformationId,
-
-                    FullName = string.Join(" ",
-                        new[]
-                        {
                     p.FirstName,
                     p.MiddleName,
                     p.LastName,
-                    p.Suffix
-                        }.Where(x => !string.IsNullOrWhiteSpace(x))
-                    ),
-
-                    Relationship = p.Relationship
+                    p.Suffix,
+                    p.Relationship
                 })
                 .ToListAsync();
 
-            if (!profiles.Any())
+            if (!data.Any())
                 return NotFound("No profiles found for this user.");
+
+            // Step 2: Transform in memory (safe)
+            var profiles = data.Select(p => new
+            {
+                p.PassportPersonalInformationId,
+
+                FullName = string.Join(" ",
+                    new[]
+                    {
+                p.FirstName,
+                p.MiddleName,
+                p.LastName,
+                p.Suffix
+                    }.Where(x => !string.IsNullOrWhiteSpace(x))
+                ),
+
+                Relationship = p.Relationship
+            });
 
             return Ok(profiles);
         }
