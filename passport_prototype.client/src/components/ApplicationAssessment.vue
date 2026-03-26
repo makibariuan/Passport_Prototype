@@ -30,6 +30,7 @@
 
             <tbody>
               <tr v-for="item in tableData" :key="item.id">
+                <td class="app-number">{{ item.number }}</td>
 
                 <td class="app-number">
                   <span class="clickable-code">{{ item.number }}</span>
@@ -66,7 +67,7 @@
                @error="(e) => e.target.src = 'https://via.placeholder.com/150'" />
 
           <div class="pass-status-tag" :class="statusClass(selectedApp.status).replace('status-', '')">
-            {{ getStatusLabel(selectedApp.status).toUpperCase() }}
+            {{ selectedApp.status.toUpperCase() }}
           </div>
         </div>
 
@@ -120,24 +121,21 @@
       </div>
     </div>
   </DialogBox>
-
-
 </template>
 
 <script setup>
 import { ref, onMounted, nextTick } from "vue";
 import { useRouter } from "vue-router";
-import LeftMenu from "./LeftMenuHR.vue";
+//import LeftMenu from "./LeftMenuHR.vue";
   import axios from "axios";
 
   import DialogBox from "@/components/DialogBox.vue";
-
 
 const router = useRouter();
 
 const tableData = ref([]);
 
-let table;
+  let table;
 
   const showDetails = ref(false);
   const selectedApp = ref(null);
@@ -147,6 +145,7 @@ let table;
     selectedApp.value = item;
     showDetails.value = true;
   };
+
 /* ---------------------------
      FETCH DATA FROM API
   ----------------------------*/
@@ -233,7 +232,6 @@ const formatDate = (dateString) => {
     }
   };
 
-
   const getFullImageUrl = (path) => {
     if (!path) return 'https://via.placeholder.com/150';
     let cleanPath = path.replace(/\\/g, '/');
@@ -243,7 +241,6 @@ const formatDate = (dateString) => {
     const API_BASE_URL = 'https://localhost:5000'; // Match your Application API port
     return `${API_BASE_URL}${cleanPath.startsWith('/') ? '' : '/'}${cleanPath}`;
   };
-
 /* ---------------------------
      INIT TABLE
   ----------------------------*/
@@ -257,9 +254,8 @@ onMounted(async () => {
     columns: [
       {
         data: "number",
-        className: "app-number",
+        className: "app-number", // Applies the class to the <td>
         render: function (data) {
-          // Restoring the clickable logic for the first column
           return `<span class="clickable-code view-details-trigger">${data}</span>`;
         }
       },
@@ -269,17 +265,11 @@ onMounted(async () => {
       {
         data: "status",
         render: function (data) {
-          const label = getStatusLabel(data);
-          const cls = statusClass(data).replace('status-', '');
-          // Note: statusClass already handles the logic for approved/pending/rejected
-
-          // Fallback logic for class names to match your badge CSS
-          let badgeCls = 'default';
-          if (cls === 'approved') badgeCls = 'approved';
-          if (cls === 'pending') badgeCls = 'init';
-          if (cls === 'rejected') badgeCls = 'rejected';
-
-          return `<span class="badge ${badgeCls}">${label}</span>`;
+          let cls = "";
+          if (data.includes("Pending")) cls = "init"; // Match your badge CSS
+          else if (data.includes("Progress")) cls = "progress";
+          else if (data.includes("Approved")) cls = "approved";
+          return `<span class="badge ${cls}">${data}</span>`;
         },
       },
     ],
@@ -291,6 +281,7 @@ onMounted(async () => {
     autoWidth: false
   });
 
+  // Add this right after: table = new window.DataTable(...)
   const tableElement = document.querySelector('#assessmentTable');
 
   tableElement.addEventListener('click', (e) => {
@@ -374,7 +365,6 @@ const onNavigate = (path) => {
     overflow-x: hidden;
   }
 
-/* ===== CARD ===== */
   .content-card {
     background: #fff;
     border-radius: 16px;
@@ -661,6 +651,153 @@ const onNavigate = (path) => {
     color: #991b1b;
   }
 
+  /* Add to your <style scoped> */
+  :deep(.clickable-code) {
+    cursor: pointer !important;
+    display: inline-block;
+    width: 100%;
+    color: #2563eb !important;
+    text-decoration: underline;
+    font-weight: 700;
+    position: relative;
+    z-index: 10; /* Ensure it stays above table cell layers */
+  }
+
+  :deep(.view-details-trigger) {
+    cursor: pointer !important;
+  }
+
+  .app-details-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 10px 0;
+  }
+
+  .detail-item {
+    font-size: 0.95rem;
+    color: #374151;
+  }
+
+    .detail-item strong {
+      color: #111827;
+      width: 140px;
+      display: inline-block;
+    }
+
+  hr {
+    border: 0;
+    border-top: 1px solid #e5e7eb;
+    margin: 10px 0;
+  }
+
+  /* VMS Inspired Pass Layout */
+  .visitor-details-pass {
+    padding: 5px;
+    max-width: 650px;
+  }
+
+  .pass-body {
+    display: flex;
+    gap: 25px;
+    margin-bottom: 20px;
+  }
+
+  .pass-visual {
+    flex: 0 0 200px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .pass-label {
+    font-size: 0.7rem;
+    font-weight: 800;
+    color: #64748b;
+    letter-spacing: 1px;
+  }
+
+  .pass-id-image {
+    width: 100%;
+    aspect-ratio: 4/3;
+    object-fit: cover;
+    border-radius: 12px;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  }
+
+  .pass-info-grid {
+    flex: 1;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+  }
+
+  .info-item label {
+    display: block;
+    font-size: 0.75rem;
+    color: #94a3b8;
+    font-weight: 600;
+    margin-bottom: 2px;
+    text-transform: uppercase;
+  }
+
+  .info-item p {
+    font-weight: 600;
+    color: #1e293b;
+    margin: 0;
+    font-size: 0.95rem;
+  }
+
+  .full-width {
+    grid-column: span 2;
+  }
+
+  .pass-status-tag {
+    text-align: center;
+    padding: 8px;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    font-weight: 800;
+  }
+
+    /* Match your existing status logic to VMS colors */
+    .pass-status-tag.pending {
+      background: #fef3c7;
+      color: #92400e;
+    }
+
+    .pass-status-tag.approved {
+      background: #dcfce7;
+      color: #166534;
+    }
+
+    .pass-status-tag.rejected {
+      background: #fee2e2;
+      color: #991b1b;
+    }
+
+  .close-details-btn {
+    width: 100%;
+    padding: 12px;
+    background: #3b82f6; /* Matching your primary blue */
+    border: none;
+    border-radius: 8px;
+    font-weight: 700;
+    color: white;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+
+    .close-details-btn:hover {
+      background: #2563eb;
+    }
+
+  .code-text {
+    font-family: 'Courier New', Courier, monospace;
+    color: #003366 !important;
+  }
+
 /* ===== RESPONSIVE ===== */
 
 
@@ -678,8 +815,20 @@ const onNavigate = (path) => {
       padding: 15px;
     }
 
-    .search {
-      width: 180px;
+  .search {
+    width: 180px;
+  }
+}
+
+  /* ===== RESPONSIVE ===== */
+  @media (max-width: 768px) {
+    .main-container {
+      margin-left: 0; /* Ensure no margin on small screens */
+      padding: 15px;
+    }
+
+    .content-card {
+      padding: 15px;
     }
   }
 </style>
