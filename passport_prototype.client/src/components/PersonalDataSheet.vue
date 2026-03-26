@@ -10,7 +10,6 @@
 
   <div class="app-layout">
     <LeftMenu class="leftMenu" />
-
     <Header title="Personal Profile" class="header" />
 
     <div class="dashboard-content">
@@ -156,7 +155,6 @@
                   </div>
                 </div>
                 <!-- /SECTION: Personal Information -->
-
                 <!-- SECTION: Civil Status & Documents -->
                 <div class="pds-section">
                   <div class="pds-section-header">
@@ -191,11 +189,7 @@
                       <label class="pds-label"
                         >Civil Status<span class="required-star">*</span></label
                       >
-                      <select
-                        v-model="user.civilStatusID"
-                        class="pds-input"
-                        :class="{ 'pds-input-error': showValidationErrors && !user.civilStatusID }"
-                      >
+                      <select v-model="user.civilStatusID" class="pds-input">
                         <option disabled value="">— Select Civil Status —</option>
                         <option>Single</option>
                         <option>Married</option>
@@ -269,7 +263,6 @@
                   </div>
                 </div>
                 <!-- /SECTION: Civil Status & Documents -->
-
                 <!-- SECTION: Place of Birth -->
                 <div class="pds-section">
                   <div class="pds-section-header">
@@ -378,16 +371,18 @@
                   </div>
                 </div>
                 <!-- /SECTION: Place of Birth -->
-
                 <!-- Save -->
                 <div class="button-group-row">
-                  <button @click="save" class="btn" style="margin-left: auto; width: 200px">
+                  <button
+                    @click="save"
+                    class="btn save-btn"
+                    style="margin-left: auto; width: 200px"
+                  >
                     Save Progress
                   </button>
                 </div>
               </div>
               <!-- /PERSONAL TAB -->
-
               <!-- ═══════════════════════════════════════════ -->
               <!-- FAMILY TAB                                 -->
               <!-- ═══════════════════════════════════════════ -->
@@ -540,7 +535,6 @@
                     </div>
                   </div>
                   <!-- /SECTION: Father -->
-
                   <!-- SECTION: Mother's Information -->
                   <div class="pds-section">
                     <div class="pds-section-header">
@@ -690,224 +684,627 @@
                     </div>
                   </div>
                   <!-- /SECTION: Mother -->
-
                   <!-- Save -->
                   <div class="button-group-row">
-                    <button @click="save" class="btn" style="margin-left: auto; width: 200px">
+                    <button
+                      @click="save"
+                      class="btn save-btn"
+                      style="margin-left: auto; width: 200px"
+                    >
                       Save Progress
                     </button>
                   </div>
                 </div>
               </div>
               <!-- /FAMILY TAB -->
-
               <!-- ═══════════════════════════════════════════ -->
+
               <!-- CONTACT TAB                                -->
               <!-- ═══════════════════════════════════════════ -->
               <div v-else-if="activeTab === 'Contact'">
-                <div style="margin-bottom: 30px">
-                  <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 20px">
-                    <p style="margin: 0; font-weight: bold; white-space: nowrap">
-                      Personal Contact & Address
-                    </p>
-                  </div>
-
-                  <div style="display: flex; flex-direction: column; gap: 12px">
-                    <label class="form-row">
-                      <span>Current Address</span>
-                      <input class="auth-input" v-model="address.street" />
-                    </label>
-                    <label class="form-row">
-                      <span>Address Abroad</span>
-                      <input class="auth-input" v-model="address.abroad" />
-                    </label>
-                    <label class="form-row">
-                      <span>Current Country</span>
-                      <select class="auth-select" v-model="address.country">
-                        <option value="">Select Country</option>
-                      </select>
-                    </label>
-                    <label class="form-row">
-                      <span>Current Region</span>
-                      <select class="auth-select" v-model="address.region">
-                        <option value="">Select Region</option>
-                      </select>
-                    </label>
-                    <label class="form-row">
-                      <span>Current Province</span>
-                      <select class="auth-select" v-model="address.province">
-                        <option value="">Select Province</option>
-                      </select>
-                    </label>
-                    <label class="form-row">
-                      <span>Current Municipality</span>
-                      <select class="auth-select" v-model="address.municipality">
-                        <option value="">Select Municipality</option>
-                      </select>
-                    </label>
-                    <label class="form-row">
-                      <span>Current Barangay</span>
-                      <select class="auth-select" v-model="address.barangay">
-                        <option value="">Select Barangay</option>
-                      </select>
-                    </label>
-                    <label class="form-row">
-                      <span>Current Postal Code</span>
-                      <input class="auth-input" v-model="address.postal" />
-                    </label>
-                  </div>
-
-                  <!-- Personal Mobile -->
-                  <label class="form-row" style="margin-top: 24px">
-                    <span>Personal Mobile</span>
-                    <div class="phone-input-group">
-                      <select class="phone-flag" v-model="contact.mobileCountry">
-                        <option value="+63">🇵🇭 +63</option>
-                        <option value="+1">🇺🇸 +1</option>
-                        <option value="+44">🇬🇧 +44</option>
-                      </select>
-                      <input
-                        class="auth-input phone-prefix"
-                        placeholder="906"
-                        v-model="contact.mobilePrefix"
-                        maxlength="4"
-                      />
-                      <input
-                        class="auth-input phone-number"
-                        placeholder="1234567"
-                        v-model="contact.mobileNumber"
-                      />
+                <div class="form-wrapper">
+                  <!-- SECTION: Current Address -->
+                  <div class="pds-section">
+                    <div class="pds-section-header">
+                      <div class="section-icon-wrap contact">
+                        <svg
+                          width="18"
+                          height="18"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                          stroke-width="2"
+                        >
+                          <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
+                          />
+                          <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
+                          />
+                        </svg>
+                      </div>
+                      <div>
+                        <h3 class="pds-section-title">Current Address</h3>
+                        <p class="pds-section-sub">Your residential address details</p>
+                      </div>
                     </div>
-                  </label>
 
-                  <!-- Personal Landline -->
-                  <label class="form-row" style="margin-top: 16px">
-                    <span>Personal Landline</span>
-                    <div class="phone-input-group">
-                      <select class="phone-flag" v-model="contact.landlineCountry">
-                        <option value="+63">🇵🇭 +63</option>
-                        <option value="+1">🇺🇸 +1</option>
-                        <option value="+44">🇬🇧 +44</option>
-                      </select>
-                      <input
-                        class="auth-input phone-number"
-                        placeholder="02-123-4567"
-                        v-model="contact.landlineNumber"
-                      />
+                    <div class="pds-field-grid">
+                      <!-- Street / Unit / Building -->
+                      <div class="pds-field contact-full">
+                        <label class="pds-label"
+                          >Street / Unit / Building<span class="required-star">*</span></label
+                        >
+                        <input
+                          v-model="address.street"
+                          class="pds-input"
+                          placeholder="e.g. 123 Rizal St., Unit 4B"
+                        />
+                      </div>
+
+                      <!-- Address Abroad -->
+                      <div class="pds-field contact-full">
+                        <label class="pds-label"
+                          >Address Abroad <span class="pds-optional">(if applicable)</span></label
+                        >
+                        <input
+                          v-model="address.abroad"
+                          class="pds-input"
+                          placeholder="Foreign address if currently abroad"
+                        />
+                      </div>
+
+                      <!-- Country -->
+                      <div class="pds-field">
+                        <label class="pds-label">Country<span class="required-star">*</span></label>
+                        <div class="pds-flag-select">
+                          <span class="pds-flag-preview">{{ selectedAddressCountryFlag }}</span>
+                          <select
+                            v-model="address.country"
+                            class="pds-input pds-flag-input"
+                            @change="onAddressCountryChange"
+                          >
+                            <option value="">— Select Country —</option>
+                            <option v-for="c in birthCountries" :key="c.code" :value="c.code">
+                              {{ c.flag }} {{ c.name }}
+                            </option>
+                          </select>
+                        </div>
+                      </div>
+
+                      <!-- Region (PH only) -->
+                      <div class="pds-field" v-if="address.country === 'PH'">
+                        <label class="pds-label">Region<span class="required-star">*</span></label>
+                        <select
+                          v-model="address.region"
+                          class="pds-input"
+                          @change="onAddressRegionChange"
+                        >
+                          <option value="">— Select Region —</option>
+                          <option v-for="r in phRegions" :key="r.code" :value="r.code">
+                            {{ r.name }}
+                          </option>
+                        </select>
+                      </div>
+
+                      <!-- Province (PH only) -->
+                      <div class="pds-field" v-if="address.country === 'PH' && address.region">
+                        <label class="pds-label"
+                          >Province<span class="required-star">*</span></label
+                        >
+                        <select
+                          v-model="address.province"
+                          class="pds-input"
+                          @change="onAddressProvinceChange"
+                        >
+                          <option value="">— Select Province —</option>
+                          <option
+                            v-for="p in filteredAddressProvinces"
+                            :key="p.code"
+                            :value="p.code"
+                          >
+                            {{ p.name }}
+                          </option>
+                        </select>
+                      </div>
+
+                      <!-- Municipality (PH only) -->
+                      <div class="pds-field" v-if="address.country === 'PH' && address.province">
+                        <label class="pds-label"
+                          >City / Municipality<span class="required-star">*</span></label
+                        >
+                        <select
+                          v-model="address.municipality"
+                          class="pds-input"
+                          @change="onAddressMunicipalityChange"
+                        >
+                          <option value="">— Select City / Municipality —</option>
+                          <option v-for="c in filteredAddressCities" :key="c.code" :value="c.code">
+                            {{ c.name }}
+                          </option>
+                        </select>
+                      </div>
+
+                      <!-- Barangay (PH only) -->
+                      <div
+                        class="pds-field"
+                        v-if="address.country === 'PH' && address.municipality"
+                      >
+                        <label class="pds-label">Barangay</label>
+                        <select v-model="address.barangay" class="pds-input">
+                          <option value="">— Select Barangay —</option>
+                          <option
+                            v-for="b in filteredAddressBarangays"
+                            :key="b.code"
+                            :value="b.code"
+                          >
+                            {{ b.name }}
+                          </option>
+                        </select>
+                      </div>
+
+                      <!-- Foreign city (non-PH) -->
+                      <div class="pds-field" v-if="address.country && address.country !== 'PH'">
+                        <label class="pds-label">City / Town</label>
+                        <input
+                          v-model="address.city"
+                          class="pds-input"
+                          placeholder="Enter city or town"
+                        />
+                      </div>
+
+                      <!-- Postal Code -->
+                      <div class="pds-field">
+                        <label class="pds-label">Postal Code</label>
+                        <input
+                          v-model="address.postal"
+                          class="pds-input"
+                          placeholder="e.g. 1200"
+                          maxlength="10"
+                        />
+                      </div>
                     </div>
-                  </label>
 
+                    <!-- Address breadcrumb -->
+                    <div v-if="addressLocationSummary" class="pds-location-crumb">
+                      📍 {{ addressLocationSummary }}
+                    </div>
+                  </div>
+                  <!-- /SECTION: Current Address -->
+                  <!-- SECTION: Phone Numbers -->
+                  <div class="pds-section">
+                    <div class="pds-section-header">
+                      <div class="section-icon-wrap phone">
+                        <svg
+                          width="18"
+                          height="18"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                          stroke-width="2"
+                        >
+                          <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 8V5z"
+                          />
+                        </svg>
+                      </div>
+                      <div>
+                        <h3 class="pds-section-title">Contact Numbers</h3>
+                        <p class="pds-section-sub">Personal mobile and landline</p>
+                      </div>
+                    </div>
+
+                    <div class="contact-phone-grid">
+                      <!-- Personal Mobile -->
+                      <div class="phone-card">
+                        <div class="phone-card-label">
+                          <span class="phone-type-badge mobile">📱 Mobile</span>
+                        </div>
+                        <div class="phone-input-row">
+                          <select class="phone-country-select" v-model="contact.mobileCountry">
+                            <option value="+63">🇵🇭 +63</option>
+                            <option value="+1">🇺🇸 +1</option>
+                            <option value="+44">🇬🇧 +44</option>
+                            <option value="+61">🇦🇺 +61</option>
+                            <option value="+81">🇯🇵 +81</option>
+                            <option value="+82">🇰🇷 +82</option>
+                            <option value="+65">🇸🇬 +65</option>
+                          </select>
+                          <input
+                            class="pds-input phone-segment"
+                            placeholder="906"
+                            v-model="contact.mobilePrefix"
+                            maxlength="4"
+                          />
+                          <span class="phone-dash">—</span>
+                          <input
+                            class="pds-input phone-main"
+                            placeholder="1234567"
+                            v-model="contact.mobileNumber"
+                            maxlength="8"
+                          />
+                        </div>
+                        <div
+                          class="phone-preview"
+                          v-if="contact.mobilePrefix || contact.mobileNumber"
+                        >
+                          {{ contact.mobileCountry }} {{ contact.mobilePrefix
+                          }}{{ contact.mobileNumber }}
+                        </div>
+                      </div>
+
+                      <!-- Personal Landline -->
+                      <div class="phone-card">
+                        <div class="phone-card-label">
+                          <span class="phone-type-badge landline">☎️ Landline</span>
+                        </div>
+                        <div class="phone-input-row">
+                          <select class="phone-country-select" v-model="contact.landlineCountry">
+                            <option value="+63">🇵🇭 +63</option>
+                            <option value="+1">🇺🇸 +1</option>
+                            <option value="+44">🇬🇧 +44</option>
+                            <option value="+61">🇦🇺 +61</option>
+                            <option value="+81">🇯🇵 +81</option>
+                          </select>
+                          <input
+                            class="pds-input phone-main"
+                            placeholder="02-8123-4567"
+                            v-model="contact.landlineNumber"
+                          />
+                        </div>
+                        <div class="phone-preview" v-if="contact.landlineNumber">
+                          {{ contact.landlineCountry }} {{ contact.landlineNumber }}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <!-- /SECTION: Phone Numbers -->
+                  <!-- Save -->
                   <div class="button-group-row">
-                    <button @click="save" class="btn" style="margin-left: auto; width: 200px">
+                    <button
+                      @click="save"
+                      class="btn save-btn"
+                      style="margin-left: auto; width: 200px"
+                    >
+                      <svg
+                        width="16"
+                        height="16"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                        stroke-width="2.5"
+                      >
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+                      </svg>
                       Save Progress
                     </button>
                   </div>
                 </div>
               </div>
               <!-- /CONTACT TAB -->
-
               <!-- ═══════════════════════════════════════════ -->
+
               <!-- WORK TAB                                   -->
               <!-- ═══════════════════════════════════════════ -->
               <div v-else-if="activeTab === 'Work'">
                 <div class="form-wrapper">
-                  <div style="margin-bottom: 30px">
-                    <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 20px">
-                      <p style="margin: 0; font-weight: bold; white-space: nowrap">
-                        Work Information
-                      </p>
+                  <!-- SECTION: Job Details -->
+                  <div class="pds-section">
+                    <div class="pds-section-header">
+                      <div class="section-icon-wrap work">
+                        <svg
+                          width="18"
+                          height="18"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                          stroke-width="2"
+                        >
+                          <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+                          />
+                        </svg>
+                      </div>
+                      <div>
+                        <h3 class="pds-section-title">Job Details</h3>
+                        <p class="pds-section-sub">Your current occupation and employer</p>
+                      </div>
                     </div>
 
-                    <div style="display: flex; flex-direction: column; gap: 12px">
-                      <label class="form-row">
-                        <span>Occupation</span>
-                        <input class="auth-input" v-model="work.occupation" />
-                      </label>
-                      <label class="form-row">
-                        <span>Office Address</span>
-                        <input class="auth-input" v-model="work.officeAddress" />
-                      </label>
-                      <label class="form-row">
-                        <span>Office Country</span>
-                        <select class="auth-select" v-model="work.officeCountry">
-                          <option value="">Select Country</option>
-                        </select>
-                      </label>
-                      <label class="form-row">
-                        <span>Office Region</span>
-                        <select class="auth-select" v-model="work.officeRegion">
-                          <option value="">Select Region</option>
-                        </select>
-                      </label>
-                      <label class="form-row">
-                        <span>Office Province</span>
-                        <select class="auth-select" v-model="work.officeProvince">
-                          <option value="">Select Province</option>
-                        </select>
-                      </label>
-                      <label class="form-row">
-                        <span>Office Municipality</span>
-                        <select class="auth-select" v-model="work.officeMunicipality">
-                          <option value="">Select Municipality</option>
-                        </select>
-                      </label>
-                      <label class="form-row">
-                        <span>Office Barangay</span>
-                        <select class="auth-select" v-model="work.officeBarangay">
-                          <option value="">Select Barangay</option>
-                        </select>
-                      </label>
-                      <label class="form-row">
-                        <span>Office Postal Code</span>
-                        <input class="auth-input" v-model="work.postalCode" />
-                      </label>
-                    </div>
-
-                    <!-- Work Mobile -->
-                    <label class="form-row" style="margin-top: 24px">
-                      <span>Work Mobile</span>
-                      <div class="phone-input-group">
-                        <select class="phone-flag" v-model="contact.mobileCountry">
-                          <option value="+63">🇵🇭 +63</option>
-                          <option value="+1">🇺🇸 +1</option>
-                          <option value="+44">🇬🇧 +44</option>
-                        </select>
+                    <div class="pds-field-grid">
+                      <div class="pds-field contact-full">
+                        <label class="pds-label">Occupation / Job Title</label>
                         <input
-                          class="auth-input phone-prefix"
-                          placeholder="906"
-                          v-model="contact.mobilePrefix"
-                          maxlength="4"
-                        />
-                        <input
-                          class="auth-input phone-number"
-                          placeholder="1234567"
-                          v-model="contact.mobileNumber"
+                          v-model="work.occupation"
+                          class="pds-input"
+                          placeholder="e.g. Software Engineer, Teacher, Nurse"
                         />
                       </div>
-                    </label>
 
-                    <!-- Work Landline -->
-                    <label class="form-row" style="margin-top: 16px">
-                      <span>Work Landline</span>
-                      <div class="phone-input-group">
-                        <select class="phone-flag" v-model="contact.landlineCountry">
-                          <option value="+63">🇵🇭 +63</option>
-                          <option value="+1">🇺🇸 +1</option>
-                          <option value="+44">🇬🇧 +44</option>
-                        </select>
+                      <div class="pds-field contact-full">
+                        <label class="pds-label">Employer / Company Name</label>
                         <input
-                          class="auth-input phone-number"
-                          placeholder="02-123-4567"
-                          v-model="contact.landlineNumber"
+                          v-model="work.employer"
+                          class="pds-input"
+                          placeholder="e.g. Acme Corporation"
                         />
                       </div>
-                    </label>
 
-                    <div class="button-group-row">
-                      <button @click="save" class="btn" style="margin-left: auto; width: 200px">
-                        Save Progress
-                      </button>
+                      <div class="pds-field contact-full">
+                        <label class="pds-label">Office Address</label>
+                        <input
+                          v-model="work.officeAddress"
+                          class="pds-input"
+                          placeholder="e.g. 10th Floor, BGC Tower, Taguig"
+                        />
+                      </div>
                     </div>
+                  </div>
+                  <!-- /SECTION: Job Details -->
+                  <!-- SECTION: Office Location -->
+                  <div class="pds-section">
+                    <div class="pds-section-header">
+                      <div class="section-icon-wrap office-loc">
+                        <svg
+                          width="18"
+                          height="18"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                          stroke-width="2"
+                        >
+                          <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-2 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"
+                          />
+                        </svg>
+                      </div>
+                      <div>
+                        <h3 class="pds-section-title">Office Location</h3>
+                        <p class="pds-section-sub">Where your office is located</p>
+                      </div>
+                    </div>
+
+                    <div class="pds-field-grid">
+                      <!-- Country -->
+                      <div class="pds-field">
+                        <label class="pds-label">Country</label>
+                        <div class="pds-flag-select">
+                          <span class="pds-flag-preview">{{ selectedOfficeCountryFlag }}</span>
+                          <select
+                            v-model="work.officeCountry"
+                            class="pds-input pds-flag-input"
+                            @change="onOfficeCountryChange"
+                          >
+                            <option value="">— Select Country —</option>
+                            <option v-for="c in birthCountries" :key="c.code" :value="c.code">
+                              {{ c.flag }} {{ c.name }}
+                            </option>
+                          </select>
+                        </div>
+                      </div>
+
+                      <!-- Region (PH only) -->
+                      <div class="pds-field" v-if="work.officeCountry === 'PH'">
+                        <label class="pds-label">Region</label>
+                        <select
+                          v-model="work.officeRegion"
+                          class="pds-input"
+                          @change="onOfficeRegionChange"
+                        >
+                          <option value="">— Select Region —</option>
+                          <option v-for="r in phRegions" :key="r.code" :value="r.code">
+                            {{ r.name }}
+                          </option>
+                        </select>
+                      </div>
+
+                      <!-- Province (PH only) -->
+                      <div
+                        class="pds-field"
+                        v-if="work.officeCountry === 'PH' && work.officeRegion"
+                      >
+                        <label class="pds-label">Province</label>
+                        <select
+                          v-model="work.officeProvince"
+                          class="pds-input"
+                          @change="onOfficeProvinceChange"
+                        >
+                          <option value="">— Select Province —</option>
+                          <option
+                            v-for="p in filteredOfficeProvinces"
+                            :key="p.code"
+                            :value="p.code"
+                          >
+                            {{ p.name }}
+                          </option>
+                        </select>
+                      </div>
+
+                      <!-- Municipality (PH only) -->
+                      <div
+                        class="pds-field"
+                        v-if="work.officeCountry === 'PH' && work.officeProvince"
+                      >
+                        <label class="pds-label">City / Municipality</label>
+                        <select
+                          v-model="work.officeMunicipality"
+                          class="pds-input"
+                          @change="onOfficeMunicipalityChange"
+                        >
+                          <option value="">— Select City / Municipality —</option>
+                          <option v-for="c in filteredOfficeCities" :key="c.code" :value="c.code">
+                            {{ c.name }}
+                          </option>
+                        </select>
+                      </div>
+
+                      <!-- Barangay (PH only) -->
+                      <div
+                        class="pds-field"
+                        v-if="work.officeCountry === 'PH' && work.officeMunicipality"
+                      >
+                        <label class="pds-label">Barangay</label>
+                        <select v-model="work.officeBarangay" class="pds-input">
+                          <option value="">— Select Barangay —</option>
+                          <option
+                            v-for="b in filteredOfficeBarangays"
+                            :key="b.code"
+                            :value="b.code"
+                          >
+                            {{ b.name }}
+                          </option>
+                        </select>
+                      </div>
+
+                      <!-- Foreign city (non-PH) -->
+                      <div
+                        class="pds-field"
+                        v-if="work.officeCountry && work.officeCountry !== 'PH'"
+                      >
+                        <label class="pds-label">City / Town</label>
+                        <input
+                          v-model="work.officeCity"
+                          class="pds-input"
+                          placeholder="Enter city or town"
+                        />
+                      </div>
+
+                      <!-- Postal Code -->
+                      <div class="pds-field">
+                        <label class="pds-label">Postal Code</label>
+                        <input
+                          v-model="work.postalCode"
+                          class="pds-input"
+                          placeholder="e.g. 1634"
+                          maxlength="10"
+                        />
+                      </div>
+                    </div>
+
+                    <!-- Office breadcrumb -->
+                    <div v-if="officeLocationSummary" class="pds-location-crumb">
+                      🏢 {{ officeLocationSummary }}
+                    </div>
+                  </div>
+                  <!-- /SECTION: Office Location -->
+                  <!-- SECTION: Work Contact Numbers -->
+                  <div class="pds-section">
+                    <div class="pds-section-header">
+                      <div class="section-icon-wrap phone">
+                        <svg
+                          width="18"
+                          height="18"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                          stroke-width="2"
+                        >
+                          <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 8V5z"
+                          />
+                        </svg>
+                      </div>
+                      <div>
+                        <h3 class="pds-section-title">Work Contact Numbers</h3>
+                        <p class="pds-section-sub">Work mobile and office landline</p>
+                      </div>
+                    </div>
+
+                    <div class="contact-phone-grid">
+                      <!-- Work Mobile -->
+                      <div class="phone-card">
+                        <div class="phone-card-label">
+                          <span class="phone-type-badge mobile">📱 Work Mobile</span>
+                        </div>
+                        <div class="phone-input-row">
+                          <select class="phone-country-select" v-model="work.workMobileCountry">
+                            <option value="+63">🇵🇭 +63</option>
+                            <option value="+1">🇺🇸 +1</option>
+                            <option value="+44">🇬🇧 +44</option>
+                            <option value="+61">🇦🇺 +61</option>
+                            <option value="+81">🇯🇵 +81</option>
+                            <option value="+82">🇰🇷 +82</option>
+                            <option value="+65">🇸🇬 +65</option>
+                          </select>
+                          <input
+                            class="pds-input phone-segment"
+                            placeholder="906"
+                            v-model="work.workMobilePrefix"
+                            maxlength="4"
+                          />
+                          <span class="phone-dash">—</span>
+                          <input
+                            class="pds-input phone-main"
+                            placeholder="1234567"
+                            v-model="work.workMobileNumber"
+                            maxlength="8"
+                          />
+                        </div>
+                        <div
+                          class="phone-preview"
+                          v-if="work.workMobilePrefix || work.workMobileNumber"
+                        >
+                          {{ work.workMobileCountry }} {{ work.workMobilePrefix
+                          }}{{ work.workMobileNumber }}
+                        </div>
+                      </div>
+
+                      <!-- Work Landline -->
+                      <div class="phone-card">
+                        <div class="phone-card-label">
+                          <span class="phone-type-badge landline">☎️ Office Landline</span>
+                        </div>
+                        <div class="phone-input-row">
+                          <select class="phone-country-select" v-model="work.workLandlineCountry">
+                            <option value="+63">🇵🇭 +63</option>
+                            <option value="+1">🇺🇸 +1</option>
+                            <option value="+44">🇬🇧 +44</option>
+                            <option value="+61">🇦🇺 +61</option>
+                          </select>
+                          <input
+                            class="pds-input phone-main"
+                            placeholder="02-8123-4567"
+                            v-model="work.workLandlineNumber"
+                          />
+                        </div>
+                        <div class="phone-preview" v-if="work.workLandlineNumber">
+                          {{ work.workLandlineCountry }} {{ work.workLandlineNumber }}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <!-- /SECTION: Work Contact Numbers -->
+                  <!-- Save -->
+                  <div class="button-group-row">
+                    <button
+                      @click="save"
+                      class="btn save-btn"
+                      style="margin-left: auto; width: 200px"
+                    >
+                      <svg
+                        width="16"
+                        height="16"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                        stroke-width="2.5"
+                      >
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+                      </svg>
+                      Save Progress
+                    </button>
                   </div>
                 </div>
               </div>
@@ -938,8 +1335,10 @@ import axios from "axios";
 import DialogBox from "@/components/DialogBox.vue";
 import LoadingDialog from "./LoadingDialog.vue";
 import { useAuthStore } from "../stores/auth";
-import { BACKEND_DOMAIN } from "@/configs/config";
 
+// ─────────────────────────────────────────────
+// GLOBAL STATE
+// ─────────────────────────────────────────────
 const showDialog = ref(false);
 const dialogTitle = ref("");
 const dialogMessage = ref("");
@@ -947,26 +1346,31 @@ const isLoading = ref(false);
 const activeTab = ref("Personal");
 const userId = 5;
 const Auth = useAuthStore();
+const showValidationErrors = ref(false);
 
-// ------------------ State ------------------
+// ─────────────────────────────────────────────
+// USER / PERSONAL
+// ─────────────────────────────────────────────
 const user = ref({
+  // Personal
   lastName: "",
   firstName: "",
   middleName: "",
   nameExtension: "",
-  dateOfBirth: "",
+  birthdate: "",
   sex: "",
   citizenship: "",
   civilStatusID: "",
   birthLegitimacy: "",
   isAdoptee: false,
   placeOfBirth: "",
-  // family fields live here — the template binds to these
+  // Family — father
   fatherSurname: "",
   fatherFirstName: "",
   fatherMiddleName: "",
   fatherNameExtension: "",
   fatherCitizenship: "",
+  // Family — mother
   motherSurname: "",
   motherFirstName: "",
   motherMiddleName: "",
@@ -974,19 +1378,14 @@ const user = ref({
   motherCitizenship: "",
 });
 
-const family = ref({
-  relationship: "",
-  lastName: "",
-  firstName: "",
-  middleName: "",
-  extension: "",
-  citizenship: "",
-});
+// Personal tab extras
+const hasMiddleName = ref(true);
+const hasPSABirthCert = ref(false);
 
+// ─────────────────────────────────────────────
+// CONTACT STATE
+// ─────────────────────────────────────────────
 const contact = ref({
-  mobile: "",
-  landline: "",
-  email: "",
   mobileCountry: "+63",
   mobilePrefix: "",
   mobileNumber: "",
@@ -994,64 +1393,50 @@ const contact = ref({
   landlineNumber: "",
 });
 
+const address = ref({
+  street: "",
+  abroad: "",
+  country: "",
+  region: "",
+  province: "",
+  municipality: "",
+  barangay: "",
+  city: "", // for non-PH free-text
+  postal: "",
+});
+
+// ─────────────────────────────────────────────
+// WORK STATE
+// ─────────────────────────────────────────────
 const work = ref({
   occupation: "",
+  employer: "",
   officeAddress: "",
   officeCountry: "",
   officeRegion: "",
   officeProvince: "",
   officeMunicipality: "",
   officeBarangay: "",
+  officeCity: "", // for non-PH free-text
   postalCode: "",
+  workMobileCountry: "+63",
+  workMobilePrefix: "",
+  workMobileNumber: "",
+  workLandlineCountry: "+63",
+  workLandlineNumber: "",
 });
 
-const address = ref({
-  street: "",
-  abroad: "",
-  city: "",
-  province: "",
-  region: "",
-  municipality: "",
-  barangay: "",
-  postal: "",
-  postalCode: "",
-  country: "",
-});
+// ─────────────────────────────────────────────
+// FAMILY EXTRAS
+// ─────────────────────────────────────────────
+const fatherLifeStatus = ref("alive");
+const motherLifeStatus = ref("alive");
+const fatherHasMiddleName = ref(true);
+const motherHasMiddleName = ref(true);
 
-const showValidationErrors = ref(false);
-
-// ── Personal tab extras ──────────────────────────────────────────
-const hasMiddleName = ref(true);
-const hasPSABirthCert = ref(false);
-const civilStatuses = ref([]);
-
-// Birth location cascading refs
-const birthCountry = ref("PH");
-const birthRegion = ref("");
-const birthProvince = ref("");
-const birthCity = ref("");
-const birthBarangay = ref("");
-
-const onBirthCountryChange = () => {
-  birthRegion.value = "";
-  birthProvince.value = "";
-  birthCity.value = "";
-  birthBarangay.value = "";
-};
-const onBirthRegionChange = () => {
-  birthProvince.value = "";
-  birthCity.value = "";
-  birthBarangay.value = "";
-};
-const onBirthProvinceChange = () => {
-  birthCity.value = "";
-  birthBarangay.value = "";
-};
-const onBirthCityChange = () => {
-  birthBarangay.value = "";
-};
-
-// ── Nationality list ────────────────────────
+// ─────────────────────────────────────────────
+// REFERENCE DATA
+// ─────────────────────────────────────────────
 const nationalities = [
   { code: "PH", name: "Filipino", flag: "🇵🇭" },
   { code: "US", name: "American", flag: "🇺🇸" },
@@ -1135,7 +1520,85 @@ const phBarangays = [
   { code: "MKT-BGY3", cityCode: "MKT", name: "San Lorenzo" },
 ];
 
-// Cascading computed
+// ─────────────────────────────────────────────
+// BIRTH LOCATION STATE & HANDLERS
+// ─────────────────────────────────────────────
+const birthCountry = ref("PH");
+const birthRegion = ref("");
+const birthProvince = ref("");
+const birthCity = ref("");
+const birthBarangay = ref("");
+
+const onBirthCountryChange = () => {
+  birthRegion.value = "";
+  birthProvince.value = "";
+  birthCity.value = "";
+  birthBarangay.value = "";
+};
+const onBirthRegionChange = () => {
+  birthProvince.value = "";
+  birthCity.value = "";
+  birthBarangay.value = "";
+};
+const onBirthProvinceChange = () => {
+  birthCity.value = "";
+  birthBarangay.value = "";
+};
+const onBirthCityChange = () => {
+  birthBarangay.value = "";
+};
+
+// ─────────────────────────────────────────────
+// ADDRESS CASCADING HANDLERS
+// ─────────────────────────────────────────────
+const onAddressCountryChange = () => {
+  address.value.region = "";
+  address.value.province = "";
+  address.value.municipality = "";
+  address.value.barangay = "";
+  address.value.city = "";
+};
+const onAddressRegionChange = () => {
+  address.value.province = "";
+  address.value.municipality = "";
+  address.value.barangay = "";
+};
+const onAddressProvinceChange = () => {
+  address.value.municipality = "";
+  address.value.barangay = "";
+};
+const onAddressMunicipalityChange = () => {
+  address.value.barangay = "";
+};
+
+// ─────────────────────────────────────────────
+// OFFICE CASCADING HANDLERS
+// ─────────────────────────────────────────────
+const onOfficeCountryChange = () => {
+  work.value.officeRegion = "";
+  work.value.officeProvince = "";
+  work.value.officeMunicipality = "";
+  work.value.officeBarangay = "";
+  work.value.officeCity = "";
+};
+const onOfficeRegionChange = () => {
+  work.value.officeProvince = "";
+  work.value.officeMunicipality = "";
+  work.value.officeBarangay = "";
+};
+const onOfficeProvinceChange = () => {
+  work.value.officeMunicipality = "";
+  work.value.officeBarangay = "";
+};
+const onOfficeMunicipalityChange = () => {
+  work.value.officeBarangay = "";
+};
+
+// ─────────────────────────────────────────────
+// COMPUTED — CASCADING FILTERS
+// ─────────────────────────────────────────────
+
+// Birth place
 const filteredProvinces = computed(() =>
   phProvinces.filter((p) => p.regionCode === birthRegion.value),
 );
@@ -1144,15 +1607,53 @@ const filteredCities = computed(() =>
 );
 const filteredBarangays = computed(() => phBarangays.filter((b) => b.cityCode === birthCity.value));
 
-// Flag helpers
+// Address
+const filteredAddressProvinces = computed(() =>
+  phProvinces.filter((p) => p.regionCode === address.value.region),
+);
+const filteredAddressCities = computed(() =>
+  phCities.filter((c) => c.provinceCode === address.value.province),
+);
+const filteredAddressBarangays = computed(() =>
+  phBarangays.filter((b) => b.cityCode === address.value.municipality),
+);
+
+// Office
+const filteredOfficeProvinces = computed(() =>
+  phProvinces.filter((p) => p.regionCode === work.value.officeRegion),
+);
+const filteredOfficeCities = computed(() =>
+  phCities.filter((c) => c.provinceCode === work.value.officeProvince),
+);
+const filteredOfficeBarangays = computed(() =>
+  phBarangays.filter((b) => b.cityCode === work.value.officeMunicipality),
+);
+
+// ─────────────────────────────────────────────
+// COMPUTED — FLAGS
+// ─────────────────────────────────────────────
 const selectedNationalityFlag = computed(
   () => nationalities.find((n) => n.name === user.value.citizenship)?.flag ?? "🌐",
 );
 const selectedBirthCountryFlag = computed(
   () => birthCountries.find((c) => c.code === birthCountry.value)?.flag ?? "🌐",
 );
+const selectedAddressCountryFlag = computed(
+  () => birthCountries.find((c) => c.code === address.value.country)?.flag ?? "🌐",
+);
+const selectedOfficeCountryFlag = computed(
+  () => birthCountries.find((c) => c.code === work.value.officeCountry)?.flag ?? "🌐",
+);
+const fatherCitizenshipFlag = computed(
+  () => nationalities.find((n) => n.name === user.value.fatherCitizenship)?.flag ?? "🌐",
+);
+const motherCitizenshipFlag = computed(
+  () => nationalities.find((n) => n.name === user.value.motherCitizenship)?.flag ?? "🌐",
+);
 
-// Location breadcrumb
+// ─────────────────────────────────────────────
+// COMPUTED — LOCATION BREADCRUMBS
+// ─────────────────────────────────────────────
 const birthLocationSummary = computed(() => {
   const parts = [];
   if (birthCountry.value) {
@@ -1171,46 +1672,70 @@ const birthLocationSummary = computed(() => {
   return parts.filter(Boolean).join(" › ");
 });
 
-// ── Family tab extras ────────────────────────────
-const fatherLifeStatus = ref("alive");
-const motherLifeStatus = ref("alive");
-const fatherHasMiddleName = ref(true);
-const motherHasMiddleName = ref(true);
+const addressLocationSummary = computed(() => {
+  const parts = [];
+  if (address.value.country) {
+    const c = birthCountries.find((x) => x.code === address.value.country);
+    if (c) parts.push(c.name);
+  }
+  if (address.value.country === "PH") {
+    if (address.value.region)
+      parts.push(phRegions.find((r) => r.code === address.value.region)?.name ?? "");
+    if (address.value.province)
+      parts.push(phProvinces.find((p) => p.code === address.value.province)?.name ?? "");
+    if (address.value.municipality)
+      parts.push(phCities.find((c) => c.code === address.value.municipality)?.name ?? "");
+    if (address.value.barangay)
+      parts.push(phBarangays.find((b) => b.code === address.value.barangay)?.name ?? "");
+  } else if (address.value.city) {
+    parts.push(address.value.city);
+  }
+  return parts.filter(Boolean).join(" › ");
+});
 
-// Flag computed helpers for parent citizenship selects
-const fatherCitizenshipFlag = computed(
-  () => nationalities.find((n) => n.name === user.value.fatherCitizenship)?.flag ?? "🌐",
-);
-const motherCitizenshipFlag = computed(
-  () => nationalities.find((n) => n.name === user.value.motherCitizenship)?.flag ?? "🌐",
-);
+const officeLocationSummary = computed(() => {
+  const parts = [];
+  if (work.value.officeCountry) {
+    const c = birthCountries.find((x) => x.code === work.value.officeCountry);
+    if (c) parts.push(c.name);
+  }
+  if (work.value.officeCountry === "PH") {
+    if (work.value.officeRegion)
+      parts.push(phRegions.find((r) => r.code === work.value.officeRegion)?.name ?? "");
+    if (work.value.officeProvince)
+      parts.push(phProvinces.find((p) => p.code === work.value.officeProvince)?.name ?? "");
+    if (work.value.officeMunicipality)
+      parts.push(phCities.find((c) => c.code === work.value.officeMunicipality)?.name ?? "");
+    if (work.value.officeBarangay)
+      parts.push(phBarangays.find((b) => b.code === work.value.officeBarangay)?.name ?? "");
+  } else if (work.value.officeCity) {
+    parts.push(work.value.officeCity);
+  }
+  return parts.filter(Boolean).join(" › ");
+});
 
-// ------------------ GET Methods ------------------
+// ─────────────────────────────────────────────
+// API — FETCH
+// ─────────────────────────────────────────────
 const fetchPersonal = async () => {
   try {
     isLoading.value = true;
     const { data } = await axios.get(
-      `${BACKEND_DOMAIN}/api/PassportPersonalInformations/My-Profile`,
-      {
-        headers: {
-          Authorization: `Bearer ${Auth.token}`,
-        },
-      },
+      "https://localhost:5000/api/PassportPersonalInformations/My-Profile",
+      { headers: { Authorization: `Bearer ${Auth.token}` } },
     );
 
     user.value.lastName = data.lastName ?? "";
     user.value.firstName = data.firstName ?? "";
     user.value.middleName = data.middleName ?? "";
     user.value.nameExtension = data.suffix ?? "";
-
-    user.value.dateOfBirth = data.birthdate ? new Date(data.birthdate) : "";
-
+    user.value.birthdate = data.birthdate
+      ? new Date(data.birthdate).toISOString().split("T")[0]
+      : "";
     user.value.sex = data.gender ?? "";
     user.value.citizenship = data.nationality ?? "";
     user.value.civilStatusID = data.civilStatus ?? "";
-
     user.value.birthLegitimacy = data.birthLegitimacy ?? "";
-
     user.value.isAdoptee = data.isAdoptee ?? false;
     user.value.placeOfBirth = data.placeOfBirth ?? "";
 
@@ -1232,41 +1757,29 @@ const fetchPersonal = async () => {
 const fetchFamily = async () => {
   try {
     isLoading.value = true;
-
-    const { data } = await axios.get(`${BACKEND_DOMAIN}/api/Families/My-Family`, {
-      headers: {
-        Authorization: `Bearer ${Auth.token}`,
-      },
+    const { data } = await axios.get("https://localhost:5000/api/Families/My-Family", {
+      headers: { Authorization: `Bearer ${Auth.token}` },
     });
 
-    // ✅ Extract from array
     const father = data.find((f) => f.relationship === "Father");
     const mother = data.find((f) => f.relationship === "Mother");
 
-    // ======================
-    // 👨 FATHER
-    // ======================
+    // Father
     user.value.fatherSurname = father?.lastName ?? "";
     user.value.fatherFirstName = father?.firstName ?? "";
     user.value.fatherMiddleName = father?.middleName ?? "";
     user.value.fatherNameExtension = father?.suffix ?? "";
     user.value.fatherCitizenship = father?.citizenship ?? "";
-
     fatherLifeStatus.value = father ? (father.isAlive ? "alive" : "deceased") : "alive";
-
     fatherHasMiddleName.value = !!father?.middleName;
 
-    // ======================
-    // 👩 MOTHER
-    // ======================
+    // Mother
     user.value.motherSurname = mother?.lastName ?? "";
     user.value.motherFirstName = mother?.firstName ?? "";
     user.value.motherMiddleName = mother?.middleName ?? "";
-    user.value.motherNameExtension = mother?.suffix ?? ""; // ✅ FIXED
+    user.value.motherNameExtension = mother?.suffix ?? "";
     user.value.motherCitizenship = mother?.citizenship ?? "";
-
     motherLifeStatus.value = mother ? (mother.isAlive ? "alive" : "deceased") : "alive";
-
     motherHasMiddleName.value = !!mother?.middleName;
   } catch (err) {
     console.log("fetchFamily error:", err);
@@ -1275,52 +1788,39 @@ const fetchFamily = async () => {
   }
 };
 
-onMounted(async () => {
-  await fetchPersonal();
-  await fetchFamily();
-});
-
-// ------------------ PATCH Methods ------------------
+// ─────────────────────────────────────────────
+// API — UPDATE / PATCH
+// ─────────────────────────────────────────────
 const updatePersonal = async () => {
   try {
     isLoading.value = true;
-
     const payload = {
       lastName: user.value.lastName,
       firstName: user.value.firstName,
       middleName: hasMiddleName.value ? user.value.middleName : null,
       suffix: user.value.nameExtension || null,
-
-      birthdate: user.value.dateOfBirth || null,
+      birthdate: user.value.birthdate || null,
       gender: user.value.sex || null,
       nationality: user.value.citizenship || null,
-      civilStatus: user.value.civilStatusID || null, // ⚠️ only if string
-
+      civilStatus: user.value.civilStatusID || null,
       birthLegitimacy: user.value.birthLegitimacy,
-
       hasPSABirthcert: hasPSABirthCert.value,
-
       birthCountry: birthCountry.value,
       birthRegion: birthRegion.value,
       birthProvince: birthProvince.value,
       birthCity: birthCity.value,
       birthBarangay: birthBarangay.value,
     };
-
     await axios.patch(
-      `${BACKEND_DOMAIN}/api/PassportPersonalInformations/Update-Profile`,
+      "https://localhost:5000/api/PassportPersonalInformations/Update-Profile",
       payload,
-      {
-        headers: {
-          Authorization: `Bearer ${Auth.token}`,
-        },
-      },
+      { headers: { Authorization: `Bearer ${Auth.token}` } },
     );
     dialogTitle.value = "Success";
     dialogMessage.value = "Personal info saved.";
     showDialog.value = true;
   } catch (err) {
-    console.log("error: ", err);
+    console.log("updatePersonal error:", err);
     dialogTitle.value = "Error";
     dialogMessage.value = "Failed to save personal info.";
     showDialog.value = true;
@@ -1334,7 +1834,7 @@ const updateFamily = async () => {
     isLoading.value = true;
     const payload = {
       father: {
-        surname: user.value.fatherLastName,
+        surname: user.value.fatherSurname,
         firstName: user.value.fatherFirstName,
         middleName: fatherHasMiddleName.value ? user.value.fatherMiddleName : null,
         nameExtension: user.value.fatherNameExtension,
@@ -1342,7 +1842,7 @@ const updateFamily = async () => {
         lifeStatus: fatherLifeStatus.value,
       },
       mother: {
-        surname: user.value.motherLastName,
+        surname: user.value.motherSurname,
         firstName: user.value.motherFirstName,
         middleName: motherHasMiddleName.value ? user.value.motherMiddleName : null,
         nameExtension: user.value.motherNameExtension,
@@ -1350,12 +1850,14 @@ const updateFamily = async () => {
         lifeStatus: motherLifeStatus.value,
       },
     };
-    await axios.patch(`${BACKEND_DOMAIN}/api/Families/${userId}`, payload);
+    await axios.patch(`https://localhost:5000/api/Families/${userId}`, payload, {
+      headers: { Authorization: `Bearer ${Auth.token}` },
+    });
     dialogTitle.value = "Success";
     dialogMessage.value = "Family info saved.";
     showDialog.value = true;
   } catch (err) {
-    console.log("error: ", err);
+    console.log("updateFamily error:", err);
     dialogTitle.value = "Error";
     dialogMessage.value = "Failed to save family info.";
     showDialog.value = true;
@@ -1364,58 +1866,44 @@ const updateFamily = async () => {
   }
 };
 
-const updateContact = async () => {
-  try {
-    isLoading.value = true;
-    await axios.patch("${BACKEND_DOMAIN}/user/contact", {
-      mobile: `${contact.value.mobileCountry}${contact.value.mobilePrefix}${contact.value.mobileNumber}`,
-      landline: `${contact.value.landlineCountry}${contact.value.landlineNumber}`,
-      address: address.value,
-    });
-    dialogTitle.value = "Success";
-    dialogMessage.value = "Contact info saved.";
-    showDialog.value = true;
-  } catch (err) {
-    console.log("error: ", err);
-    dialogTitle.value = "Error";
-    dialogMessage.value = "Failed to save contact info.";
-    showDialog.value = true;
-  } finally {
-    isLoading.value = false;
-  }
-};
-
-const updateWork = async () => {
-  try {
-    isLoading.value = true;
-    await axios.patch("${BACKEND_DOMAIN}/user/work", { ...work.value });
-    dialogTitle.value = "Success";
-    dialogMessage.value = "Work info saved.";
-    showDialog.value = true;
-  } catch (err) {
-    console.log("error: ", err);
-    dialogTitle.value = "Error";
-    dialogMessage.value = "Failed to save work info.";
-    showDialog.value = true;
-  } finally {
-    isLoading.value = false;
-  }
-};
-
+// ─────────────────────────────────────────────
+// SAVE DISPATCHER
+// ─────────────────────────────────────────────
 const save = () => {
   showValidationErrors.value = true;
   if (activeTab.value === "Personal") updatePersonal();
   else if (activeTab.value === "Family") updateFamily();
-  else if (activeTab.value === "Contact") updateContact();
-  else if (activeTab.value === "Work") updateWork();
+  else if (activeTab.value === "Contact") {
+    dialogTitle.value = "Info";
+    dialogMessage.value = "Contact save is not yet connected to the API.";
+    showDialog.value = true;
+  } else if (activeTab.value === "Work") {
+    dialogTitle.value = "Info";
+    dialogMessage.value = "Work save is not yet connected to the API.";
+    showDialog.value = true;
+  }
 };
 
+// ─────────────────────────────────────────────
+// DIALOG
+// ─────────────────────────────────────────────
 const handleCloseDialog = () => {
   showDialog.value = false;
 };
+
+// ─────────────────────────────────────────────
+// LIFECYCLE
+// ─────────────────────────────────────────────
+onMounted(async () => {
+  await fetchPersonal();
+  await fetchFamily();
+});
 </script>
 
 <style>
+/* ═══════════════════════════════════════════
+     LAYOUT
+  ═══════════════════════════════════════════ */
 .app-layout {
   display: grid;
   grid-template-columns: 280px 1fr;
@@ -1450,6 +1938,9 @@ const handleCloseDialog = () => {
   overflow: hidden;
 }
 
+/* ═══════════════════════════════════════════
+     PAGE TITLE & IMPORTANT BOX
+  ═══════════════════════════════════════════ */
 .page-title {
   font-size: 1.8rem;
   color: #06195e;
@@ -1457,14 +1948,36 @@ const handleCloseDialog = () => {
   margin-bottom: 25px;
 }
 
-.sub-title {
-  font-size: 1.5rem;
-  color: #06195e;
-  padding-bottom: 10px;
-  border-bottom: 2px solid #f0f4f8;
-  font-weight: 700;
+.important-box {
+  background: #fff8e1;
+  border: 1px solid #facc15;
+  border-left: 5px solid #f59e0b;
+  border-radius: 10px;
+  padding: 14px 16px;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
 }
 
+.important-header {
+  font-weight: 800;
+  color: #92400e;
+  font-size: 0.9rem;
+  margin-bottom: 4px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.important-text {
+  font-size: 0.85rem;
+  color: #78350f;
+  margin: 0;
+  line-height: 1.5;
+}
+
+/* ═══════════════════════════════════════════
+     TABS
+  ═══════════════════════════════════════════ */
 .tab-container {
   display: flex;
   gap: 2px;
@@ -1507,6 +2020,9 @@ const handleCloseDialog = () => {
   flex-direction: column;
 }
 
+/* ═══════════════════════════════════════════
+     FORM WRAPPER & SECTIONS
+  ═══════════════════════════════════════════ */
 .form-wrapper {
   padding: 10px;
 }
@@ -1541,6 +2057,49 @@ const handleCloseDialog = () => {
   margin: 0 0 2px;
 }
 
+.pds-section-sub {
+  font-size: 0.75rem;
+  color: #94a3b8;
+  margin: 2px 0 0;
+  font-weight: 400;
+}
+
+/* ═══════════════════════════════════════════
+     SECTION ICON WRAPS
+  ═══════════════════════════════════════════ */
+.section-icon-wrap {
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.section-icon-wrap.contact {
+  background: #eff6ff;
+  color: #3b82f6;
+}
+
+.section-icon-wrap.phone {
+  background: #f0fdf4;
+  color: #16a34a;
+}
+
+.section-icon-wrap.work {
+  background: #faf5ff;
+  color: #7c3aed;
+}
+
+.section-icon-wrap.office-loc {
+  background: #fff7ed;
+  color: #ea580c;
+}
+
+/* ═══════════════════════════════════════════
+     FIELD GRID & FIELDS
+  ═══════════════════════════════════════════ */
 .pds-field-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
@@ -1552,6 +2111,11 @@ const handleCloseDialog = () => {
   flex-direction: column;
   gap: 5px;
   position: relative;
+}
+
+/* Full-width field within grid */
+.contact-full {
+  grid-column: 1 / -1;
 }
 
 .pds-label {
@@ -1572,6 +2136,14 @@ const handleCloseDialog = () => {
   font-size: 0.72rem;
 }
 
+.required-star {
+  color: #e53935;
+  font-weight: 800;
+}
+
+/* ═══════════════════════════════════════════
+     INPUTS
+  ═══════════════════════════════════════════ */
 .pds-input {
   width: 100%;
   padding: 9px 12px;
@@ -1612,6 +2184,9 @@ const handleCloseDialog = () => {
   right: 2px;
 }
 
+/* ═══════════════════════════════════════════
+     GENDER TOGGLE
+  ═══════════════════════════════════════════ */
 .pds-gender-toggle {
   display: flex;
   border: 1.5px solid #d1d9e6;
@@ -1653,6 +2228,9 @@ const handleCloseDialog = () => {
   font-size: 1.1rem;
 }
 
+/* ═══════════════════════════════════════════
+     YES/NO TOGGLES
+  ═══════════════════════════════════════════ */
 .pds-toggle-wrap {
   display: inline-flex;
   border: 1px solid #d1d9e6;
@@ -1707,6 +2285,9 @@ const handleCloseDialog = () => {
   border-color: #fc8181;
 }
 
+/* ═══════════════════════════════════════════
+     N/A PILL
+  ═══════════════════════════════════════════ */
 .pds-na-pill {
   padding: 9px 12px;
   background: #f1f5f9;
@@ -1717,6 +2298,9 @@ const handleCloseDialog = () => {
   font-style: italic;
 }
 
+/* ═══════════════════════════════════════════
+     FLAG SELECT
+  ═══════════════════════════════════════════ */
 .pds-flag-select {
   display: flex;
   align-items: center;
@@ -1748,6 +2332,9 @@ const handleCloseDialog = () => {
   background: transparent;
 }
 
+/* ═══════════════════════════════════════════
+     LOCATION BREADCRUMB
+  ═══════════════════════════════════════════ */
 .pds-location-crumb {
   margin-top: 14px;
   padding: 10px 16px;
@@ -1759,6 +2346,9 @@ const handleCloseDialog = () => {
   font-weight: 600;
 }
 
+/* ═══════════════════════════════════════════
+     LIFE STATUS TOGGLE (FAMILY)
+  ═══════════════════════════════════════════ */
 .pds-life-status-toggle {
   display: flex;
   gap: 10px;
@@ -1791,6 +2381,9 @@ const handleCloseDialog = () => {
   border-color: #a0aec0;
 }
 
+/* ═══════════════════════════════════════════
+     DECEASED STATUS NOTICE
+  ═══════════════════════════════════════════ */
 .pds-status-notice {
   display: flex;
   align-items: center;
@@ -1808,6 +2401,9 @@ const handleCloseDialog = () => {
   color: #4a5568;
 }
 
+/* ═══════════════════════════════════════════
+     MAIDEN TAG
+  ═══════════════════════════════════════════ */
 .pds-maiden-tag {
   font-size: 0.65rem;
   font-weight: 700;
@@ -1820,33 +2416,120 @@ const handleCloseDialog = () => {
   margin-left: 4px;
 }
 
-.important-box {
-  background: #fff8e1;
-  border: 1px solid #facc15;
-  border-left: 5px solid #f59e0b;
-  border-radius: 10px;
-  padding: 14px 16px;
-  margin-bottom: 20px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+/* ═══════════════════════════════════════════
+     PHONE CARDS (CONTACT & WORK)
+  ═══════════════════════════════════════════ */
+.contact-phone-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 16px;
 }
 
-.important-header {
-  font-weight: 800;
-  color: #92400e;
-  font-size: 0.9rem;
-  margin-bottom: 4px;
+.phone-card {
+  background: #f8fafc;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 16px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  transition:
+    border-color 0.18s,
+    box-shadow 0.18s;
+}
+
+.phone-card:focus-within {
+  border-color: #06195e;
+  box-shadow: 0 0 0 3px rgba(6, 25, 94, 0.08);
+}
+
+.phone-card-label {
   display: flex;
   align-items: center;
-  gap: 6px;
 }
 
-.important-text {
-  font-size: 0.85rem;
-  color: #78350f;
-  margin: 0;
-  line-height: 1.5;
+.phone-type-badge {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 3px 10px;
+  border-radius: 20px;
 }
 
+.phone-type-badge.mobile {
+  background: #dbeafe;
+  color: #1d4ed8;
+}
+
+.phone-type-badge.landline {
+  background: #d1fae5;
+  color: #065f46;
+}
+
+.phone-input-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.phone-country-select {
+  padding: 8px 10px;
+  border: 1.5px solid #d1d9e6;
+  border-radius: 8px;
+  font-size: 0.82rem;
+  background: #fff;
+  min-width: 105px;
+  cursor: pointer;
+  height: 38px;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
+  background-position: right 6px center;
+  background-repeat: no-repeat;
+  background-size: 14px;
+  padding-right: 26px;
+}
+
+.phone-country-select:focus {
+  outline: none;
+  border-color: #06195e;
+  box-shadow: 0 0 0 3px rgba(6, 25, 94, 0.1);
+}
+
+.phone-segment {
+  max-width: 72px;
+  text-align: center;
+  padding: 8px 10px !important;
+  height: 38px;
+}
+
+.phone-main {
+  flex: 1;
+  padding: 8px 10px !important;
+  height: 38px;
+}
+
+.phone-dash {
+  color: #94a3b8;
+  font-weight: 700;
+  font-size: 1rem;
+  flex-shrink: 0;
+}
+
+.phone-preview {
+  font-size: 0.78rem;
+  color: #3b82f6;
+  font-weight: 600;
+  padding: 4px 10px;
+  background: #eff6ff;
+  border-radius: 6px;
+  width: fit-content;
+  letter-spacing: 0.3px;
+}
+
+/* ═══════════════════════════════════════════
+     BUTTONS
+  ═══════════════════════════════════════════ */
 .btn {
   background-color: #007bff;
   color: white;
@@ -1863,11 +2546,21 @@ const handleCloseDialog = () => {
   border-color: #0056b3;
 }
 
+.save-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
 .button-group-row {
   display: flex;
   margin-top: 20px;
 }
 
+/* ═══════════════════════════════════════════
+     TRANSITIONS
+  ═══════════════════════════════════════════ */
 .fade-slide-enter-active,
 .fade-slide-leave-active {
   transition:
@@ -1885,91 +2578,9 @@ const handleCloseDialog = () => {
   transform: translateY(-10px);
 }
 
-.required-star {
-  color: #e53935;
-  font-weight: 800;
-}
-
-/* Contact / Work form styles */
-.form-row {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin-bottom: 4px;
-}
-
-.form-row span {
-  min-width: 160px;
-  font-weight: 500;
-  color: #374151;
-  font-size: 14px;
-}
-
-.auth-input,
-.auth-select,
-.phone-flag {
-  padding: 10px 14px;
-  border: 1px solid #d1d5db;
-  border-radius: 8px;
-  font-size: 14px;
-  background-color: #f9fafb;
-  transition: all 0.2s ease;
-  height: 44px;
-  box-sizing: border-box;
-}
-
-.auth-input {
-  flex: 1;
-}
-
-.auth-select {
-  flex: 1;
-  appearance: none;
-  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
-  background-position: right 12px center;
-  background-repeat: no-repeat;
-  background-size: 16px;
-  padding-right: 40px;
-  cursor: pointer;
-}
-
-.phone-input-group {
-  display: flex;
-  gap: 8px;
-  flex: 1;
-  align-items: center;
-}
-
-.phone-flag {
-  min-width: 100px;
-  padding-right: 32px;
-  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
-  background-position: right 8px center;
-  background-repeat: no-repeat;
-  background-size: 16px;
-  cursor: pointer;
-  appearance: none;
-}
-
-.phone-prefix {
-  max-width: 80px;
-  text-align: center;
-}
-
-.phone-number {
-  flex: 1;
-}
-
-.auth-input:focus,
-.auth-select:focus,
-.phone-flag:focus {
-  outline: none;
-  border-color: #3b82f6;
-  background-color: #eef2ff;
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-}
-
-/* Responsive */
+/* ═══════════════════════════════════════════
+     RESPONSIVE
+  ═══════════════════════════════════════════ */
 @media (max-width: 1200px) {
   .app-layout {
     grid-template-columns: 20vw 1fr;
@@ -2020,20 +2631,12 @@ const handleCloseDialog = () => {
     min-height: auto;
   }
 
-  .form-row {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 8px;
+  .phone-input-row {
+    flex-wrap: wrap;
   }
 
-  .form-row span {
-    min-width: auto;
-    font-weight: bold;
-  }
-
-  .phone-input-group {
-    flex-direction: column;
-    width: 100%;
+  .phone-segment {
+    max-width: 100%;
   }
 }
 </style>

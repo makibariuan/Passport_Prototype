@@ -61,7 +61,7 @@ import ApplicationHistory from "@/components/ApplicationHistory.vue";
 
 const routes = [
   // ── Public / Auth ──────────────────────────────────────────────
-  { path: "/", name: "Login", component: AuthPage },
+  { path: "/", name: "Login", component: DashboardUser },
   { path: "/login", redirect: "/" },
   { path: "/confirm-email", name: "ConfirmEmail", component: EmailConfirm },
   { path: "/reset-password", name: "ResetPassword", component: ResetPassword },
