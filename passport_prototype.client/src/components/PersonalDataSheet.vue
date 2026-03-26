@@ -1761,8 +1761,8 @@ const fetchFamily = async () => {
       headers: { Authorization: `Bearer ${Auth.token}` },
     });
 
-      const father = data.find(f => f.relationship === "Father");
-      const mother = data.find(f => f.relationship === "Mother");
+    const father = data.find((f) => f.relationship === "Father");
+    const mother = data.find((f) => f.relationship === "Mother");
 
     // ======================
     // 👨 FATHER
@@ -1776,109 +1776,98 @@ const fetchFamily = async () => {
     fatherLifeStatus.value = father ? (father.isAlive ? "alive" : "deceased") : "alive";
     fatherHasMiddleName.value = !!father?.middleName;
 
-      // ======================
-      // 👩 MOTHER
-      // ======================
-      user.value.motherId = mother?.familyId ?? null;
-      user.value.motherFirstName = mother?.firstName ?? "";
-      user.value.motherMiddleName = mother?.middleName ?? "";
-      user.value.motherSurname = mother?.lastName ?? "";
-      user.value.motherNameExtension = mother?.suffix ?? "";
-      user.value.motherCitizenship = mother?.citizenship ?? "";
+    // ======================
+    // 👩 MOTHER
+    // ======================
+    user.value.motherId = mother?.familyId ?? null;
+    user.value.motherFirstName = mother?.firstName ?? "";
+    user.value.motherMiddleName = mother?.middleName ?? "";
+    user.value.motherSurname = mother?.lastName ?? "";
+    user.value.motherNameExtension = mother?.suffix ?? "";
+    user.value.motherCitizenship = mother?.citizenship ?? "";
 
     motherLifeStatus.value = mother ? (mother.isAlive ? "alive" : "deceased") : "alive";
 
-      motherHasMiddleName.value = !!mother?.middleName;
+    motherHasMiddleName.value = !!mother?.middleName;
 
-      // ✅ IMPORTANT: needed for update
-      user.value.personalInfoId =
-        father?.passportPersonalInformationId ||
-        mother?.passportPersonalInformationId ||
-        null;
+    // ✅ IMPORTANT: needed for update
+    user.value.personalInfoId =
+      father?.passportPersonalInformationId || mother?.passportPersonalInformationId || null;
+  } catch (err) {
+    console.log("fetchFamily error:", err);
+  } finally {
+    isLoading.value = false;
+  }
+};
 
-    } catch (err) {
-      console.log("fetchFamily error:", err);
-    } finally {
-      isLoading.value = false;
-    }
-  };
+const fetchContact = async () => {
+  try {
+    isLoading.value = true;
 
-  const fetchContact = async () => {
-    try {
-      isLoading.value = true;
+    const { data } = await axios.get(`https://localhost:5000/api/ContactInformation/My-Contact`, {
+      headers: {
+        Authorization: `Bearer ${Auth.token}`,
+      },
+    });
 
-      const { data } = await axios.get(
-        `https://localhost:5000/api/ContactInformation/My-Contact`,
-        {
-          headers: {
-            Authorization: `Bearer ${Auth.token}`
-          }
-        }
-      );
+    // Store ID (important for update if needed later)
+    contact.value.id = data.id;
+    user.value.personalInfoId = data.passportPersonalInformationId;
 
-      // Store ID (important for update if needed later)
-      contact.value.id = data.id;
-      user.value.personalInfoId = data.passportPersonalInformationId;
+    // Address fields
+    contact.value.region = data.currentRegion ?? "";
+    contact.value.province = data.currentProvince ?? "";
+    contact.value.city = data.currentCityMunicipality ?? "";
+    contact.value.barangay = data.currentBarangay ?? "";
+    contact.value.postalCode = data.currentPostalCode ?? "";
 
-      // Address fields
-      contact.value.region = data.currentRegion ?? "";
-      contact.value.province = data.currentProvince ?? "";
-      contact.value.city = data.currentCityMunicipality ?? "";
-      contact.value.barangay = data.currentBarangay ?? "";
-      contact.value.postalCode = data.currentPostalCode ?? "";
+    // Contact numbers
+    contact.value.mobileNumber = data.personalMobileNumber ?? "";
+    contact.value.landlineNumber = data.personalLandlineNumber ?? "";
 
-      // Contact numbers
-      contact.value.mobileNumber = data.personalMobileNumber ?? "";
-      contact.value.landlineNumber = data.personalLandlineNumber ?? "";
+    contact.value.email = data.email ?? "";
+  } catch (err) {
+    console.log("fetchContact error:", err);
+  } finally {
+    isLoading.value = false;
+  }
+};
 
-      contact.value.email = data.email ?? "";
+const fetchWork = async () => {
+  try {
+    isLoading.value = true;
 
-    } catch (err) {
-      console.log("fetchContact error:", err);
-    } finally {
-      isLoading.value = false;
-    }
-  };
+    const { data } = await axios.get(`https://localhost:5000/api/WorkInformation/My-Work`, {
+      headers: {
+        Authorization: `Bearer ${Auth.token}`,
+      },
+    });
 
-  const fetchWork = async () => {
-    try {
-      isLoading.value = true;
+    work.value.id = data.id;
+    user.value.personalInfoId = data.passportPersonalInformationId;
 
-      const { data } = await axios.get(
-        `https://localhost:5000/api/WorkInformation/My-Work`,
-        {
-          headers: {
-            Authorization: `Bearer ${Auth.token}`
-          }
-        }
-      );
+    work.value.occupation = data.occupation ?? "";
+    work.value.officeAddress = data.officeAddress ?? "";
+    work.value.officeCountry = data.officeCountry ?? "";
+    work.value.officeRegion = data.officeRegion ?? "";
+    work.value.officeProvince = data.officeProvince ?? "";
+    work.value.officeCityMunicipality = data.officeCityMunicipality ?? "";
+    work.value.officePostalCode = data.officePostalCode ?? "";
+    work.value.officeMobileNumber = data.officeMobileNumber ?? "";
+    work.value.officeLandlineNumber = data.officeLandlineNumber ?? "";
+  } catch (err) {
+    console.log("fetchWork error:", err);
+  } finally {
+    isLoading.value = false;
+  }
+};
 
-      work.value.id = data.id;
-      user.value.personalInfoId = data.passportPersonalInformationId;
-
-      work.value.occupation = data.occupation ?? "";
-      work.value.officeAddress = data.officeAddress ?? "";
-      work.value.officeCountry = data.officeCountry ?? "";
-      work.value.officeRegion = data.officeRegion ?? "";
-      work.value.officeProvince = data.officeProvince ?? "";
-      work.value.officeCityMunicipality = data.officeCityMunicipality ?? "";
-      work.value.officePostalCode = data.officePostalCode ?? "";
-      work.value.officeMobileNumber = data.officeMobileNumber ?? "";
-      work.value.officeLandlineNumber = data.officeLandlineNumber ?? "";
-
-    } catch (err) {
-      console.log("fetchWork error:", err);
-    } finally {
-      isLoading.value = false;
-    }
-  };
-
-  onMounted(async () => {
-    await fetchPersonal();
-    await fetchFamily();
-    await fetchContact();
-    await fetchWork();
-  });
+onMounted(async () => {
+  await fetchPersonal();
+  await fetchFamily();
+  await fetchContact();
+  await fetchWork();
+});
 
 // ------------------ PATCH Methods ------------------
 const updatePersonal = async () => {
@@ -1901,11 +1890,9 @@ const updatePersonal = async () => {
       birthCity: birthCity.value,
       birthBarangay: birthBarangay.value,
     };
-    await axios.patch(
-      "https://localhost:5000/api/PassportPersonalInformations/Update-Profile",
-      payload,
-      { headers: { Authorization: `Bearer ${Auth.token}` } },
-    );
+    await axios.patch("https://localhost:5000/api/PassportPersonalInformations", payload, {
+      headers: { Authorization: `Bearer ${Auth.token}` },
+    });
     dialogTitle.value = "Success";
     dialogMessage.value = "Personal info saved.";
     showDialog.value = true;
@@ -1919,64 +1906,55 @@ const updatePersonal = async () => {
   }
 };
 
-  const updateFamily = async () => {
-    try {
-      isLoading.value = true;
+const updateFamily = async () => {
+  try {
+    isLoading.value = true;
 
-      const payload = [
-        {
-          familyId: user.value.fatherId,
-          passportPersonalInformationId: user.value.personalInfoId,
+    const payload = [
+      {
+        familyId: user.value.fatherId,
+        passportPersonalInformationId: user.value.personalInfoId,
 
-          firstName: user.value.fatherFirstName,
-          middleName: fatherHasMiddleName.value
-            ? user.value.fatherMiddleName
-            : null,
-          lastName: user.value.fatherSurname,
-          suffix: user.value.fatherNameExtension,
-          relationship: "Father",
-          isAlive: fatherLifeStatus.value === "alive",
-          citizenship: user.value.fatherCitizenship,
-        },
-        {
-          familyId: user.value.motherId,
-          passportPersonalInformationId: user.value.personalInfoId,
+        firstName: user.value.fatherFirstName,
+        middleName: fatherHasMiddleName.value ? user.value.fatherMiddleName : null,
+        lastName: user.value.fatherSurname,
+        suffix: user.value.fatherNameExtension,
+        relationship: "Father",
+        isAlive: fatherLifeStatus.value === "alive",
+        citizenship: user.value.fatherCitizenship,
+      },
+      {
+        familyId: user.value.motherId,
+        passportPersonalInformationId: user.value.personalInfoId,
 
-          firstName: user.value.motherFirstName,
-          middleName: motherHasMiddleName.value
-            ? user.value.motherMiddleName
-            : null,
-          lastName: user.value.motherSurname,
-          suffix: user.value.motherNameExtension,
-          relationship: "Mother",
-          isAlive: motherLifeStatus.value === "alive",
-          citizenship: user.value.motherCitizenship,
-        }
-      ];
+        firstName: user.value.motherFirstName,
+        middleName: motherHasMiddleName.value ? user.value.motherMiddleName : null,
+        lastName: user.value.motherSurname,
+        suffix: user.value.motherNameExtension,
+        relationship: "Mother",
+        isAlive: motherLifeStatus.value === "alive",
+        citizenship: user.value.motherCitizenship,
+      },
+    ];
 
-      await axios.patch(
-        `https://localhost:5000/api/Families`,
-        payload,
-        {
-          headers: {
-            Authorization: `Bearer ${Auth.token}`
-          }
-        }
-      );
+    await axios.patch(`https://localhost:5000/api/Families`, payload, {
+      headers: {
+        Authorization: `Bearer ${Auth.token}`,
+      },
+    });
 
-      dialogTitle.value = "Success";
-      dialogMessage.value = "Family info saved.";
-      showDialog.value = true;
-
-    } catch (err) {
-      console.log("updateFamily error:", err);
-      dialogTitle.value = "Error";
-      dialogMessage.value = "Failed to save family info.";
-      showDialog.value = true;
-    } finally {
-      isLoading.value = false;
-    }
-  };
+    dialogTitle.value = "Success";
+    dialogMessage.value = "Family info saved.";
+    showDialog.value = true;
+  } catch (err) {
+    console.log("updateFamily error:", err);
+    dialogTitle.value = "Error";
+    dialogMessage.value = "Failed to save family info.";
+    showDialog.value = true;
+  } finally {
+    isLoading.value = false;
+  }
+};
 
 // ─────────────────────────────────────────────
 // SAVE DISPATCHER
