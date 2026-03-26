@@ -1376,14 +1376,15 @@
 
 <script setup>
 import LeftMenu from "@/components/LeftMenu.vue";
-import { ref, computed } from "vue";
+  import { ref, computed, onMounted } from "vue";
+  import axios from 'axios'
+  import { useAuthStore } from "../stores/auth";
+
+  const Auth = useAuthStore();
 
 // ── Pre-step state ──────────────────────────────────────────────────
 const preStep = ref("terms");
 const consentChecked = ref(false);
-
-const profiles = ref([{ id: 1, name: "MARVIN ALFRED MERCADO PICO" }]);
-const selectedProfile = ref(null);
 
 // ── Pre-step handlers ───────────────────────────────────────────────
 const continueExisting = () => {};
@@ -1396,11 +1397,6 @@ const startIndividual = () => {
 const startGroup = () => {
   if (!consentChecked.value) return;
   preStep.value = "selectProfile";
-};
-
-const proceedWithProfile = () => {
-  if (!selectedProfile.value) return;
-  preStep.value = "appointmentNotice";
 };
 
 const cancelNotice = () => {
@@ -1800,6 +1796,50 @@ const closePaymentSuccess = () => {
   showPaymentSuccess.value = false;
   showEReceipt.value = true;
 };
+
+
+  // GET PROFILES LIST
+  // Reactive states
+  const profiles = ref([]);
+  const selectedProfile = ref(null);
+  const loading = ref(false);
+  const error = ref(null);
+
+  // Fetch profiles from backend
+  const fetchProfiles = async () => {
+    loading.value = true;
+    error.value = null;
+    try {
+      const res = await axios.get("/api/PassportProfile/Profiles", {
+        headers: {
+          Authorization: `Bearer ${Auth.token}`,
+        },
+      });
+
+      // Use backend-provided fullName and relationship
+      profiles.value = res.data.map(p => ({
+        id: p.passportPersonalInformationId,
+        name: p.fullName,
+        relationship: p.relationship ?? "Personal"
+      }));
+    } catch (err) {
+      console.error(err);
+      error.value = "Failed to load profiles.";
+    } finally {
+      loading.value = false;
+    }
+  };
+
+  // Trigger API call on mount
+  onMounted(() => {
+    fetchProfiles();
+  });
+
+  // Handle proceed action
+  const proceedWithProfile = () => {
+    if (!selectedProfile.value) return;
+    preStep.value = "appointmentNotice";
+  };
 </script>
 
 <style scoped>

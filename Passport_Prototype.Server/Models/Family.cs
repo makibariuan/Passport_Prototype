@@ -13,23 +13,18 @@ namespace Passport_Prototype.Server.Models
 
         public int PassportPersonalInformationId { get; set; }
 
-        [Required]
         public string? Relationship { get; set; }
 
-        [Required]
         public bool? isAlive { get; set; }
 
-        [Required]
         public string? FirstName { get; set; }
 
         public string? MiddleName { get; set; }
 
-        [Required]
         public string? LastName { get; set; }
 
         public string? Suffix { get; set; }
 
-        [Required]
         public string? Citizenship { get; set; }
     }
 }

@@ -12,14 +12,12 @@ namespace Passport_Prototype.Server.DTOs
         [Required]
         public int UserId { get; set; }
 
-        [Required]
         [MaxLength(255)]
         public string? FirstName { get; set; }
 
         [MaxLength(255)]
         public string? MiddleName { get; set; }
 
-        [Required]
         [MaxLength(255)]
         public string? LastName { get; set; }
 
@@ -58,15 +56,12 @@ namespace Passport_Prototype.Server.DTOs
     }
     public class CreatePassportPersonalInformationDTO
     {
-        [Required]
         public int UserId { get; set; }
 
-        [Required]
         public string FirstName { get; set; } = null!;
 
         public string? MiddleName { get; set; }
 
-        [Required]
         public string LastName { get; set; } = null!;
 
         public string? Suffix { get; set; }

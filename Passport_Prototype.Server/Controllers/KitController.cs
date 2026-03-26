@@ -349,22 +349,24 @@ namespace OnlineRegistration.Server.Controllers
                 return BadRequest(new { resposeCode = -1, message = "ReasonCode is required." });
             }
 
-            // 2. Data Retrieval - Using the Unified Table
+            // 2. Data Retrieval - Unified to use _db (or _context if EnrollmentRegistries is there)
+            // CRITICAL: Ensure registryEntry is loaded from the SAME context that starts the transaction.
             var registryEntry = await _db.EnrollmentRegistries.FindAsync(id);
             if (registryEntry == null) return NotFound(new { message = "Registry Record not found" });
 
-            // 3. Begin Transaction
-            using var transaction = await _context.Database.BeginTransactionAsync();
+            // 3. Begin Transaction on _db since it owns the main record
+            using var transaction = await _db.Database.BeginTransactionAsync();
             try
             {
-                // 4. Check for existing log to prevent duplicates for the same step (e.g., Left Thumb)
+                // 4. Check for existing log
+                // Note: If BypassLogs is in _context, you must move it to _db or vice versa for this transaction.
                 var bypassLog = await _context.BypassLogs
                     .FirstOrDefaultAsync(p => p.BDEID == id && p.StepName == stepNameToCheck);
 
                 if (bypassLog != null)
                 {
                     LogBypassAttempt("BYPASS_ALREADY_EXISTS", id, stepNameToCheck, currentKitUser, dto.KitName, currentUsername);
-                    await _db.SaveChangesAsync();
+                    await _context.SaveChangesAsync();
                     await transaction.CommitAsync();
                     return Ok(new { resposeCode = 1, message = "Bypass already logged." });
                 }
@@ -372,7 +374,7 @@ namespace OnlineRegistration.Server.Controllers
                 // 5. Create New Bypass Log
                 var newLog = new BypassLog
                 {
-                    BDEID = id, // Now links to EnrollmentRegistryID.Id
+                    BDEID = id,
                     StepName = stepNameToCheck,
                     ReasonCode = dto.ReasonCode,
                     ReasonDetails = dto.ReasonDetails,
@@ -384,17 +386,16 @@ namespace OnlineRegistration.Server.Controllers
                 _context.BypassLogs.Add(newLog);
 
                 // 6. Update Unified Registry Status
-                // Setting BiometricBypass to true and updating the statuses
                 registryEntry.BiometricBypass = true;
-
-                // If they are bypassing a capture step, we usually treat it as "Capture In-Progress" 
-                // until the final upload, but you can adjust these status numbers based on your logic.
                 if (registryEntry.BiometricStatus < 1) registryEntry.BiometricStatus = 1;
 
                 // 7. Success Logging
                 LogBypassAttempt("BYPASS_SUCCESS", id, stepNameToCheck, currentKitUser, dto.KitName, currentUsername);
 
+                // 8. Save both contexts (If they share the same database, this is safer)
                 await _context.SaveChangesAsync();
+                await _db.SaveChangesAsync();
+
                 await transaction.CommitAsync();
 
                 return Ok(new { resposeCode = 0, message = "Bypass logged successfully." });
@@ -402,7 +403,7 @@ namespace OnlineRegistration.Server.Controllers
             catch (Exception ex)
             {
                 await transaction.RollbackAsync();
-                return StatusCode(500, new { message = "Error saving bypass", details = ex.Message });
+                return StatusCode(500, new { message = "Error saving bypass", details = ex.InnerException?.Message ?? ex.Message });
             }
         }
 
