@@ -50,7 +50,7 @@
                   <div class="pds-relationship-inner">
                     <div class="pds-relationship-label">
                       <div>
-                        <p class="pds-relationship-title">This profile is for</p>
+                        <p class="pds-relationship-title">This profile is for: </p>
                       </div>
                     </div>
                     <select

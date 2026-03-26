@@ -1455,12 +1455,12 @@ const handleCloseDialog = () => {
   overflow: hidden;
 }
 
-.page-title {
-  font-size: 1.8rem;
-  color: #06195e;
-  font-weight: 800;
-  margin-bottom: 25px;
-}
+  .page-title {
+    font-size: 1.8rem;
+    color: #3b82f6;
+    font-weight: 800;
+    margin-bottom: 25px;
+  }
 
 .sub-title {
   font-size: 1.5rem;

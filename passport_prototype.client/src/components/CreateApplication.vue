@@ -4,7 +4,7 @@
     <Header title="Application" class="header" />
 
     <div class="dashboard-content">
-      <h2 class="page-title">Application for</h2>
+      <h2 class="page-title">Passport Application</h2>
 
       <!-- ═══════════════════════════════════════════════════════════ -->
       <!-- PRE-STEP 0 — Terms & Conditions                           -->
@@ -1318,22 +1318,24 @@
                       <p class="epay-intro">This mode of payment is requesting for...</p>
 
                       <table class="epay-table">
-                        <tr>
-                          <td class="ep-label">Status</td>
-                          <td class="ep-value ep-bold">PAID</td>
-                        </tr>
-                        <tr>
-                          <td class="ep-label">Scheduled Date</td>
-                          <td class="ep-value">9 January 2025, 09:00</td>
-                        </tr>
-                        <tr>
-                          <td class="ep-label">Amount</td>
-                          <td class="ep-value">PHP 950.00</td>
-                        </tr>
-                        <tr>
-                          <td class="ep-label">Total Amount Due</td>
-                          <td class="ep-value ep-green">PHP 950.00</td>
-                        </tr>
+                        <tbody>
+                          <tr>
+                            <td class="ep-label">Status</td>
+                            <td class="ep-value ep-bold">PAID</td>
+                          </tr>
+                          <tr>
+                            <td class="ep-label">Scheduled Date</td>
+                            <td class="ep-value">9 January 2025, 09:00</td>
+                          </tr>
+                          <tr>
+                            <td class="ep-label">Amount</td>
+                            <td class="ep-value">PHP 950.00</td>
+                          </tr>
+                          <tr>
+                            <td class="ep-label">Total Amount Due</td>
+                            <td class="ep-value ep-green">PHP 950.00</td>
+                          </tr>
+                        </tbody>
                       </table>
 
                       <p class="not-receipt">This is not your e-Receipt.</p>
