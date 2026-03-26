@@ -804,20 +804,8 @@ const handleVerifyLoginOtp = async () => {
       user: response.data.user,
     });
 
-      showOtpDialog.value = false;
-      alert("Login Successful!");
+    router.push("/profile");
 
-      // 2. Redirect based on user role (matching your store logic)
-      const role = parseInt(auth.userRole);
-      if (role === 1) {
-        router.push("/dashboard-admin");
-      }
-      else if (role === 4) {
-        router.push("/applicationassessment");
-      }
-      else {
-        router.push("/dashboard");
-      }
     } catch (err) {
       otpError.value = err.response?.data?.message || "Invalid or expired OTP.";
     } finally {
