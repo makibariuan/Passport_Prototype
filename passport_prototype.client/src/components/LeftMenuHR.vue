@@ -25,6 +25,7 @@
       <div class="user-info">
         <Settings class="w-5 h-5 shrink-0" />
         <span class="username">JUAN DELA CRUZ</span>
+
       </div>
       <div class="logout-button" @click="logout">Logout</div>
     </div>
@@ -33,12 +34,10 @@
 
 <script setup>
   import { useRouter, useRoute } from "vue-router";
-  import { User, LayoutDashboard, Users, Calendar, FileSearch, BookText, CheckSquare, Settings } from "@lucide/vue";
-  import { useAuthStore } from "@/stores/auth";
+  import { LayoutDashboard, Settings } from "@lucide/vue";
 
   const router = useRouter();
   const route = useRoute();
-  const auth = useAuthStore();
 
   const navItems = [
     { icon: LayoutDashboard, label: "Application Assessment", path: "/applicationassessment" },
@@ -52,7 +51,6 @@
 
   const logout = () => {
     localStorage.removeItem("menu_open_states");
-    auth.logout?.();
     router.push("/login");
   };
 </script>
