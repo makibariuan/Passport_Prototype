@@ -169,6 +169,17 @@
       </div>
     </DialogBox>
   </div>
+
+  <template>
+    <div class="dfa-wrapper">
+      <div v-if="isProcessingLogin" class="loading-overlay">
+        <div class="loading-box">
+          <div class="hourglass"></div>
+          <p>Verifying Identity...</p>
+        </div>
+      </div>
+    </div>
+  </template>
 </template>
 
 <script setup>
@@ -236,6 +247,8 @@
     updatePST();
     timer = setInterval(updatePST, 1000);
   });
+
+  const isProcessingLogin = ref(false);
 
   // Login/Register State
   const isLogin = ref(true);
@@ -496,20 +509,6 @@
 
     auth.login({ token: res.data.token });
     showOtpDialog.value = false;
-
-    // Role-based redirection
-    const role = parseInt(auth.userRole);
-    if (role === 5 || role === 6) {
-      router.push("/dashboard");
-    }
-    else if (role === 4) {
-      router.push("/applicationassessment");
-    }
-    else if (role === 1) {
-      router.push("/dashboard-admin");
-    } else {
-      router.push("/");
-    }
 
   } catch (err) {
     // Set the error message returned from backend
@@ -780,20 +779,15 @@
         user: response.data.user
       });
 
+      // 2. Hide OTP dialog and start the full-screen loading sequence
       showOtpDialog.value = false;
-      alert("Login Successful!");
+      isProcessingLogin.value = true;
 
-      // 2. Redirect based on user role (matching your store logic)
-      const role = parseInt(auth.userRole);
-      if (role === 1) {
-        router.push("/dashboard-admin");
-      }
-      else if (role === 4) {
-        router.push("/applicationassessment");
-      }
-      else {
-        router.push("/dashboard");
-      }
+      // 3. Brief delay for the "Hourglass" effect before redirecting
+      
+      router.push("/profile");
+      
+
     } catch (err) {
       otpError.value = err.response?.data?.message || "Invalid or expired OTP.";
     } finally {
