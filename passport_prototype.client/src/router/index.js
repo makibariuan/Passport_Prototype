@@ -102,7 +102,7 @@ const routes = [
   { path: "/applicationassessment", name: "ApplicationAssessment", component: ApplicationAssessment },
   // ── User-Adjusdication ──────────────────────────────────────────────────
 
-  { path: "/UserAbjudication", name: "UserAbjudication", component: UserAdjudication },
+  { path: "/user-adjudication", name: "UserAdjudication", component: UserAdjudication },
 
 
 ];

@@ -1,6 +1,6 @@
 <template>
   <div class="app-layout">
-    <LeftMenu class="leftMenu" />
+    <!--<LeftMenu class="leftMenu" />-->
 
     <Header title="Employee ID" class="header" />
 
@@ -240,7 +240,7 @@
   </div>
 </template>
 
-<script setup>import LeftMenu from './LeftMenuHR.vue'
+<script setup>
   import api from "@/api";
   import { ref, onMounted, computed, watch, nextTick } from "vue";
   import { useRoute, useRouter } from "vue-router";
