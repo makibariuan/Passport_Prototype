@@ -344,9 +344,9 @@
 
       //Adjudication
 
-        //case "Adjudication":
-        //  await getPendingAdjudication();
-        //  break;
+        case "Adjudication":
+          await getPendingAdjudication();
+          break;
 
       //Adjudication
 
@@ -863,20 +863,20 @@
     }
   }
 
-  //async function getPendingAdjudication() {
-  //  try {
-  //    isLoading.value = true;
-  //    const res = await api.get(`/hr/adjudication`);
-  //    console.log("1. API Raw Response:", res.data); // Should show an array
+  async function getPendingAdjudication() {
+    try {
+      isLoading.value = true;
+      const res = await api.get(`/hr/adjudication`);
+      console.log("1. API Raw Response:", res.data); // Should show an array
 
-  //    employeeForAdjudication.value = res.data || [];
-  //    console.log("2. Assigned to Ref:", employeeForAdjudication.value.length, "items");
-  //  } catch (err) {
-  //    console.error("Adjudication fetch failed:", err);
-  //  } finally {
-  //    isLoading.value = false;
-  //  }
-  //}
+      employeeForAdjudication.value = res.data || [];
+      console.log("2. Assigned to Ref:", employeeForAdjudication.value.length, "items");
+    } catch (err) {
+      console.error("Adjudication fetch failed:", err);
+    } finally {
+      isLoading.value = false;
+    }
+  }
 
   // Helper to handle base64 images from backend
   const renderImage = (base64) => {
@@ -1263,31 +1263,31 @@
 
   // ------------------ Load Data ------------------
   // Load dropdown options
-  //async function loadLookups() {
-  //  try {
-  //    isLoading.value = true; // show hourglass
-  //    const g = await api.get("/employee/gender");
-  //    genders.value = g.data;
+  async function loadLookups() {
+    try {
+      isLoading.value = true; // show hourglass
+      const g = await api.get("/employee/gender");
+      genders.value = g.data;
 
-  //    const cs = await api.get("/employee/civilstatus");
-  //    civilStatuses.value = cs.data;
-  //  } catch (err) {
-  //    console.error("AxiosError:", err);
+      const cs = await api.get("/employee/civilstatus");
+      civilStatuses.value = cs.data;
+    } catch (err) {
+      console.error("AxiosError:", err);
 
-  //    if (err.response) {
-  //      console.error("🔴 Backend responded with error:");
-  //      console.error("Status:", err.response.status);
-  //      console.error("Data:", err.response.data);
-  //    } else if (err.request) {
-  //      console.error("🔴 No response received from server");
-  //      console.error("Request:", err.request);
-  //    } else {
-  //      console.error("🔴 Axios setup error:", err.message);
-  //    }
-  //  } finally {
-  //    isLoading.value = false;  // hide hourglass
-  //  }
-  //}
+      if (err.response) {
+        console.error("🔴 Backend responded with error:");
+        console.error("Status:", err.response.status);
+        console.error("Data:", err.response.data);
+      } else if (err.request) {
+        console.error("🔴 No response received from server");
+        console.error("Request:", err.request);
+      } else {
+        console.error("🔴 Axios setup error:", err.message);
+      }
+    } finally {
+      isLoading.value = false;  // hide hourglass
+    }
+  }
 
 
   // ✅ Function to call backend API
@@ -1408,11 +1408,11 @@
   /* 1. DASHBOARD GRID LAYOUT STYLES (Copied from ManageHRApplicationsPage.vue) */
   /* ************************************************************************** */
   .app-layout {
-    display: grid;
-    grid-template-columns: 280px 1fr;
-    grid-template-rows: auto 1fr;
-    height: 100vh;
-    background-color: #f4f7f9;
+    width: 100%;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    background-color: #f8fafc; /* Optional: light gray background */
   }
 
   .leftMenu {
