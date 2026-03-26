@@ -66,13 +66,11 @@
             <button :class="{ active: !hasMiddleName }" @click="hasMiddleName = false">No</button>
           </div>
 
-          <input
-            v-if="hasMiddleName"
-            v-model="middleName"
-            type="text"
-            placeholder="Middle Name"
-            style="margin-top: 8px"
-          />
+          <input v-if="hasMiddleName"
+                 v-model="middleName"
+                 type="text"
+                 placeholder="Middle Name"
+                 style="margin-top: 8px" />
         </div>
 
         <div class="form-field">
@@ -95,35 +93,27 @@
         <div class="form-field">
           <label style="padding-top: 30px">Verification Code</label>
           <div class="otp-wrapper">
-            <input
-              v-model="otp"
-              type="text"
-              maxlength="6"
-              class="otp-hidden-input"
-              autocomplete="one-time-code"
-            />
+            <input v-model="otp"
+                   type="text"
+                   maxlength="6"
+                   class="otp-hidden-input"
+                   autocomplete="one-time-code" />
 
             <div class="otp-slots-container">
-              <div
-                v-for="i in 6"
-                :key="i"
-                class="otp-slot"
-                :class="{ filled: otp.length >= i, 'verified-slot': isEmailVerified }"
-              >
+              <div v-for="i in 6"
+                   :key="i"
+                   class="otp-slot"
+                   :class="{ filled: otp.length >= i, 'verified-slot': isEmailVerified }">
                 {{ otp[i - 1] || "" }}
               </div>
             </div>
           </div>
 
-          <div
-            class="otp-action-bar"
-            style="margin-top: 10px; display: flex; gap: 10px; align-items: center"
-          >
-            <button
-              @click="verifyOtpCode"
-              class="action-btn verify-btn"
-              :disabled="otp.length < 6 || isLoading || isEmailVerified"
-            >
+          <div class="otp-action-bar"
+               style="margin-top: 10px; display: flex; gap: 10px; align-items: center">
+            <button @click="verifyOtpCode"
+                    class="action-btn verify-btn"
+                    :disabled="otp.length < 6 || isLoading || isEmailVerified">
               {{ isEmailVerified ? "Verified ✓" : "Verify Code" }}
             </button>
 
@@ -152,12 +142,10 @@
           <span>Read and Accept <a href="#">Terms of Service</a></span>
         </div>
 
-        <button
-          @click="handleRegister"
-          class="submit-register-btn"
-          :disabled="!canRegister || isLoading"
-          :class="{ 'btn-disabled': !canRegister }"
-        >
+        <button @click="handleRegister"
+                class="submit-register-btn"
+                :disabled="!canRegister || isLoading"
+                :class="{ 'btn-disabled': !canRegister }">
           {{ isLoading ? "Processing..." : "Sign Up" }}
         </button>
       </section>
@@ -167,19 +155,15 @@
       <div class="otp-dialog-content">
         <p>A 6-digit verification code has been sent to your email.</p>
         <div class="otp-wrapper" style="margin: 20px 0">
-          <input
-            v-model="otp"
-            type="text"
-            maxlength="6"
-            placeholder="000000"
-            class="otp-input-simple"
-          />
+          <input v-model="otp"
+                 type="text"
+                 maxlength="6"
+                 placeholder="000000"
+                 class="otp-input-simple" />
         </div>
-        <button
-          @click="handleVerifyLoginOtp"
-          class="action-btn"
-          :disabled="otp.length < 6 || isLoading"
-        >
+        <button @click="handleVerifyLoginOtp"
+                class="action-btn"
+                :disabled="otp.length < 6 || isLoading">
           {{ isLoading ? "Verifying..." : "Verify & Sign In" }}
         </button>
         <p v-if="otpError" class="error-text" style="color: #d9534f; margin-top: 10px">
@@ -187,6 +171,19 @@
         </p>
       </div>
     </DialogBox>
+
+    <template>
+      <div class="dfa-wrapper">
+        <div v-if="isProcessingLogin" class="loading-overlay">
+          <div class="loading-box">
+            <div class="hourglass"></div>
+            <p>Verifying Identity...</p>
+          </div>
+        </div>
+      </div>
+    </template>
+
+
   </div>
 </template>
 
@@ -794,14 +791,8 @@ const handleVerifyLoginOtp = async () => {
     alert("Login Successful!");
 
     // 2. Redirect based on user role (matching your store logic)
-    const role = parseInt(auth.userRole);
-    if (role === 1) {
-      router.push("/dashboard-admin");
-    } else if (role === 4) {
-      router.push("/applicationassessment");
-    } else {
       router.push("/profile");
-    }
+    
   } catch (err) {
     otpError.value = err.response?.data?.message || "Invalid or expired OTP.";
   } finally {

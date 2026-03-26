@@ -200,24 +200,55 @@ namespace Passport_Prototype.Server.Controllers
             var result = await (
                 from app in _context.Applications
 
-                join user in _context.Users
-                    on app.UserId equals user.Id
-
-                join ppi in _context.PassportPersonalInformation
-                    on user.Id equals ppi.UserId
+                join enrollment in _context.EnrollmentRegistries
+                  on app.ApplicationId equals enrollment.Id
 
                 select new
                 {
-                    id = app.ApplicationId,
-                    number = app.ApplicationId.ToString(),
+                    // Enrollment Registry fields
+                    EnrollmentId = enrollment.Id,
+                    EnrollmentAccessCode = enrollment.ApplicationCode,
 
-                    type = app.ApplicationType,
+                    PersonID = enrollment.PersonID,
+                    FirstName = enrollment.FirstName,
+                    MiddleName = enrollment.MiddleName,
+                    LastName = enrollment.LastName,
+                    BirthDate = enrollment.BirthDate,
+                    Email = enrollment.Email,
+                    EmployeeID = enrollment.EmployeeID,
+                    DepartmentName = enrollment.DepartmentName,
+                    Designation = enrollment.Designation,
+                    CitizenType = enrollment.CitizenType,
+                    EnrollmentStatus = enrollment.Status,
+                    EnrollmentCreatedAt = enrollment.CreatedAt,
+                    Photo = enrollment.Photo,
+                    Signature = enrollment.Signature,
+                    // Add more enrollment fields if needed
 
-                    date = app.Schedule,
+                    // Application fields
+                    ApplicationId = app.ApplicationId,
+                    UserId = app.UserId,
+                    Region = app.Region,
+                    Country = app.Country,
+                    Site = app.Site,
+                    Schedule = app.Schedule,
+                    AppType = app.ApplicationType,
+                    CitizenshipBasis = app.CitizenshipBasis,
+                    isForeignPassportHolder = app.isForeignPassportHolder,
+                    isCourtesyLane = app.isCourtesyLane,
+                    DocumentType = app.DocumentType,
+                    //
+                    IdDocumentIdNumber = app.IdDocumentIdNumber,
+                    ValidIdPath = app.ValidIdPath,
+                    CertificatePath = app.CertificatePath,
+                    ProcessingType = app.ProcessingType,
 
-                    name = $"{user.FirstName} {user.LastName}",
+                    PaymentMethod = app.PaymentMethod,
+                    DeliveryOption = app.DeliveryOption,
 
-                    status = app.ApplicationStatus
+                    isPaid = app.isPaid,
+                    ApplicationStatus = app.ApplicationStatus,
+                    // Add more application fields if needed
                 }
             ).ToListAsync();
 

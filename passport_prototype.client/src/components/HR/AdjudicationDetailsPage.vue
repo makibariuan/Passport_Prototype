@@ -1,6 +1,5 @@
 <template>
   <div class="app-layout">
-    <LeftMenu class="leftMenu" />
     <Header title="Adjudication Resolution" />
 
     <div class="dashboard-content">
@@ -23,7 +22,7 @@
           </div>
         </div>
 
-        <div class="vs-divider">VS</div>
+        <div class="vs-divider"></div>
 
         <div class="comparison-card hit">
           <div class="card-tag tag-hit">Potential Duplicate (Hit)</div>
@@ -57,7 +56,6 @@
 import { ref, onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import api from '@/api';
-import LeftMenu from "@/components/LeftMenu.vue";
 // import Header from "@/components/Header.vue"; // Uncomment if needed
 
 const route = useRoute();
@@ -167,6 +165,49 @@ onMounted(() => {
 </script>
 
 <style scoped>
+
+  .app-layout {
+    width: 100%;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    background-color: #f8fafc; /* Optional: light gray background */
+  }
+
+  .dashboard-content {
+    width: 100%;
+    max-width: 1200px;
+    /* This margin: 0 auto only works if the parent allows it */
+    margin: 0 auto;
+    padding: 40px 20px;
+    box-sizing: border-box;
+    /* Ensures that if the content is short, it still stays centered */
+    display: flex;
+    flex-direction: column;
+  }
+
+  .dashboard-content {
+    max-width: 1200px; /* Limits the width for better readability */
+    margin: 0 auto; /* This does the actual centering */
+    padding: 40px 20px; /* Gives some breathing room on top and sides */
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .header-flex {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    margin-bottom: 30px;
+  }
+
+  .page-title {
+    margin: 0;
+    font-size: 1.8rem;
+    color: #1e293b;
+  }
+
+
   .comparison-grid {
     display: grid;
     grid-template-columns: 1fr 100px 1fr;
