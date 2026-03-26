@@ -1727,13 +1727,13 @@ const fetchRelationship = async () => {
     });
 
     // Map accountRelationship → relationship so the template renders it
-   profiles.value = Array.isArray(data)
-  ? data.map((p) => ({
-      id: p.passportPersonalInformationId, 
-      relationship: p.relationship,
-      fullName: p.fullName,
-    }))
-  : [];
+    profiles.value = Array.isArray(data)
+      ? data.map((p) => ({
+          id: p.passportPersonalInformationId,
+          relationship: p.relationship,
+          fullName: p.fullName,
+        }))
+      : [];
 
     if (profiles.value.length > 0) {
       selectedProfileId.value = profiles.value[0].id;
@@ -1899,6 +1899,7 @@ const updatePersonal = async () => {
   try {
     isLoading.value = true;
     const payload = {
+      passportPersonalInformationId: user.value.personalInfoId,
       lastName: user.value.lastName,
       firstName: user.value.firstName,
       middleName: hasMiddleName.value ? user.value.middleName : null,
@@ -1915,11 +1916,9 @@ const updatePersonal = async () => {
       birthCity: birthCity.value,
       birthBarangay: birthBarangay.value,
     };
-    await axios.patch(
-      `https://localhost:5000/api/PassportPersonalInformations/${selectedProfileId.value}`,
-      payload,
-      { headers: { Authorization: `Bearer ${Auth.token}` } },
-    );
+    await axios.patch(`https://localhost:5000/api/PassportPersonalInformations`, payload, {
+      headers: { Authorization: `Bearer ${Auth.token}` },
+    });
     dialogTitle.value = "Success";
     dialogMessage.value = "Personal info saved.";
     showDialog.value = true;
