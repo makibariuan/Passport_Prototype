@@ -122,6 +122,9 @@ namespace Passport_Prototype.Server.Controllers
             return $"MKT-{DateTime.Now:yyyyMMdd}-{Guid.NewGuid().ToString().Substring(0, 6).ToUpper()}";
         }
 
+
+
+
         [HttpGet("GetApplicationsWithUserInfo")]
         [AllowAnonymous]
         public async Task<IActionResult> GetApplicationsWithUserInfo()
