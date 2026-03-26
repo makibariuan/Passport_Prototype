@@ -199,6 +199,17 @@
       </div>
     </template>
   </div>
+
+  <template>
+    <div class="dfa-wrapper">
+      <div v-if="isProcessingLogin" class="loading-overlay">
+        <div class="loading-box">
+          <div class="hourglass"></div>
+          <p>Verifying Identity...</p>
+        </div>
+      </div>
+    </div>
+  </template>
 </template>
 
 <script setup>
@@ -267,6 +278,7 @@ onMounted(() => {
   timer = setInterval(updatePST, 1000);
 });
 
+<<<<<<< HEAD
 // Login/Register State
 const isLogin = ref(true);
 const loginStep = ref("credentials");
@@ -278,6 +290,21 @@ const confirmPassword = ref("");
 const otp = ref("");
 const showPassword = ref(false); // Dont forget to leave to false
 const showConfirm = ref(false);
+=======
+  const isProcessingLogin = ref(false);
+
+  // Login/Register State
+  const isLogin = ref(true);
+  const loginStep = ref("credentials");
+  const username = ref(""); // Dont forget to leave empty
+  const email = ref("");
+  const loginPassword = ref("");
+  const password = ref(""); // Dont forget to leave empty
+  const confirmPassword = ref("");
+  const otp = ref("");
+  const showPassword = ref(false); // Dont forget to leave to false
+  const showConfirm = ref(false);
+>>>>>>> 6ed62f6 (Removed alert in login)
 
 // OTP animation and countdown reference
 
@@ -526,6 +553,7 @@ const handleVerifyOtp = async () => {
     auth.login({ token: res.data.token });
     showOtpDialog.value = false;
 
+<<<<<<< HEAD
     // Role-based redirection
     const role = parseInt(auth.userRole);
     if (role === 5 || role === 6) {
@@ -537,6 +565,8 @@ const handleVerifyOtp = async () => {
     } else {
       router.push("/");
     }
+=======
+>>>>>>> 6ed62f6 (Removed alert in login)
   } catch (err) {
     // Set the error message returned from backend
     otpError.value =
@@ -811,7 +841,157 @@ const handleVerifyLoginOtp = async () => {
   } finally {
     isLoading.value = false;
   }
+<<<<<<< HEAD
 };
+=======
+
+
+  // --- API Integration Functions ---
+
+  // 1. Send Verification Code (Initiate)
+  const sendVerificationCode = async () => {
+    if (!email.value) {
+      alert("Please enter an email address.");
+      return;
+    }
+
+    isLoading.value = true;
+    try {
+      // Matches [HttpPost("initiate-registration")]
+      const response = await api.post("Auth/initiate-registration", {
+        email: email.value
+      });
+      alert(response.data.message);
+      // Start your countdown timer here
+    } catch (err) {
+      console.error("Full Error Object:", err); // Look at this in F12 Chrome DevTools
+      console.log("Status Code:", err.response?.status);
+      alert(err.response?.data?.message || "Failed to send code.");
+    } finally {
+      isLoading.value = false;
+    }
+  };
+
+  // 2. Verify OTP (Before filling the rest of the form)
+  const verifyOtpCode = async () => {
+    if (otp.value.length !== 6) {
+      otpError.value = "Please enter the 6-digit code.";
+      return;
+    }
+
+    isLoading.value = true;
+    otpError.value = "";
+
+    try {
+      // Matches your [HttpPost("verify-registration-otp")]
+      const response = await api.post("/auth/verify-registration-otp", {
+        email: email.value,
+        verificationCode: otp.value
+      });
+
+      isEmailVerified.value = true;
+      alert("Email Verified! You can now complete your registration.");
+    } catch (err) {
+      otpError.value = err.response?.data?.message || "Invalid or expired code.";
+      isEmailVerified.value = false;
+    } finally {
+      isLoading.value = false;
+    }
+  };
+
+  // 3. Final Sign Up (Complete)
+  const handleRegister = async () => {
+    if (!canRegister.value) return;
+
+    isLoading.value = true;
+    try {
+      const payload = {
+        email: email.value,
+        password: password.value,
+        firstName: firstName.value,
+        middleName: hasMiddleName.value ? middleName.value : "",
+        lastName: lastName.value,
+        suffix: "", // Add a ref if you want to capture this
+        verificationCode: otp.value,
+        // The other fields (Gender, BirthCity, etc.) can be omitted 
+        // or sent as null since the DTO is now nullable.
+      };
+
+      console.log("Sending Clean Payload:", payload);
+      const response = await api.put("/Auth/complete-registration", payload);
+
+      alert("Registration Successful!");
+      router.push("/login");
+    } catch (err) {
+      console.error("Registration Error:", err.response?.data);
+      alert(err.response?.data?.message || "Registration failed.");
+    } finally {
+      isLoading.value = false;
+    }
+  };
+
+  // 4. Login Logic
+  const handleLogin = async () => {
+    if (!username.value || !loginPassword.value) {
+      alert("Please enter credentials.");
+      return;
+    }
+
+    isLoading.value = true;
+    otp.value = ""; // Clear old OTP input
+    otpError.value = "";
+
+    try {
+      const response = await api.post("/auth/login", {
+        email: username.value,
+        password: loginPassword.value
+      });
+
+      console.log("Login API Success, showing dialog...");
+      showOtpDialog.value = true;
+      console.log("Current showOtpDialog state:", showOtpDialog.value);
+    } catch (err) {
+      alert(err.response?.data?.message || "Login failed.");
+    } finally {
+      isLoading.value = false;
+    }
+  };
+
+  const handleVerifyLoginOtp = async () => {
+    if (otp.value.length !== 6) return;
+
+    isLoading.value = true;
+    otpError.value = "";
+
+    try {
+      // This calls your backend endpoint that checks LoginOtp and LoginOtpExpiry
+      const response = await api.post("/auth/verify-otp", {
+        email: username.value,
+        verificationCode: otp.value
+      });
+
+      // 1. Save the token to your Pinia store
+      auth.login({
+        token: response.data.token,
+        user: response.data.user
+      });
+
+      // 2. Hide OTP dialog and start the full-screen loading sequence
+      showOtpDialog.value = false;
+      isProcessingLogin.value = true;
+
+      // 3. Brief delay for the "Hourglass" effect before redirecting
+      
+      router.push("/profile");
+      
+
+    } catch (err) {
+      otpError.value = err.response?.data?.message || "Invalid or expired OTP.";
+    } finally {
+      isLoading.value = false;
+    }
+  };
+>>>>>>> 6ed62f6 (Removed alert in login)
 </script>
 
 <style>
