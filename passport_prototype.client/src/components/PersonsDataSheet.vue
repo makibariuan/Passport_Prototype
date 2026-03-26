@@ -35,7 +35,6 @@
             v-model="selectedProfileId"
             class="pds-input pds-relationship-select"
             :class="{ 'pds-input-error': showValidationErrors && !selectedProfileId }"
-            @change="onProfileSelected"
           >
             <option disabled :value="null">— Select Relationship —</option>
             <option v-for="profile in profiles" :key="profile.id" :value="profile.id">
@@ -1309,7 +1308,7 @@
 
 <script setup>
 import LeftMenu from "@/components/LeftMenu.vue";
-import { ref, computed, onMounted } from "vue";
+import { ref, computed, onMounted, watch } from "vue";
 import axios from "axios";
 import DialogBox from "@/components/DialogBox.vue";
 import LoadingDialog from "./LoadingDialog.vue";
@@ -1334,6 +1333,14 @@ const showValidationErrors = ref(false);
 // ─────────────────────────────────────────────
 const profiles = ref([]); // [{ id, accountRelationship }, ...]
 const selectedProfileId = ref(null);
+
+watch(selectedProfileId, async (newId) => {
+  if (!newId) return;
+  await fetchPersonal();
+  await fetchFamily();
+  await fetchContact();
+  await fetchWork();
+});
 
 // ─────────────────────────────────────────────
 // USER / PERSONAL
@@ -1720,25 +1727,12 @@ const fetchRelationship = async () => {
 
     if (profiles.value.length > 0) {
       selectedProfileId.value = profiles.value[0].id;
-      // ✅ Manually trigger the fetch after auto-selecting
-      await onProfileSelected();
     }
   } catch (err) {
     console.log("fetchRelationship error:", err);
   } finally {
     isLoading.value = false;
   }
-};
-
-// ─────────────────────────────────────────────
-// Handler: when user picks a different profile
-// ─────────────────────────────────────────────
-const onProfileSelected = async () => {
-  if (!selectedProfileId.value) return;
-  await fetchPersonal();
-  await fetchFamily();
-  await fetchContact();
-  await fetchWork();
 };
 
 // ─────────────────────────────────────────────
@@ -2110,12 +2104,6 @@ const handleCloseDialog = () => {
 // ─────────────────────────────────────────────
 onMounted(async () => {
   await fetchRelationship();
-  if (selectedProfileId.value) {
-    await fetchPersonal();
-    await fetchFamily();
-    await fetchContact();
-    await fetchWork();
-  }
 });
 </script>
 
