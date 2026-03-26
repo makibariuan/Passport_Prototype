@@ -137,7 +137,7 @@ const router = useRouter();
 
 const tableData = ref([]);
 
-let table;
+  let table;
 
   const showDetails = ref(false);
   const selectedApp = ref(null);
@@ -659,6 +659,153 @@ const onNavigate = (path) => {
   .pass-status-tag.rejected {
     background: #fee2e2;
     color: #991b1b;
+  }
+
+  /* Add to your <style scoped> */
+  :deep(.clickable-code) {
+    cursor: pointer !important;
+    display: inline-block;
+    width: 100%;
+    color: #2563eb !important;
+    text-decoration: underline;
+    font-weight: 700;
+    position: relative;
+    z-index: 10; /* Ensure it stays above table cell layers */
+  }
+
+  :deep(.view-details-trigger) {
+    cursor: pointer !important;
+  }
+
+  .app-details-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 10px 0;
+  }
+
+  .detail-item {
+    font-size: 0.95rem;
+    color: #374151;
+  }
+
+    .detail-item strong {
+      color: #111827;
+      width: 140px;
+      display: inline-block;
+    }
+
+  hr {
+    border: 0;
+    border-top: 1px solid #e5e7eb;
+    margin: 10px 0;
+  }
+
+  /* VMS Inspired Pass Layout */
+  .visitor-details-pass {
+    padding: 5px;
+    max-width: 650px;
+  }
+
+  .pass-body {
+    display: flex;
+    gap: 25px;
+    margin-bottom: 20px;
+  }
+
+  .pass-visual {
+    flex: 0 0 200px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .pass-label {
+    font-size: 0.7rem;
+    font-weight: 800;
+    color: #64748b;
+    letter-spacing: 1px;
+  }
+
+  .pass-id-image {
+    width: 100%;
+    aspect-ratio: 4/3;
+    object-fit: cover;
+    border-radius: 12px;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  }
+
+  .pass-info-grid {
+    flex: 1;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+  }
+
+  .info-item label {
+    display: block;
+    font-size: 0.75rem;
+    color: #94a3b8;
+    font-weight: 600;
+    margin-bottom: 2px;
+    text-transform: uppercase;
+  }
+
+  .info-item p {
+    font-weight: 600;
+    color: #1e293b;
+    margin: 0;
+    font-size: 0.95rem;
+  }
+
+  .full-width {
+    grid-column: span 2;
+  }
+
+  .pass-status-tag {
+    text-align: center;
+    padding: 8px;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    font-weight: 800;
+  }
+
+    /* Match your existing status logic to VMS colors */
+    .pass-status-tag.pending {
+      background: #fef3c7;
+      color: #92400e;
+    }
+
+    .pass-status-tag.approved {
+      background: #dcfce7;
+      color: #166534;
+    }
+
+    .pass-status-tag.rejected {
+      background: #fee2e2;
+      color: #991b1b;
+    }
+
+  .close-details-btn {
+    width: 100%;
+    padding: 12px;
+    background: #3b82f6; /* Matching your primary blue */
+    border: none;
+    border-radius: 8px;
+    font-weight: 700;
+    color: white;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+
+    .close-details-btn:hover {
+      background: #2563eb;
+    }
+
+  .code-text {
+    font-family: 'Courier New', Courier, monospace;
+    color: #003366 !important;
   }
 
 /* ===== RESPONSIVE ===== */
