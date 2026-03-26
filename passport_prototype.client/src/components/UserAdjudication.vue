@@ -6,7 +6,7 @@
 
     <div class="dashboard-content">
 
-      <h2 class="page-title">Employee ID Managements</h2>
+      <h2 class="page-title">Employee ID Management</h2>
 
       <!--<div class="tab-container action-bar">
         <button v-for="tab in tabs"
@@ -260,11 +260,11 @@
   const tabs = ["Adjudication"];
   const activeTab = ref("Adjudication");
 
-  //const auth = useAuthStore();
-  //const personId = computed(() => auth.userId); // logged in user’s ID
-  //const personEmail = computed(() => auth.email);
-  //const firstName = computed(() => auth.firstName);
-  //const lastName = computed(() => auth.lastName);
+  const auth = useAuthStore();
+  const personId = computed(() => auth.userId); // logged in user’s ID
+  const personEmail = computed(() => auth.email);
+  const firstName = computed(() => auth.firstName);
+  const lastName = computed(() => auth.lastName);
 
   // --- Added for Layout (Required for LeftMenu) ---
   const current = ref("Employee ID");
@@ -1265,31 +1265,31 @@
 
   // ------------------ Load Data ------------------
   // Load dropdown options
-  async function loadLookups() {
-    try {
-      isLoading.value = true; // show hourglass
-      const g = await api.get("/employee/gender");
-      genders.value = g.data;
+  //async function loadLookups() {
+  //  try {
+  //    isLoading.value = true; // show hourglass
+  //    const g = await api.get("/employee/gender");
+  //    genders.value = g.data;
 
-      const cs = await api.get("/employee/civilstatus");
-      civilStatuses.value = cs.data;
-    } catch (err) {
-      console.error("AxiosError:", err);
+  //    const cs = await api.get("/employee/civilstatus");
+  //    civilStatuses.value = cs.data;
+  //  } catch (err) {
+  //    console.error("AxiosError:", err);
 
-      if (err.response) {
-        console.error("🔴 Backend responded with error:");
-        console.error("Status:", err.response.status);
-        console.error("Data:", err.response.data);
-      } else if (err.request) {
-        console.error("🔴 No response received from server");
-        console.error("Request:", err.request);
-      } else {
-        console.error("🔴 Axios setup error:", err.message);
-      }
-    } finally {
-      isLoading.value = false;  // hide hourglass
-    }
-  }
+  //    if (err.response) {
+  //      console.error("🔴 Backend responded with error:");
+  //      console.error("Status:", err.response.status);
+  //      console.error("Data:", err.response.data);
+  //    } else if (err.request) {
+  //      console.error("🔴 No response received from server");
+  //      console.error("Request:", err.request);
+  //    } else {
+  //      console.error("🔴 Axios setup error:", err.message);
+  //    }
+  //  } finally {
+  //    isLoading.value = false;  // hide hourglass
+  //  }
+  //}
 
 
   // ✅ Function to call backend API
@@ -1410,11 +1410,11 @@
   /* 1. DASHBOARD GRID LAYOUT STYLES (Copied from ManageHRApplicationsPage.vue) */
   /* ************************************************************************** */
   .app-layout {
-    width: 100%;
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    background-color: #f8fafc; /* Optional: light gray background */
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    grid-template-rows: auto 1fr;
+    height: 100vh;
+    background-color: #f4f7f9;
   }
 
   .leftMenu {
