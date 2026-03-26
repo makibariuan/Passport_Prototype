@@ -1705,6 +1705,7 @@ const officeLocationSummary = computed(() => {
 // API — FETCH RELATIONSHIPS
 // Populates the dropdown; auto-selects the first profile.
 // ─────────────────────────────────────────────
+// ─── fetchRelationship ───
 const fetchRelationship = async () => {
   try {
     isLoading.value = true;
@@ -1712,12 +1713,15 @@ const fetchRelationship = async () => {
       headers: { Authorization: `Bearer ${Auth.token}` },
     });
 
-    // data is expected to be an array: [{ id, accountRelationship }, ...]
-    profiles.value = Array.isArray(data) ? data : [];
+    // Map accountRelationship → relationship so the template renders it
+    profiles.value = Array.isArray(data)
+      ? data.map((p) => ({ id: p.id, relationship: p.accountRelationship ?? p.relationship }))
+      : [];
 
-    // Auto-select the first profile so the form loads immediately
     if (profiles.value.length > 0) {
       selectedProfileId.value = profiles.value[0].id;
+      // ✅ Manually trigger the fetch after auto-selecting
+      await onProfileSelected();
     }
   } catch (err) {
     console.log("fetchRelationship error:", err);
