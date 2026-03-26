@@ -37,7 +37,7 @@
             :class="{ 'pds-input-error': showValidationErrors && !selectedProfileId }"
           >
             <option disabled :value="null">— Select Relationship —</option>
-            <option v-for="profile in profiles" :key="profile.id" :value="profile.id">
+            <option v-for="profile in profiles" :key="profile.id" :value="Number(profile.id)">
               {{ profile.relationship }}
             </option>
           </select>
@@ -1340,6 +1340,12 @@ watch(selectedProfileId, async (newId) => {
   await fetchFamily();
   await fetchContact();
   await fetchWork();
+
+  console.log("Done fetching");
+});
+
+watch(selectedProfileId, async (newId, oldId) => {
+  console.log("changed:", oldId, "→", newId);
 });
 
 // ─────────────────────────────────────────────
