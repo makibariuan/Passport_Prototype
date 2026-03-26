@@ -191,9 +191,11 @@
                       <label class="pds-label"
                         >Civil Status<span class="required-star">*</span></label
                       >
-                      <select v-model="user.civilStatusID"
-                              class="pds-input"
-                              :class="{ 'pds-input-error': showValidationErrors && !user.civilStatusID }">
+                      <select
+                        v-model="user.civilStatusID"
+                        class="pds-input"
+                        :class="{ 'pds-input-error': showValidationErrors && !user.civilStatusID }"
+                      >
                         <option disabled value="">— Select Civil Status —</option>
                         <option>Single</option>
                         <option>Married</option>
@@ -936,14 +938,15 @@ import axios from "axios";
 import DialogBox from "@/components/DialogBox.vue";
 import LoadingDialog from "./LoadingDialog.vue";
 import { useAuthStore } from "../stores/auth";
+import { BACKEND_DOMAIN } from "@/configs/config";
 
 const showDialog = ref(false);
 const dialogTitle = ref("");
 const dialogMessage = ref("");
 const isLoading = ref(false);
 const activeTab = ref("Personal");
-  const userId = 5;
-  const Auth = useAuthStore();
+const userId = 5;
+const Auth = useAuthStore();
 
 // ------------------ State ------------------
 const user = ref({
@@ -1187,11 +1190,12 @@ const fetchPersonal = async () => {
   try {
     isLoading.value = true;
     const { data } = await axios.get(
-      `https://localhost:5000/api/PassportPersonalInformations/My-Profile`, {
+      `${BACKEND_DOMAIN}/api/PassportPersonalInformations/My-Profile`,
+      {
         headers: {
-          Authorization: `Bearer ${Auth.token}`
-      }
-    }
+          Authorization: `Bearer ${Auth.token}`,
+        },
+      },
     );
 
     user.value.lastName = data.lastName ?? "";
@@ -1199,9 +1203,7 @@ const fetchPersonal = async () => {
     user.value.middleName = data.middleName ?? "";
     user.value.nameExtension = data.suffix ?? "";
 
-    user.value.dateOfBirth = data.birthdate
-      ? new Date(data.birthdate)
-      : "";
+    user.value.dateOfBirth = data.birthdate ? new Date(data.birthdate) : "";
 
     user.value.sex = data.gender ?? "";
     user.value.citizenship = data.nationality ?? "";
@@ -1220,68 +1222,58 @@ const fetchPersonal = async () => {
     birthProvince.value = data.birthProvince ?? "";
     birthCity.value = data.birthCity ?? "";
     birthBarangay.value = data.birthBarangay ?? "";
-
   } catch (err) {
     console.log("fetchPersonal error:", err);
   } finally {
     isLoading.value = false;
   }
-
 };
 
-  const fetchFamily = async () => {
-    try {
-      isLoading.value = true;
+const fetchFamily = async () => {
+  try {
+    isLoading.value = true;
 
-      const { data } = await axios.get(
-        `https://localhost:5000/api/Families/My-Family`,
-        {
-          headers: {
-            Authorization: `Bearer ${Auth.token}`
-          }
-        }
-      );
+    const { data } = await axios.get(`${BACKEND_DOMAIN}/api/Families/My-Family`, {
+      headers: {
+        Authorization: `Bearer ${Auth.token}`,
+      },
+    });
 
-      // ✅ Extract from array
-      const father = data.find(f => f.relationship === "Father");
-      const mother = data.find(f => f.relationship === "Mother");
+    // ✅ Extract from array
+    const father = data.find((f) => f.relationship === "Father");
+    const mother = data.find((f) => f.relationship === "Mother");
 
-      // ======================
-      // 👨 FATHER
-      // ======================
-      user.value.fatherSurname = father?.lastName ?? "";
-      user.value.fatherFirstName = father?.firstName ?? "";
-      user.value.fatherMiddleName = father?.middleName ?? "";
-      user.value.fatherNameExtension = father?.suffix ?? "";
-      user.value.fatherCitizenship = father?.citizenship ?? "";
+    // ======================
+    // 👨 FATHER
+    // ======================
+    user.value.fatherSurname = father?.lastName ?? "";
+    user.value.fatherFirstName = father?.firstName ?? "";
+    user.value.fatherMiddleName = father?.middleName ?? "";
+    user.value.fatherNameExtension = father?.suffix ?? "";
+    user.value.fatherCitizenship = father?.citizenship ?? "";
 
-      fatherLifeStatus.value = father
-        ? (father.isAlive ? "alive" : "deceased")
-        : "alive";
+    fatherLifeStatus.value = father ? (father.isAlive ? "alive" : "deceased") : "alive";
 
-      fatherHasMiddleName.value = !!father?.middleName;
+    fatherHasMiddleName.value = !!father?.middleName;
 
-      // ======================
-      // 👩 MOTHER
-      // ======================
-      user.value.motherSurname = mother?.lastName ?? "";
-      user.value.motherFirstName = mother?.firstName ?? "";
-      user.value.motherMiddleName = mother?.middleName ?? "";
-      user.value.motherNameExtension = mother?.suffix ?? ""; // ✅ FIXED
-      user.value.motherCitizenship = mother?.citizenship ?? "";
+    // ======================
+    // 👩 MOTHER
+    // ======================
+    user.value.motherSurname = mother?.lastName ?? "";
+    user.value.motherFirstName = mother?.firstName ?? "";
+    user.value.motherMiddleName = mother?.middleName ?? "";
+    user.value.motherNameExtension = mother?.suffix ?? ""; // ✅ FIXED
+    user.value.motherCitizenship = mother?.citizenship ?? "";
 
-      motherLifeStatus.value = mother
-        ? (mother.isAlive ? "alive" : "deceased")
-        : "alive";
+    motherLifeStatus.value = mother ? (mother.isAlive ? "alive" : "deceased") : "alive";
 
-      motherHasMiddleName.value = !!mother?.middleName;
-
-    } catch (err) {
-      console.log("fetchFamily error:", err);
-    } finally {
-      isLoading.value = false;
-    }
-  };
+    motherHasMiddleName.value = !!mother?.middleName;
+  } catch (err) {
+    console.log("fetchFamily error:", err);
+  } finally {
+    isLoading.value = false;
+  }
+};
 
 onMounted(async () => {
   await fetchPersonal();
@@ -1312,15 +1304,18 @@ const updatePersonal = async () => {
       birthRegion: birthRegion.value,
       birthProvince: birthProvince.value,
       birthCity: birthCity.value,
-      birthBarangay: birthBarangay.value
+      birthBarangay: birthBarangay.value,
     };
 
-    await axios.patch(`https://localhost:5000/api/PassportPersonalInformations/Update-Profile`, payload,
+    await axios.patch(
+      `${BACKEND_DOMAIN}/api/PassportPersonalInformations/Update-Profile`,
+      payload,
       {
         headers: {
-          Authorization: `Bearer ${Auth.token}`
-      }
-    });
+          Authorization: `Bearer ${Auth.token}`,
+        },
+      },
+    );
     dialogTitle.value = "Success";
     dialogMessage.value = "Personal info saved.";
     showDialog.value = true;
@@ -1355,7 +1350,7 @@ const updateFamily = async () => {
         lifeStatus: motherLifeStatus.value,
       },
     };
-    await axios.patch(`https://localhost:5000/api/Families/${userId}`, payload);
+    await axios.patch(`${BACKEND_DOMAIN}/api/Families/${userId}`, payload);
     dialogTitle.value = "Success";
     dialogMessage.value = "Family info saved.";
     showDialog.value = true;
@@ -1372,7 +1367,7 @@ const updateFamily = async () => {
 const updateContact = async () => {
   try {
     isLoading.value = true;
-    await axios.patch("https://localhost:5000/user/contact", {
+    await axios.patch("${BACKEND_DOMAIN}/user/contact", {
       mobile: `${contact.value.mobileCountry}${contact.value.mobilePrefix}${contact.value.mobileNumber}`,
       landline: `${contact.value.landlineCountry}${contact.value.landlineNumber}`,
       address: address.value,
@@ -1393,7 +1388,7 @@ const updateContact = async () => {
 const updateWork = async () => {
   try {
     isLoading.value = true;
-    await axios.patch("https://localhost:5000/user/work", { ...work.value });
+    await axios.patch("${BACKEND_DOMAIN}/user/work", { ...work.value });
     dialogTitle.value = "Success";
     dialogMessage.value = "Work info saved.";
     showDialog.value = true;
