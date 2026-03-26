@@ -1836,7 +1836,7 @@ const fetchPersonal = async () => {
       : "";
     user.value.sex = data.gender ?? "";
     user.value.citizenship = data.nationality ?? "";
-    user.value.civilStatusID = data.civilStatus ?? "";
+    user.value.civilStatusID = data.civilStatusId ?? "";
     user.value.birthLegitimacy = data.birthLegitimacy ?? "";
     user.value.isAdoptee = data.isAdoptee ?? false;
     user.value.placeOfBirth = data.placeOfBirth ?? "";
