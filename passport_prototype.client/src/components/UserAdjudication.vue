@@ -6,7 +6,7 @@
 
     <div class="dashboard-content">
 
-      <h2 class="page-title">Employee ID Management</h2>
+      <h2 class="page-title">Employee ID Managements</h2>
 
       <!--<div class="tab-container action-bar">
         <button v-for="tab in tabs"
