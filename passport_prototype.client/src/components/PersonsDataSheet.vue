@@ -36,8 +36,8 @@
             class="pds-input pds-relationship-select"
             :class="{ 'pds-input-error': showValidationErrors && !selectedProfileId }"
           >
-            <option disabled :value="null">— Select Relationship —</option>
-            <option v-for="profile in profiles" :key="profile.id" :value="Number(profile.id)">
+            <option disabled value="">— Select Relationship —</option>
+            <option v-for="profile in profiles" :key="profile.id" :value="profile.id">
               {{ profile.relationship }}
             </option>
           </select>
