@@ -1962,7 +1962,7 @@ const updateFamily = async () => {
         citizenship: user.value.motherCitizenship,
       },
     ];
-    await axios.patch(`https://localhost:5000/api/Families/${selectedProfileId.value}`, payload, {
+    await axios.patch(`https://localhost:5000/api/Families`, payload, {
       headers: { Authorization: `Bearer ${Auth.token}` },
     });
     dialogTitle.value = "Success";
