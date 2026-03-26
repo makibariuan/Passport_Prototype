@@ -37,7 +37,7 @@
             :class="{ 'pds-input-error': showValidationErrors && !selectedProfileId }"
           >
             <option disabled value="">— Select Relationship —</option>
-            <option v-for="profile in profiles" :key="profile.id" :value="profile.id">
+            <option v-for="profile in validProfiles" :key="profile.id" :value="profile.id">
               {{ profile.relationship }}
             </option>
           </select>
@@ -1724,6 +1724,8 @@ const fatherCitizenshipFlag = computed(
 const motherCitizenshipFlag = computed(
   () => nationalities.find((n) => n.name === user.value.motherCitizenship)?.flag ?? "🌐",
 );
+
+const validProfiles = computed(() => profiles.value.filter((p) => p.relationship));
 
 // ─────────────────────────────────────────────
 // COMPUTED — LOCATION BREADCRUMBS
