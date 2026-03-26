@@ -224,7 +224,71 @@ namespace Passport_Prototype.Server.Controllers
             return Ok(result);
         }
 
+        [HttpGet("My-Applications")]
+        [Authorize]
+        public async Task<IActionResult> GetMyApplications()
+        {
+            var userIdString = User.FindFirstValue("id");
 
+            if (!int.TryParse(userIdString, out int userId))
+                return BadRequest("Invalid user ID in claims.");
+
+            var applications = await (
+                from app in _context.Applications
+                join ppi in _context.PassportPersonalInformation
+                    on app.PassportPersonalInformationId equals ppi.PassportPersonalInformationId into ppiJoin
+                from ppi in ppiJoin.DefaultIfEmpty() // LEFT JOIN to allow missing profiles
+                where app.UserId == userId
+                select new
+                {
+                    applicationId = app.ApplicationId,
+                    status = (int?)app.ApplicationStatus,
+                    barcodePath = app.ApplicationBarCodePath ?? "",
+                    barcode = app.ApplicationBarCodePath ?? "",
+                    profileName = ppi != null
+                        ? $"{ppi.FirstName} {(ppi.MiddleName ?? "")} {ppi.LastName} {(ppi.Suffix ?? "")}".Trim()
+                        : "No Profile",
+                    schedule = app.Schedule
+                }
+            ).ToListAsync();
+
+            return Ok(applications);
+        }
+
+        [HttpGet("{applicationId}")]
+        [Authorize]
+        public async Task<IActionResult> GetApplicationById(int applicationId)
+        {
+            var userIdString = User.FindFirstValue("id");
+
+            if (!int.TryParse(userIdString, out int userId))
+                return BadRequest("Invalid user ID in claims.");
+
+            var application = await (
+                from app in _context.Applications
+                join ppi in _context.PassportPersonalInformation
+                    on app.PassportPersonalInformationId equals ppi.PassportPersonalInformationId into ppiJoin
+                from ppi in ppiJoin.DefaultIfEmpty() // LEFT JOIN
+                where app.ApplicationId == applicationId && app.UserId == userId
+                select new
+                {
+                    applicationId = app.ApplicationId,
+                    status = (int?)app.ApplicationStatus,
+                    barcodePath = app.ApplicationBarCodePath ?? "",
+                    barcode = app.ApplicationBarCodePath ?? "",
+                    profileName = ppi != null
+                        ? $"{ppi.FirstName} {(ppi.MiddleName ?? "")} {ppi.LastName} {(ppi.Suffix ?? "")}".Trim()
+                        : "No Profile",
+                    site = app.Site ?? "",
+                    schedule = app.Schedule
+                }
+            ).FirstOrDefaultAsync();
+
+            if (application == null)
+                return NotFound();
+
+            return Ok(application);
+        }
     }
 
 }
