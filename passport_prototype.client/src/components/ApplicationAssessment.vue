@@ -66,7 +66,7 @@
                @error="(e) => e.target.src = 'https://via.placeholder.com/150'" />
 
           <div class="pass-status-tag" :class="statusClass(selectedApp.status).replace('status-', '')">
-            {{ selectedApp.status.toUpperCase() }}
+            {{ getStatusLabel(selectedApp.status).toUpperCase() }}
           </div>
         </div>
 
@@ -163,12 +163,33 @@ const formatDate = (dateString) => {
   });
 };
 
-const statusClass = (status) => {
-  if (status === "Approved") return "status-approved";
-  if (status === "Pending") return "status-pending";
-  if (status === "Rejected") return "status-rejected";
-  return "";
-};
+  const statusClass = (status) => {
+    // Integers representing success/approval
+    if ([4, 5, 6].includes(status)) return "status-approved";
+    // Integers representing pending/init
+    if ([0, 7].includes(status)) return "status-pending";
+    // Integers representing rejections
+    if (status === 99) return "status-rejected";
+    // Everything else is "in progress" blue
+    return "status-pending";
+  };
+
+  // Add this helper function in your <script setup>
+  const getStatusLabel = (status) => {
+    const statusMap = {
+      0: "Pending Schedule",
+      1: "Scheduled",
+      2: "Captured",
+      3: "Adjudication",
+      4: "Validated",
+      5: "Printed / Exported",
+      6: "Active / Card Issued",
+      7: "For Approval",
+      99: "Rejected / Fraud",
+      100: "Display Only"
+    };
+    return statusMap[status] || "Unknown";
+  };
 
   const fetchApplications = async () => {
     try {
@@ -228,13 +249,15 @@ onMounted(async () => {
 
   await nextTick();
 
+  // Replace the columns array inside your onMounted:
   table = new window.DataTable("#assessmentTable", {
     data: tableData.value,
     columns: [
       {
         data: "number",
-        className: "app-number", // Applies the class to the <td>
+        className: "app-number",
         render: function (data) {
+          // Restoring the clickable logic for the first column
           return `<span class="clickable-code view-details-trigger">${data}</span>`;
         }
       },
@@ -244,17 +267,26 @@ onMounted(async () => {
       {
         data: "status",
         render: function (data) {
-          let cls = "";
-          if (data.includes("Pending")) cls = "init"; // Match your badge CSS
-          else if (data.includes("Progress")) cls = "progress";
-          else if (data.includes("Approved")) cls = "approved";
-          return `<span class="badge ${cls}">${data}</span>`;
+          const label = getStatusLabel(data);
+          const cls = statusClass(data).replace('status-', '');
+          // Note: statusClass already handles the logic for approved/pending/rejected
+
+          // Fallback logic for class names to match your badge CSS
+          let badgeCls = 'default';
+          if (cls === 'approved') badgeCls = 'approved';
+          if (cls === 'pending') badgeCls = 'init';
+          if (cls === 'rejected') badgeCls = 'rejected';
+
+          return `<span class="badge ${badgeCls}">${label}</span>`;
         },
       },
     ],
     pageLength: 5,
     lengthChange: false,
     info: false,
+    // Helpful addition to ensure it fits your layout
+    responsive: true,
+    autoWidth: false
   });
 
   // Add this right after: table = new window.DataTable(...)
@@ -465,10 +497,10 @@ const onNavigate = (path) => {
   color: #16a34a;
 }
 
-.badge.default {
-  background: #eee;
-  color: #555;
-}
+  .badge.default {
+    background: #f3f4f6;
+    color: #374151;
+  }
 
   /* Add to your <style scoped> */
   :deep(.clickable-code) {
@@ -615,6 +647,17 @@ const onNavigate = (path) => {
   .code-text {
     font-family: 'Courier New', Courier, monospace;
     color: #003366 !important;
+  }
+
+  .badge.rejected {
+    background: #fee2e2;
+    color: #991b1b;
+  }
+
+  /* Also ensure the Dialog status tag handles the class correctly */
+  .pass-status-tag.rejected {
+    background: #fee2e2;
+    color: #991b1b;
   }
 
 /* ===== RESPONSIVE ===== */
