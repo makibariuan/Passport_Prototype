@@ -10,7 +10,7 @@
 
   <div class="app-layout">
     <LeftMenu class="leftMenu" />
-    <Header title="Personal Profile" class="header" />
+    <!-- <Header title="Personal Profile" class="header" /> -->
 
     <div class="dashboard-content">
       <h2 class="page-title">Personal Profile</h2>
@@ -47,8 +47,25 @@
                 <!-- SECTION: Personal Information -->
                 <div class="pds-section">
                   <div class="pds-section-header">
+                    <div class="section-icon-wrap personal">
+                      <svg
+                        width="18"
+                        height="18"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                        stroke-width="2"
+                      >
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                        />
+                      </svg>
+                    </div>
                     <div>
                       <h3 class="pds-section-title">Personal Information</h3>
+                      <p class="pds-section-sub">Your legal name and basic details</p>
                     </div>
                   </div>
 
@@ -154,12 +171,29 @@
                     </div>
                   </div>
                 </div>
-                <!-- /SECTION: Personal Information -->
+
                 <!-- SECTION: Civil Status & Documents -->
                 <div class="pds-section">
                   <div class="pds-section-header">
+                    <div class="section-icon-wrap civil">
+                      <svg
+                        width="18"
+                        height="18"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                        stroke-width="2"
+                      >
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                        />
+                      </svg>
+                    </div>
                     <div>
                       <h3 class="pds-section-title">Civil Status & Documents</h3>
+                      <p class="pds-section-sub">Citizenship, civil status, and document details</p>
                     </div>
                   </div>
 
@@ -191,10 +225,10 @@
                       >
                       <select v-model="user.civilStatusID" class="pds-input">
                         <option disabled value="">— Select Civil Status —</option>
-                        <option>Single</option>
-                        <option>Married</option>
-                        <option>Widowed</option>
-                        <option>Legally Separated</option>
+                        <option value="Single">Single</option>
+                        <option value="Married">Married</option>
+                        <option value="Widowed">Widowed</option>
+                        <option value="Legally Separated">Legally Separated</option>
                       </select>
                     </div>
 
@@ -262,12 +296,34 @@
                     </div>
                   </div>
                 </div>
-                <!-- /SECTION: Civil Status & Documents -->
+
                 <!-- SECTION: Place of Birth -->
                 <div class="pds-section">
                   <div class="pds-section-header">
+                    <div class="section-icon-wrap contact">
+                      <svg
+                        width="18"
+                        height="18"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                        stroke-width="2"
+                      >
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
+                        />
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
+                        />
+                      </svg>
+                    </div>
                     <div>
                       <h3 class="pds-section-title">Place of Birth</h3>
+                      <p class="pds-section-sub">Where you were born</p>
                     </div>
                   </div>
 
@@ -370,7 +426,7 @@
                     📍 {{ birthLocationSummary }}
                   </div>
                 </div>
-                <!-- /SECTION: Place of Birth -->
+
                 <!-- Save -->
                 <div class="button-group-row">
                   <button
@@ -378,11 +434,22 @@
                     class="btn save-btn"
                     style="margin-left: auto; width: 200px"
                   >
+                    <svg
+                      width="16"
+                      height="16"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                      stroke-width="2.5"
+                    >
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+                    </svg>
                     Save Progress
                   </button>
                 </div>
               </div>
               <!-- /PERSONAL TAB -->
+
               <!-- ═══════════════════════════════════════════ -->
               <!-- FAMILY TAB                                 -->
               <!-- ═══════════════════════════════════════════ -->
@@ -391,8 +458,25 @@
                   <!-- SECTION: Father's Information -->
                   <div class="pds-section">
                     <div class="pds-section-header">
+                      <div class="section-icon-wrap father">
+                        <svg
+                          width="18"
+                          height="18"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                          stroke-width="2"
+                        >
+                          <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                          />
+                        </svg>
+                      </div>
                       <div>
                         <h3 class="pds-section-title">Father's Information</h3>
+                        <p class="pds-section-sub">Father's legal name and citizenship</p>
                       </div>
                     </div>
 
@@ -423,7 +507,6 @@
                     </div>
 
                     <div class="pds-field-grid">
-                      <!-- Last Name -->
                       <div class="pds-field required">
                         <label class="pds-label"
                           >Last Name<span class="required-star">*</span></label
@@ -437,8 +520,6 @@
                           placeholder="e.g. Dela Cruz"
                         />
                       </div>
-
-                      <!-- First Name -->
                       <div class="pds-field required">
                         <label class="pds-label"
                           >First Name<span class="required-star">*</span></label
@@ -452,8 +533,6 @@
                           placeholder="e.g. Jose"
                         />
                       </div>
-
-                      <!-- Middle Name -->
                       <div class="pds-field required">
                         <label class="pds-label">
                           Middle Name
@@ -485,8 +564,6 @@
                         />
                         <div v-else class="pds-na-pill">N/A — No middle name</div>
                       </div>
-
-                      <!-- Suffix -->
                       <div class="pds-field">
                         <label class="pds-label"
                           >Suffix <span class="pds-optional">(Optional)</span></label
@@ -501,8 +578,6 @@
                           <option>V</option>
                         </select>
                       </div>
-
-                      <!-- Citizenship -->
                       <div class="pds-field required">
                         <label class="pds-label"
                           >Citizenship<span class="required-star">*</span></label
@@ -525,7 +600,6 @@
                       </div>
                     </div>
 
-                    <!-- Deceased notice -->
                     <div v-if="fatherLifeStatus === 'deceased'" class="pds-status-notice deceased">
                       <span>⚫</span>
                       <span
@@ -534,12 +608,29 @@
                       >
                     </div>
                   </div>
-                  <!-- /SECTION: Father -->
+
                   <!-- SECTION: Mother's Information -->
                   <div class="pds-section">
                     <div class="pds-section-header">
+                      <div class="section-icon-wrap mother">
+                        <svg
+                          width="18"
+                          height="18"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                          stroke-width="2"
+                        >
+                          <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                          />
+                        </svg>
+                      </div>
                       <div>
                         <h3 class="pds-section-title">Mother's Information</h3>
+                        <p class="pds-section-sub">Mother's maiden name and citizenship</p>
                       </div>
                     </div>
 
@@ -570,7 +661,6 @@
                     </div>
 
                     <div class="pds-field-grid">
-                      <!-- Last Name (Maiden) -->
                       <div class="pds-field required">
                         <label class="pds-label">
                           Last Name
@@ -586,8 +676,6 @@
                           placeholder="e.g. Reyes"
                         />
                       </div>
-
-                      <!-- First Name -->
                       <div class="pds-field required">
                         <label class="pds-label"
                           >First Name<span class="required-star">*</span></label
@@ -601,8 +689,6 @@
                           placeholder="e.g. Maria"
                         />
                       </div>
-
-                      <!-- Middle Name -->
                       <div class="pds-field required">
                         <label class="pds-label">
                           Middle Name
@@ -634,8 +720,6 @@
                         />
                         <div v-else class="pds-na-pill">N/A — No middle name</div>
                       </div>
-
-                      <!-- Suffix -->
                       <div class="pds-field">
                         <label class="pds-label"
                           >Suffix <span class="pds-optional">(Optional)</span></label
@@ -650,8 +734,6 @@
                           <option>V</option>
                         </select>
                       </div>
-
-                      <!-- Citizenship -->
                       <div class="pds-field required">
                         <label class="pds-label"
                           >Citizenship<span class="required-star">*</span></label
@@ -674,7 +756,6 @@
                       </div>
                     </div>
 
-                    <!-- Deceased notice -->
                     <div v-if="motherLifeStatus === 'deceased'" class="pds-status-notice deceased">
                       <span>⚫</span>
                       <span
@@ -683,7 +764,7 @@
                       >
                     </div>
                   </div>
-                  <!-- /SECTION: Mother -->
+
                   <!-- Save -->
                   <div class="button-group-row">
                     <button
@@ -691,14 +772,24 @@
                       class="btn save-btn"
                       style="margin-left: auto; width: 200px"
                     >
+                      <svg
+                        width="16"
+                        height="16"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                        stroke-width="2.5"
+                      >
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+                      </svg>
                       Save Progress
                     </button>
                   </div>
                 </div>
               </div>
               <!-- /FAMILY TAB -->
-              <!-- ═══════════════════════════════════════════ -->
 
+              <!-- ═══════════════════════════════════════════ -->
               <!-- CONTACT TAB                                -->
               <!-- ═══════════════════════════════════════════ -->
               <div v-else-if="activeTab === 'Contact'">
@@ -742,6 +833,7 @@
                         <input
                           v-model="address.street"
                           class="pds-input"
+                          :class="{ 'pds-input-error': showValidationErrors && !address.street }"
                           placeholder="e.g. 123 Rizal St., Unit 4B"
                         />
                       </div>
@@ -766,6 +858,7 @@
                           <select
                             v-model="address.country"
                             class="pds-input pds-flag-input"
+                            :class="{ 'pds-input-error': showValidationErrors && !address.country }"
                             @change="onAddressCountryChange"
                           >
                             <option value="">— Select Country —</option>
@@ -782,6 +875,10 @@
                         <select
                           v-model="address.region"
                           class="pds-input"
+                          :class="{
+                            'pds-input-error':
+                              showValidationErrors && address.country === 'PH' && !address.region,
+                          }"
                           @change="onAddressRegionChange"
                         >
                           <option value="">— Select Region —</option>
@@ -799,6 +896,10 @@
                         <select
                           v-model="address.province"
                           class="pds-input"
+                          :class="{
+                            'pds-input-error':
+                              showValidationErrors && address.country === 'PH' && !address.province,
+                          }"
                           @change="onAddressProvinceChange"
                         >
                           <option value="">— Select Province —</option>
@@ -820,6 +921,12 @@
                         <select
                           v-model="address.municipality"
                           class="pds-input"
+                          :class="{
+                            'pds-input-error':
+                              showValidationErrors &&
+                              address.country === 'PH' &&
+                              !address.municipality,
+                          }"
                           @change="onAddressMunicipalityChange"
                         >
                           <option value="">— Select City / Municipality —</option>
@@ -875,6 +982,7 @@
                     </div>
                   </div>
                   <!-- /SECTION: Current Address -->
+
                   <!-- SECTION: Phone Numbers -->
                   <div class="pds-section">
                     <div class="pds-section-header">
@@ -965,6 +1073,7 @@
                     </div>
                   </div>
                   <!-- /SECTION: Phone Numbers -->
+
                   <!-- Save -->
                   <div class="button-group-row">
                     <button
@@ -988,8 +1097,8 @@
                 </div>
               </div>
               <!-- /CONTACT TAB -->
-              <!-- ═══════════════════════════════════════════ -->
 
+              <!-- ═══════════════════════════════════════════ -->
               <!-- WORK TAB                                   -->
               <!-- ═══════════════════════════════════════════ -->
               <div v-else-if="activeTab === 'Work'">
@@ -1028,7 +1137,6 @@
                           placeholder="e.g. Software Engineer, Teacher, Nurse"
                         />
                       </div>
-
                       <div class="pds-field contact-full">
                         <label class="pds-label">Employer / Company Name</label>
                         <input
@@ -1037,7 +1145,6 @@
                           placeholder="e.g. Acme Corporation"
                         />
                       </div>
-
                       <div class="pds-field contact-full">
                         <label class="pds-label">Office Address</label>
                         <input
@@ -1049,6 +1156,7 @@
                     </div>
                   </div>
                   <!-- /SECTION: Job Details -->
+
                   <!-- SECTION: Office Location -->
                   <div class="pds-section">
                     <div class="pds-section-header">
@@ -1197,6 +1305,7 @@
                     </div>
                   </div>
                   <!-- /SECTION: Office Location -->
+
                   <!-- SECTION: Work Contact Numbers -->
                   <div class="pds-section">
                     <div class="pds-section-header">
@@ -1286,6 +1395,7 @@
                     </div>
                   </div>
                   <!-- /SECTION: Work Contact Numbers -->
+
                   <!-- Save -->
                   <div class="button-group-row">
                     <button
@@ -1330,6 +1440,7 @@
 
 <script setup>
 import LeftMenu from "@/components/LeftMenu.vue";
+import Header from "@/components/Header.vue";
 import { ref, computed, onMounted } from "vue";
 import axios from "axios";
 import DialogBox from "@/components/DialogBox.vue";
@@ -1344,7 +1455,6 @@ const dialogTitle = ref("");
 const dialogMessage = ref("");
 const isLoading = ref(false);
 const activeTab = ref("Personal");
-const userId = 5;
 const Auth = useAuthStore();
 const showValidationErrors = ref(false);
 
@@ -1352,6 +1462,11 @@ const showValidationErrors = ref(false);
 // USER / PERSONAL
 // ─────────────────────────────────────────────
 const user = ref({
+  // IDs
+  passportPersonalInformationId: 0,
+  personalInfoId: null,
+  fatherId: null,
+  motherId: null,
   // Personal
   lastName: "",
   firstName: "",
@@ -1386,6 +1501,7 @@ const hasPSABirthCert = ref(false);
 // CONTACT STATE
 // ─────────────────────────────────────────────
 const contact = ref({
+  id: null,
   mobileCountry: "+63",
   mobilePrefix: "",
   mobileNumber: "",
@@ -1401,7 +1517,7 @@ const address = ref({
   province: "",
   municipality: "",
   barangay: "",
-  city: "", // for non-PH free-text
+  city: "", // non-PH free text
   postal: "",
 });
 
@@ -1409,6 +1525,7 @@ const address = ref({
 // WORK STATE
 // ─────────────────────────────────────────────
 const work = ref({
+  id: null,
   occupation: "",
   employer: "",
   officeAddress: "",
@@ -1417,7 +1534,7 @@ const work = ref({
   officeProvince: "",
   officeMunicipality: "",
   officeBarangay: "",
-  officeCity: "", // for non-PH free-text
+  officeCity: "", // non-PH free text
   postalCode: "",
   workMobileCountry: "+63",
   workMobilePrefix: "",
@@ -1518,6 +1635,12 @@ const phBarangays = [
   { code: "MKT-BGY1", cityCode: "MKT", name: "Bel-Air" },
   { code: "MKT-BGY2", cityCode: "MKT", name: "Forbes Park" },
   { code: "MKT-BGY3", cityCode: "MKT", name: "San Lorenzo" },
+  // QC barangays
+  { code: "QC-BGY1", cityCode: "QC", name: "Bagong Lipunan Ng Crame" },
+  { code: "QC-BGY2", cityCode: "QC", name: "Batasan Hills" },
+  { code: "QC-BGY3", cityCode: "QC", name: "Commonwealth" },
+  { code: "QC-BGY4", cityCode: "QC", name: "Diliman" },
+  { code: "QC-BGY5", cityCode: "QC", name: "Fairview" },
 ];
 
 // ─────────────────────────────────────────────
@@ -1597,7 +1720,6 @@ const onOfficeMunicipalityChange = () => {
 // ─────────────────────────────────────────────
 // COMPUTED — CASCADING FILTERS
 // ─────────────────────────────────────────────
-
 // Birth place
 const filteredProvinces = computed(() =>
   phProvinces.filter((p) => p.regionCode === birthRegion.value),
@@ -1715,6 +1837,34 @@ const officeLocationSummary = computed(() => {
 });
 
 // ─────────────────────────────────────────────
+// PHONE PARSING HELPERS
+// ─────────────────────────────────────────────
+/**
+ * Parse a stored mobile string like "+63 9061234567" back into parts.
+ * prefix = first 3 digits after country code, number = remaining digits.
+ */
+const parseMobile = (str) => {
+  if (!str) return { country: "+63", prefix: "", number: "" };
+  const trimmed = str.trim();
+  const spaceIdx = trimmed.indexOf(" ");
+  if (spaceIdx === -1) return { country: "+63", prefix: "", number: trimmed };
+  const country = trimmed.slice(0, spaceIdx);
+  const digits = trimmed.slice(spaceIdx + 1).replace(/\s/g, "");
+  return { country, prefix: digits.slice(0, 3), number: digits.slice(3) };
+};
+
+/**
+ * Parse a stored landline string like "+63 028123456" back into parts.
+ */
+const parseLandline = (str) => {
+  if (!str) return { country: "+63", number: "" };
+  const trimmed = str.trim();
+  const spaceIdx = trimmed.indexOf(" ");
+  if (spaceIdx === -1) return { country: "+63", number: trimmed };
+  return { country: trimmed.slice(0, spaceIdx), number: trimmed.slice(spaceIdx + 1).trim() };
+};
+
+// ─────────────────────────────────────────────
 // API — FETCH
 // ─────────────────────────────────────────────
 const fetchPersonal = async () => {
@@ -1725,6 +1875,8 @@ const fetchPersonal = async () => {
       { headers: { Authorization: `Bearer ${Auth.token}` } },
     );
 
+    user.value.passportPersonalInformationId = data.passportPersonalInformationId;
+    user.value.personalInfoId = data.passportPersonalInformationId;
     user.value.lastName = data.lastName ?? "";
     user.value.firstName = data.firstName ?? "";
     user.value.middleName = data.middleName ?? "";
@@ -1734,7 +1886,7 @@ const fetchPersonal = async () => {
       : "";
     user.value.sex = data.gender ?? "";
     user.value.citizenship = data.nationality ?? "";
-    user.value.civilStatusID = data.civilStatus ?? "";
+    user.value.civilStatusID = data.civilStatusId ?? "";
     user.value.birthLegitimacy = data.birthLegitimacy ?? "";
     user.value.isAdoptee = data.isAdoptee ?? false;
     user.value.placeOfBirth = data.placeOfBirth ?? "";
@@ -1761,130 +1913,131 @@ const fetchFamily = async () => {
       headers: { Authorization: `Bearer ${Auth.token}` },
     });
 
-      const father = data.find(f => f.relationship === "Father");
-      const mother = data.find(f => f.relationship === "Mother");
+    const father = data.find((f) => f.relationship === "Father");
+    const mother = data.find((f) => f.relationship === "Mother");
 
-    // ======================
-    // 👨 FATHER
-    // ======================
+    // Father
+    user.value.fatherId = father?.familyId ?? null;
     user.value.fatherSurname = father?.lastName ?? "";
     user.value.fatherFirstName = father?.firstName ?? "";
     user.value.fatherMiddleName = father?.middleName ?? "";
     user.value.fatherNameExtension = father?.suffix ?? "";
     user.value.fatherCitizenship = father?.citizenship ?? "";
-
     fatherLifeStatus.value = father ? (father.isAlive ? "alive" : "deceased") : "alive";
     fatherHasMiddleName.value = !!father?.middleName;
 
-      // ======================
-      // 👩 MOTHER
-      // ======================
-      user.value.motherId = mother?.familyId ?? null;
-      user.value.motherFirstName = mother?.firstName ?? "";
-      user.value.motherMiddleName = mother?.middleName ?? "";
-      user.value.motherSurname = mother?.lastName ?? "";
-      user.value.motherNameExtension = mother?.suffix ?? "";
-      user.value.motherCitizenship = mother?.citizenship ?? "";
-
+    // Mother
+    user.value.motherId = mother?.familyId ?? null;
+    user.value.motherSurname = mother?.lastName ?? "";
+    user.value.motherFirstName = mother?.firstName ?? "";
+    user.value.motherMiddleName = mother?.middleName ?? "";
+    user.value.motherNameExtension = mother?.suffix ?? "";
+    user.value.motherCitizenship = mother?.citizenship ?? "";
     motherLifeStatus.value = mother ? (mother.isAlive ? "alive" : "deceased") : "alive";
+    motherHasMiddleName.value = !!mother?.middleName;
 
-      motherHasMiddleName.value = !!mother?.middleName;
-
-      // ✅ IMPORTANT: needed for update
+    // personalInfoId fallback
+    if (!user.value.personalInfoId) {
       user.value.personalInfoId =
-        father?.passportPersonalInformationId ||
-        mother?.passportPersonalInformationId ||
-        null;
-
-    } catch (err) {
-      console.log("fetchFamily error:", err);
-    } finally {
-      isLoading.value = false;
+        father?.passportPersonalInformationId || mother?.passportPersonalInformationId || null;
     }
-  };
+  } catch (err) {
+    console.log("fetchFamily error:", err);
+  } finally {
+    isLoading.value = false;
+  }
+};
 
-  const fetchContact = async () => {
-    try {
-      isLoading.value = true;
+const fetchContact = async () => {
+  try {
+    isLoading.value = true;
+    const { data } = await axios.get("https://localhost:5000/api/ContactInformation/My-Contact", {
+      headers: { Authorization: `Bearer ${Auth.token}` },
+    });
 
-      const { data } = await axios.get(
-        `https://localhost:5000/api/ContactInformation/My-Contact`,
-        {
-          headers: {
-            Authorization: `Bearer ${Auth.token}`
-          }
-        }
-      );
+    contact.value.id = data.id;
 
-      // Store ID (important for update if needed later)
-      contact.value.id = data.id;
+    // personalInfoId fallback
+    if (!user.value.personalInfoId) {
       user.value.personalInfoId = data.passportPersonalInformationId;
-
-      // Address fields
-      contact.value.region = data.currentRegion ?? "";
-      contact.value.province = data.currentProvince ?? "";
-      contact.value.city = data.currentCityMunicipality ?? "";
-      contact.value.barangay = data.currentBarangay ?? "";
-      contact.value.postalCode = data.currentPostalCode ?? "";
-
-      // Contact numbers
-      contact.value.mobileNumber = data.personalMobileNumber ?? "";
-      contact.value.landlineNumber = data.personalLandlineNumber ?? "";
-
-      contact.value.email = data.email ?? "";
-
-    } catch (err) {
-      console.log("fetchContact error:", err);
-    } finally {
-      isLoading.value = false;
     }
-  };
 
-  const fetchWork = async () => {
-    try {
-      isLoading.value = true;
+    // ✅ Map address fields into address ref
+    address.value.street = data.currentStreet ?? "";
+    address.value.abroad = data.currentAddressAbroad ?? "";
+    address.value.country = data.currentCountry ?? "";
+    address.value.region = data.currentRegion ?? "";
+    address.value.province = data.currentProvince ?? "";
+    // API field: currentCityMunicipality → template: municipality
+    address.value.municipality = data.currentCityMunicipality ?? "";
+    address.value.barangay = data.currentBarangay ?? "";
+    address.value.postal = data.currentPostalCode ?? "";
 
-      const { data } = await axios.get(
-        `https://localhost:5000/api/WorkInformation/My-Work`,
-        {
-          headers: {
-            Authorization: `Bearer ${Auth.token}`
-          }
-        }
-      );
+    // ✅ Parse phone strings back into split fields
+    const mob = parseMobile(data.personalMobileNumber);
+    contact.value.mobileCountry = mob.country;
+    contact.value.mobilePrefix = mob.prefix;
+    contact.value.mobileNumber = mob.number;
 
-      work.value.id = data.id;
+    const land = parseLandline(data.personalLandlineNumber);
+    contact.value.landlineCountry = land.country;
+    contact.value.landlineNumber = land.number;
+  } catch (err) {
+    console.log("fetchContact error:", err);
+  } finally {
+    isLoading.value = false;
+  }
+};
+
+const fetchWork = async () => {
+  try {
+    isLoading.value = true;
+    const { data } = await axios.get("https://localhost:5000/api/WorkInformation/My-Work", {
+      headers: { Authorization: `Bearer ${Auth.token}` },
+    });
+
+    work.value.id = data.id;
+
+    // personalInfoId fallback
+    if (!user.value.personalInfoId) {
       user.value.personalInfoId = data.passportPersonalInformationId;
-
-      work.value.occupation = data.occupation ?? "";
-      work.value.officeAddress = data.officeAddress ?? "";
-      work.value.officeCountry = data.officeCountry ?? "";
-      work.value.officeRegion = data.officeRegion ?? "";
-      work.value.officeProvince = data.officeProvince ?? "";
-      work.value.officeCityMunicipality = data.officeCityMunicipality ?? "";
-      work.value.officePostalCode = data.officePostalCode ?? "";
-      work.value.officeMobileNumber = data.officeMobileNumber ?? "";
-      work.value.officeLandlineNumber = data.officeLandlineNumber ?? "";
-
-    } catch (err) {
-      console.log("fetchWork error:", err);
-    } finally {
-      isLoading.value = false;
     }
-  };
 
-  onMounted(async () => {
-    await fetchPersonal();
-    await fetchFamily();
-    await fetchContact();
-    await fetchWork();
-  });
+    work.value.occupation = data.occupation ?? "";
+    work.value.employer = data.employer ?? ""; // ✅ was missing
+    work.value.officeAddress = data.officeAddress ?? "";
+    work.value.officeCountry = data.officeCountry ?? "";
+    work.value.officeRegion = data.officeRegion ?? "";
+    work.value.officeProvince = data.officeProvince ?? "";
+    // ✅ API field: officeCityMunicipality → template ref: officeMunicipality
+    work.value.officeMunicipality = data.officeCityMunicipality ?? "";
+    work.value.officeBarangay = data.officeBarangay ?? "";
+    work.value.postalCode = data.officePostalCode ?? "";
 
-// ------------------ PATCH Methods ------------------
+    // ✅ Parse phone strings back into split fields
+    const mob = parseMobile(data.officeMobileNumber);
+    work.value.workMobileCountry = mob.country;
+    work.value.workMobilePrefix = mob.prefix;
+    work.value.workMobileNumber = mob.number;
+
+    const land = parseLandline(data.officeLandlineNumber);
+    work.value.workLandlineCountry = land.country;
+    work.value.workLandlineNumber = land.number;
+  } catch (err) {
+    console.log("fetchWork error:", err);
+  } finally {
+    isLoading.value = false;
+  }
+};
+
+// ─────────────────────────────────────────────
+// API — PATCH
+// ─────────────────────────────────────────────
 const updatePersonal = async () => {
   try {
     isLoading.value = true;
     const payload = {
+      passportPersonalInformationId: user.value.personalInfoId,
       lastName: user.value.lastName,
       firstName: user.value.firstName,
       middleName: hasMiddleName.value ? user.value.middleName : null,
@@ -1895,17 +2048,17 @@ const updatePersonal = async () => {
       civilStatus: user.value.civilStatusID || null,
       birthLegitimacy: user.value.birthLegitimacy,
       hasPSABirthcert: hasPSABirthCert.value,
+      isAdoptee: user.value.isAdoptee,
       birthCountry: birthCountry.value,
-      birthRegion: birthRegion.value,
-      birthProvince: birthProvince.value,
-      birthCity: birthCity.value,
-      birthBarangay: birthBarangay.value,
+      birthRegion: birthRegion.value || null,
+      birthProvince: birthProvince.value || null,
+      birthCity: birthCity.value || null,
+      birthBarangay: birthBarangay.value || null,
+      placeOfBirth: birthCountry.value !== "PH" ? user.value.placeOfBirth : null,
     };
-    await axios.patch(
-      "https://localhost:5000/api/PassportPersonalInformations/Update-Profile",
-      payload,
-      { headers: { Authorization: `Bearer ${Auth.token}` } },
-    );
+    await axios.patch("https://localhost:5000/api/PassportPersonalInformations", payload, {
+      headers: { Authorization: `Bearer ${Auth.token}` },
+    });
     dialogTitle.value = "Success";
     dialogMessage.value = "Personal info saved.";
     showDialog.value = true;
@@ -1919,64 +2072,141 @@ const updatePersonal = async () => {
   }
 };
 
-  const updateFamily = async () => {
-    try {
-      isLoading.value = true;
+const updateFamily = async () => {
+  try {
+    isLoading.value = true;
+    const payload = [
+      {
+        familyId: user.value.fatherId,
+        passportPersonalInformationId: user.value.personalInfoId,
+        firstName: user.value.fatherFirstName,
+        middleName: fatherHasMiddleName.value ? user.value.fatherMiddleName : null,
+        lastName: user.value.fatherSurname,
+        suffix: user.value.fatherNameExtension || null,
+        relationship: "Father",
+        isAlive: fatherLifeStatus.value === "alive",
+        citizenship: user.value.fatherCitizenship,
+      },
+      {
+        familyId: user.value.motherId,
+        passportPersonalInformationId: user.value.personalInfoId,
+        firstName: user.value.motherFirstName,
+        middleName: motherHasMiddleName.value ? user.value.motherMiddleName : null,
+        lastName: user.value.motherSurname,
+        suffix: user.value.motherNameExtension || null,
+        relationship: "Mother",
+        isAlive: motherLifeStatus.value === "alive",
+        citizenship: user.value.motherCitizenship,
+      },
+    ];
+    await axios.patch("https://localhost:5000/api/Families", payload, {
+      headers: { Authorization: `Bearer ${Auth.token}` },
+    });
+    dialogTitle.value = "Success";
+    dialogMessage.value = "Family info saved.";
+    showDialog.value = true;
+  } catch (err) {
+    console.log("updateFamily error:", err);
+    dialogTitle.value = "Error";
+    dialogMessage.value = "Failed to save family info.";
+    showDialog.value = true;
+  } finally {
+    isLoading.value = false;
+  }
+};
 
-      const payload = [
-        {
-          familyId: user.value.fatherId,
-          passportPersonalInformationId: user.value.personalInfoId,
+const updateContact = async () => {
+  try {
+    isLoading.value = true;
+    const payload = {
+      id: contact.value.id,
+      passportPersonalInformationId: user.value.personalInfoId,
 
-          firstName: user.value.fatherFirstName,
-          middleName: fatherHasMiddleName.value
-            ? user.value.fatherMiddleName
-            : null,
-          lastName: user.value.fatherSurname,
-          suffix: user.value.fatherNameExtension,
-          relationship: "Father",
-          isAlive: fatherLifeStatus.value === "alive",
-          citizenship: user.value.fatherCitizenship,
-        },
-        {
-          familyId: user.value.motherId,
-          passportPersonalInformationId: user.value.personalInfoId,
+      // Address
+      currentStreet: address.value.street || null,
+      currentAddressAbroad: address.value.abroad || null,
+      currentCountry: address.value.country || null,
+      currentRegion: address.value.country === "PH" ? address.value.region || null : null,
+      currentProvince: address.value.country === "PH" ? address.value.province || null : null,
+      currentCityMunicipality:
+        address.value.country === "PH"
+          ? address.value.municipality || null
+          : address.value.city || null,
+      currentBarangay: address.value.country === "PH" ? address.value.barangay || null : null,
+      currentPostalCode: address.value.postal || null,
 
-          firstName: user.value.motherFirstName,
-          middleName: motherHasMiddleName.value
-            ? user.value.motherMiddleName
-            : null,
-          lastName: user.value.motherSurname,
-          suffix: user.value.motherNameExtension,
-          relationship: "Mother",
-          isAlive: motherLifeStatus.value === "alive",
-          citizenship: user.value.motherCitizenship,
-        }
-      ];
+      // Contact numbers — stored as full formatted strings
+      personalMobileNumber:
+        contact.value.mobilePrefix || contact.value.mobileNumber
+          ? `${contact.value.mobileCountry} ${contact.value.mobilePrefix}${contact.value.mobileNumber}`.trim()
+          : null,
+      personalLandlineNumber: contact.value.landlineNumber
+        ? `${contact.value.landlineCountry} ${contact.value.landlineNumber}`.trim()
+        : null,
+    };
+    await axios.patch("https://localhost:5000/api/ContactInformation", payload, {
+      headers: { Authorization: `Bearer ${Auth.token}` },
+    });
+    dialogTitle.value = "Success";
+    dialogMessage.value = "Contact info saved.";
+    showDialog.value = true;
+  } catch (err) {
+    console.log("updateContact error:", err);
+    dialogTitle.value = "Error";
+    dialogMessage.value = "Failed to save contact info.";
+    showDialog.value = true;
+  } finally {
+    isLoading.value = false;
+  }
+};
 
-      await axios.patch(
-        `https://localhost:5000/api/Families`,
-        payload,
-        {
-          headers: {
-            Authorization: `Bearer ${Auth.token}`
-          }
-        }
-      );
+const updateWork = async () => {
+  try {
+    isLoading.value = true;
+    const payload = {
+      id: work.value.id,
+      passportPersonalInformationId: user.value.personalInfoId,
 
-      dialogTitle.value = "Success";
-      dialogMessage.value = "Family info saved.";
-      showDialog.value = true;
+      // Job details
+      occupation: work.value.occupation || null,
+      employer: work.value.employer || null, // ✅ was missing
+      officeAddress: work.value.officeAddress || null,
 
-    } catch (err) {
-      console.log("updateFamily error:", err);
-      dialogTitle.value = "Error";
-      dialogMessage.value = "Failed to save family info.";
-      showDialog.value = true;
-    } finally {
-      isLoading.value = false;
-    }
-  };
+      // Office location
+      officeCountry: work.value.officeCountry || null,
+      officeRegion: work.value.officeCountry === "PH" ? work.value.officeRegion || null : null,
+      officeProvince: work.value.officeCountry === "PH" ? work.value.officeProvince || null : null,
+      officeCityMunicipality:
+        work.value.officeCountry === "PH"
+          ? work.value.officeMunicipality || null
+          : work.value.officeCity || null,
+      officeBarangay: work.value.officeCountry === "PH" ? work.value.officeBarangay || null : null,
+      officePostalCode: work.value.postalCode || null,
+
+      // Work contact numbers
+      officeMobileNumber:
+        work.value.workMobilePrefix || work.value.workMobileNumber
+          ? `${work.value.workMobileCountry} ${work.value.workMobilePrefix}${work.value.workMobileNumber}`.trim()
+          : null,
+      officeLandlineNumber: work.value.workLandlineNumber
+        ? `${work.value.workLandlineCountry} ${work.value.workLandlineNumber}`.trim()
+        : null,
+    };
+    await axios.patch("https://localhost:5000/api/WorkInformation", payload, {
+      headers: { Authorization: `Bearer ${Auth.token}` },
+    });
+    dialogTitle.value = "Success";
+    dialogMessage.value = "Work info saved.";
+    showDialog.value = true;
+  } catch (err) {
+    console.log("updateWork error:", err);
+    dialogTitle.value = "Error";
+    dialogMessage.value = "Failed to save work info.";
+    showDialog.value = true;
+  } finally {
+    isLoading.value = false;
+  }
+};
 
 // ─────────────────────────────────────────────
 // SAVE DISPATCHER
@@ -1985,15 +2215,8 @@ const save = () => {
   showValidationErrors.value = true;
   if (activeTab.value === "Personal") updatePersonal();
   else if (activeTab.value === "Family") updateFamily();
-  else if (activeTab.value === "Contact") {
-    dialogTitle.value = "Info";
-    dialogMessage.value = "Contact save is not yet connected to the API.";
-    showDialog.value = true;
-  } else if (activeTab.value === "Work") {
-    dialogTitle.value = "Info";
-    dialogMessage.value = "Work save is not yet connected to the API.";
-    showDialog.value = true;
-  }
+  else if (activeTab.value === "Contact") updateContact();
+  else if (activeTab.value === "Work") updateWork();
 };
 
 // ─────────────────────────────────────────────
@@ -2004,18 +2227,20 @@ const handleCloseDialog = () => {
 };
 
 // ─────────────────────────────────────────────
-// LIFECYCLE
+// LIFECYCLE  — single onMounted, all 4 fetches
 // ─────────────────────────────────────────────
 onMounted(async () => {
   await fetchPersonal();
   await fetchFamily();
+  await fetchContact();
+  await fetchWork();
 });
 </script>
 
 <style>
 /* ═══════════════════════════════════════════
-     LAYOUT
-  ═══════════════════════════════════════════ */
+   LAYOUT
+═══════════════════════════════════════════ */
 .app-layout {
   display: grid;
   grid-template-columns: 280px 1fr;
@@ -2024,19 +2249,16 @@ onMounted(async () => {
   background-color: #f4f7f9;
   overflow: hidden;
 }
-
 .leftMenu {
   grid-column: 1;
   grid-row: 1 / span 2;
   z-index: 100;
 }
-
 .header {
   grid-column: 2;
   grid-row: 1;
   z-index: 90;
 }
-
 .dashboard-content {
   grid-column: 2;
   grid-row: 2;
@@ -2051,15 +2273,14 @@ onMounted(async () => {
 }
 
 /* ═══════════════════════════════════════════
-     PAGE TITLE & IMPORTANT BOX
-  ═══════════════════════════════════════════ */
+   PAGE TITLE & IMPORTANT BOX
+═══════════════════════════════════════════ */
 .page-title {
   font-size: 1.8rem;
   color: #06195e;
   font-weight: 800;
   margin-bottom: 25px;
 }
-
 .important-box {
   background: #fff8e1;
   border: 1px solid #facc15;
@@ -2069,7 +2290,6 @@ onMounted(async () => {
   margin-bottom: 20px;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
 }
-
 .important-header {
   font-weight: 800;
   color: #92400e;
@@ -2079,7 +2299,6 @@ onMounted(async () => {
   align-items: center;
   gap: 6px;
 }
-
 .important-text {
   font-size: 0.85rem;
   color: #78350f;
@@ -2088,15 +2307,14 @@ onMounted(async () => {
 }
 
 /* ═══════════════════════════════════════════
-     TABS
-  ═══════════════════════════════════════════ */
+   TABS
+═══════════════════════════════════════════ */
 .tab-container {
   display: flex;
   gap: 2px;
   margin-bottom: 0;
   z-index: 2;
 }
-
 .tab-btn {
   padding: 12px 24px;
   border: none;
@@ -2107,19 +2325,16 @@ onMounted(async () => {
   cursor: pointer;
   transition: all 0.2s ease;
 }
-
 .tab-btn:hover:not(.active) {
   background: #e0e0e0;
   color: #004085;
 }
-
 .tab-btn.active {
   background: white;
   color: #06195e;
   border-top: 3px solid #06195e;
   padding-top: 9px;
 }
-
 .tab-wrapper {
   background: white;
   border-radius: 0 12px 12px 12px;
@@ -2133,12 +2348,11 @@ onMounted(async () => {
 }
 
 /* ═══════════════════════════════════════════
-     FORM WRAPPER & SECTIONS
-  ═══════════════════════════════════════════ */
+   FORM WRAPPER & SECTIONS
+═══════════════════════════════════════════ */
 .form-wrapper {
   padding: 10px;
 }
-
 .pds-section {
   background: #fff;
   border: 1px solid #e8edf4;
@@ -2148,11 +2362,9 @@ onMounted(async () => {
   box-shadow: 0 2px 8px rgba(6, 25, 94, 0.05);
   transition: box-shadow 0.2s;
 }
-
 .pds-section:hover {
   box-shadow: 0 4px 16px rgba(6, 25, 94, 0.09);
 }
-
 .pds-section-header {
   display: flex;
   align-items: center;
@@ -2161,14 +2373,12 @@ onMounted(async () => {
   padding-bottom: 14px;
   border-bottom: 2px solid #f0f4f9;
 }
-
 .pds-section-title {
   font-size: 1rem;
   font-weight: 700;
   color: #06195e;
   margin: 0 0 2px;
 }
-
 .pds-section-sub {
   font-size: 0.75rem;
   color: #94a3b8;
@@ -2177,8 +2387,8 @@ onMounted(async () => {
 }
 
 /* ═══════════════════════════════════════════
-     SECTION ICON WRAPS
-  ═══════════════════════════════════════════ */
+   SECTION ICON WRAPS
+═══════════════════════════════════════════ */
 .section-icon-wrap {
   width: 38px;
   height: 38px;
@@ -2188,48 +2398,56 @@ onMounted(async () => {
   justify-content: center;
   flex-shrink: 0;
 }
-
+.section-icon-wrap.personal {
+  background: #eff6ff;
+  color: #3b82f6;
+}
+.section-icon-wrap.civil {
+  background: #fef3c7;
+  color: #d97706;
+}
 .section-icon-wrap.contact {
   background: #eff6ff;
   color: #3b82f6;
 }
-
 .section-icon-wrap.phone {
   background: #f0fdf4;
   color: #16a34a;
 }
-
 .section-icon-wrap.work {
   background: #faf5ff;
   color: #7c3aed;
 }
-
 .section-icon-wrap.office-loc {
   background: #fff7ed;
   color: #ea580c;
 }
+.section-icon-wrap.father {
+  background: #eff6ff;
+  color: #1d4ed8;
+}
+.section-icon-wrap.mother {
+  background: #fdf2f8;
+  color: #be185d;
+}
 
 /* ═══════════════════════════════════════════
-     FIELD GRID & FIELDS
-  ═══════════════════════════════════════════ */
+   FIELD GRID & FIELDS
+═══════════════════════════════════════════ */
 .pds-field-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
   gap: 18px 20px;
 }
-
 .pds-field {
   display: flex;
   flex-direction: column;
   gap: 5px;
   position: relative;
 }
-
-/* Full-width field within grid */
 .contact-full {
   grid-column: 1 / -1;
 }
-
 .pds-label {
   font-size: 0.75rem;
   font-weight: 700;
@@ -2240,22 +2458,20 @@ onMounted(async () => {
   align-items: center;
   gap: 8px;
 }
-
 .pds-optional {
   font-weight: 400;
   text-transform: none;
   color: #a0aec0;
   font-size: 0.72rem;
 }
-
 .required-star {
   color: #e53935;
   font-weight: 800;
 }
 
 /* ═══════════════════════════════════════════
-     INPUTS
-  ═══════════════════════════════════════════ */
+   INPUTS
+═══════════════════════════════════════════ */
 .pds-input {
   width: 100%;
   padding: 9px 12px;
@@ -2269,24 +2485,20 @@ onMounted(async () => {
     border-color 0.18s,
     box-shadow 0.18s;
 }
-
 .pds-input:focus {
   outline: none;
   border-color: #06195e;
   box-shadow: 0 0 0 3px rgba(6, 25, 94, 0.1);
 }
-
 .pds-input:disabled {
   background: #f1f5f9;
   color: #718096;
   cursor: not-allowed;
 }
-
 .pds-input-error {
   border-color: #e53e3e !important;
   background: #fff5f5 !important;
 }
-
 .pds-readonly-tag {
   font-size: 0.68rem;
   color: #a0aec0;
@@ -2297,15 +2509,14 @@ onMounted(async () => {
 }
 
 /* ═══════════════════════════════════════════
-     GENDER TOGGLE
-  ═══════════════════════════════════════════ */
+   GENDER TOGGLE
+═══════════════════════════════════════════ */
 .pds-gender-toggle {
   display: flex;
   border: 1.5px solid #d1d9e6;
   border-radius: 8px;
   overflow: hidden;
 }
-
 .pds-gender-btn {
   flex: 1;
   padding: 9px;
@@ -2321,28 +2532,24 @@ onMounted(async () => {
   gap: 6px;
   transition: all 0.18s;
 }
-
 .pds-gender-btn:first-child {
   border-right: 1px solid #d1d9e6;
 }
-
 .pds-gender-btn.male.active {
   background: #dbeafe;
   color: #1d4ed8;
 }
-
 .pds-gender-btn.female.active {
   background: #fce7f3;
   color: #be185d;
 }
-
 .gender-icon {
   font-size: 1.1rem;
 }
 
 /* ═══════════════════════════════════════════
-     YES/NO TOGGLES
-  ═══════════════════════════════════════════ */
+   YES/NO TOGGLES
+═══════════════════════════════════════════ */
 .pds-toggle-wrap {
   display: inline-flex;
   border: 1px solid #d1d9e6;
@@ -2350,7 +2557,6 @@ onMounted(async () => {
   overflow: hidden;
   margin-left: auto;
 }
-
 .pds-yn-btn {
   padding: 2px 10px;
   font-size: 0.7rem;
@@ -2361,17 +2567,14 @@ onMounted(async () => {
   cursor: pointer;
   transition: all 0.15s;
 }
-
 .pds-yn-btn.active {
   background: #06195e;
   color: #fff;
 }
-
 .pds-yn-group {
   display: flex;
   gap: 8px;
 }
-
 .pds-yn-lg {
   flex: 1;
   padding: 9px;
@@ -2384,13 +2587,11 @@ onMounted(async () => {
   cursor: pointer;
   transition: all 0.18s;
 }
-
 .pds-yn-lg.active {
   background: #ebf8f0;
   color: #276749;
   border-color: #68d391;
 }
-
 .pds-yn-lg.no.active {
   background: #fff5f5;
   color: #c53030;
@@ -2398,8 +2599,8 @@ onMounted(async () => {
 }
 
 /* ═══════════════════════════════════════════
-     N/A PILL
-  ═══════════════════════════════════════════ */
+   N/A PILL
+═══════════════════════════════════════════ */
 .pds-na-pill {
   padding: 9px 12px;
   background: #f1f5f9;
@@ -2411,8 +2612,8 @@ onMounted(async () => {
 }
 
 /* ═══════════════════════════════════════════
-     FLAG SELECT
-  ═══════════════════════════════════════════ */
+   FLAG SELECT
+═══════════════════════════════════════════ */
 .pds-flag-select {
   display: flex;
   align-items: center;
@@ -2425,17 +2626,14 @@ onMounted(async () => {
     border-color 0.18s,
     box-shadow 0.18s;
 }
-
 .pds-flag-select:focus-within {
   border-color: #06195e;
   box-shadow: 0 0 0 3px rgba(6, 25, 94, 0.1);
 }
-
 .pds-flag-preview {
   font-size: 1.4rem;
   flex-shrink: 0;
 }
-
 .pds-flag-input {
   border: none !important;
   box-shadow: none !important;
@@ -2445,8 +2643,8 @@ onMounted(async () => {
 }
 
 /* ═══════════════════════════════════════════
-     LOCATION BREADCRUMB
-  ═══════════════════════════════════════════ */
+   LOCATION BREADCRUMB
+═══════════════════════════════════════════ */
 .pds-location-crumb {
   margin-top: 14px;
   padding: 10px 16px;
@@ -2459,13 +2657,12 @@ onMounted(async () => {
 }
 
 /* ═══════════════════════════════════════════
-     LIFE STATUS TOGGLE (FAMILY)
-  ═══════════════════════════════════════════ */
+   LIFE STATUS TOGGLE (FAMILY)
+═══════════════════════════════════════════ */
 .pds-life-status-toggle {
   display: flex;
   gap: 10px;
 }
-
 .pds-life-btn {
   display: flex;
   align-items: center;
@@ -2480,13 +2677,11 @@ onMounted(async () => {
   cursor: pointer;
   transition: all 0.18s;
 }
-
 .pds-life-btn.alive.active {
   background: #f0fff4;
   color: #276749;
   border-color: #68d391;
 }
-
 .pds-life-btn.deceased.active {
   background: #f7fafc;
   color: #4a5568;
@@ -2494,8 +2689,8 @@ onMounted(async () => {
 }
 
 /* ═══════════════════════════════════════════
-     DECEASED STATUS NOTICE
-  ═══════════════════════════════════════════ */
+   DECEASED STATUS NOTICE
+═══════════════════════════════════════════ */
 .pds-status-notice {
   display: flex;
   align-items: center;
@@ -2506,7 +2701,6 @@ onMounted(async () => {
   font-size: 0.83rem;
   line-height: 1.5;
 }
-
 .pds-status-notice.deceased {
   background: #f7fafc;
   border: 1px solid #cbd5e0;
@@ -2514,8 +2708,8 @@ onMounted(async () => {
 }
 
 /* ═══════════════════════════════════════════
-     MAIDEN TAG
-  ═══════════════════════════════════════════ */
+   MAIDEN TAG
+═══════════════════════════════════════════ */
 .pds-maiden-tag {
   font-size: 0.65rem;
   font-weight: 700;
@@ -2529,14 +2723,13 @@ onMounted(async () => {
 }
 
 /* ═══════════════════════════════════════════
-     PHONE CARDS (CONTACT & WORK)
-  ═══════════════════════════════════════════ */
+   PHONE CARDS (CONTACT & WORK)
+═══════════════════════════════════════════ */
 .contact-phone-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
   gap: 16px;
 }
-
 .phone-card {
   background: #f8fafc;
   border: 1.5px solid #e2e8f0;
@@ -2549,17 +2742,14 @@ onMounted(async () => {
     border-color 0.18s,
     box-shadow 0.18s;
 }
-
 .phone-card:focus-within {
   border-color: #06195e;
   box-shadow: 0 0 0 3px rgba(6, 25, 94, 0.08);
 }
-
 .phone-card-label {
   display: flex;
   align-items: center;
 }
-
 .phone-type-badge {
   font-size: 0.72rem;
   font-weight: 700;
@@ -2568,23 +2758,19 @@ onMounted(async () => {
   padding: 3px 10px;
   border-radius: 20px;
 }
-
 .phone-type-badge.mobile {
   background: #dbeafe;
   color: #1d4ed8;
 }
-
 .phone-type-badge.landline {
   background: #d1fae5;
   color: #065f46;
 }
-
 .phone-input-row {
   display: flex;
   align-items: center;
   gap: 8px;
 }
-
 .phone-country-select {
   padding: 8px 10px;
   border: 1.5px solid #d1d9e6;
@@ -2601,33 +2787,28 @@ onMounted(async () => {
   background-size: 14px;
   padding-right: 26px;
 }
-
 .phone-country-select:focus {
   outline: none;
   border-color: #06195e;
   box-shadow: 0 0 0 3px rgba(6, 25, 94, 0.1);
 }
-
 .phone-segment {
   max-width: 72px;
   text-align: center;
   padding: 8px 10px !important;
   height: 38px;
 }
-
 .phone-main {
   flex: 1;
   padding: 8px 10px !important;
   height: 38px;
 }
-
 .phone-dash {
   color: #94a3b8;
   font-weight: 700;
   font-size: 1rem;
   flex-shrink: 0;
 }
-
 .phone-preview {
   font-size: 0.78rem;
   color: #3b82f6;
@@ -2640,8 +2821,8 @@ onMounted(async () => {
 }
 
 /* ═══════════════════════════════════════════
-     BUTTONS
-  ═══════════════════════════════════════════ */
+   BUTTONS
+═══════════════════════════════════════════ */
 .btn {
   background-color: #007bff;
   color: white;
@@ -2652,62 +2833,54 @@ onMounted(async () => {
   border: 1px solid #007bff;
   transition: all 0.2s;
 }
-
 .btn:hover {
   background-color: #0056b3;
   border-color: #0056b3;
 }
-
 .save-btn {
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
 }
-
 .button-group-row {
   display: flex;
   margin-top: 20px;
 }
 
 /* ═══════════════════════════════════════════
-     TRANSITIONS
-  ═══════════════════════════════════════════ */
+   TRANSITIONS
+═══════════════════════════════════════════ */
 .fade-slide-enter-active,
 .fade-slide-leave-active {
   transition:
     opacity 0.3s ease,
     transform 0.3s ease;
 }
-
 .fade-slide-enter-from {
   opacity: 0;
   transform: translateY(10px);
 }
-
 .fade-slide-leave-to {
   opacity: 0;
   transform: translateY(-10px);
 }
 
 /* ═══════════════════════════════════════════
-     RESPONSIVE
-  ═══════════════════════════════════════════ */
+   RESPONSIVE
+═══════════════════════════════════════════ */
 @media (max-width: 1200px) {
   .app-layout {
     grid-template-columns: 20vw 1fr;
   }
 }
-
 @media (max-width: 992px) {
   .app-layout {
     grid-template-columns: 80px 1fr;
   }
-
   .tab-container {
     flex-wrap: wrap;
   }
-
   .tab-btn {
     flex: 1 1 auto;
     border: 1px solid #e0e0e0;
@@ -2715,38 +2888,31 @@ onMounted(async () => {
     margin: 5px;
   }
 }
-
 @media (max-width: 768px) {
   .app-layout {
     grid-template-columns: 1fr;
     grid-template-rows: auto auto 1fr;
   }
-
   .leftMenu,
   .header,
   .dashboard-content {
     grid-column: 1;
   }
-
   .header {
     grid-row: 1;
   }
-
   .dashboard-content {
     grid-row: 2;
     padding: 20px 15px;
   }
-
   .leftMenu {
     grid-row: 3;
     width: 100%;
     min-height: auto;
   }
-
   .phone-input-row {
     flex-wrap: wrap;
   }
-
   .phone-segment {
     max-width: 100%;
   }
