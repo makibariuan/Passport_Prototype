@@ -1925,15 +1925,18 @@ const parseLandline = (str) => {
 const fetchContact = async () => {
   try {
     isLoading.value = true;
-    const { data } = await axios.get("https://localhost:5000/api/ContactInformation/My-Contact", {
-      headers: { Authorization: `Bearer ${Auth.token}` },
-    });
+    const { data } = await axios.get(
+      `https://localhost:5000/api/ContactInformation/${selectedProfileId.value}`,
+      {
+        headers: { Authorization: `Bearer ${Auth.token}` },
+      },
+    );
 
     contact.value.id = data.id;
 
     // personalInfoId fallback
     if (!user.value.personalInfoId) {
-      user.value.personalInfoId = data.passportPersonalInformationId;
+      user.value.personalInfoId = selectedProfileId.value;
     }
 
     // ✅ Map address fields into address ref
@@ -1966,15 +1969,18 @@ const fetchContact = async () => {
 const fetchWork = async () => {
   try {
     isLoading.value = true;
-    const { data } = await axios.get("https://localhost:5000/api/WorkInformation/My-Work", {
-      headers: { Authorization: `Bearer ${Auth.token}` },
-    });
+    const { data } = await axios.get(
+      `https://localhost:5000/api/WorkInformation/${selectedProfileId.value}`,
+      {
+        headers: { Authorization: `Bearer ${Auth.token}` },
+      },
+    );
 
     work.value.id = data.id;
 
     // personalInfoId fallback
     if (!user.value.personalInfoId) {
-      user.value.personalInfoId = data.passportPersonalInformationId;
+      user.value.personalInfoId = selectedProfileId.value;
     }
 
     work.value.occupation = data.occupation ?? "";
@@ -2011,7 +2017,7 @@ const updatePersonal = async () => {
   try {
     isLoading.value = true;
     const payload = {
-      passportPersonalInformationId: user.value.personalInfoId,
+      passportPersonalInformationId: selectedProfileId.value,
       lastName: user.value.lastName,
       firstName: user.value.firstName,
       middleName: hasMiddleName.value ? user.value.middleName : null,
@@ -2053,7 +2059,7 @@ const updateFamily = async () => {
     const payload = [
       {
         familyId: user.value.fatherId,
-        passportPersonalInformationId: user.value.personalInfoId,
+        passportPersonalInformationId: selectedProfileId.value,
         firstName: user.value.fatherFirstName,
         middleName: fatherHasMiddleName.value ? user.value.fatherMiddleName : null,
         lastName: user.value.fatherSurname,
@@ -2064,7 +2070,7 @@ const updateFamily = async () => {
       },
       {
         familyId: user.value.motherId,
-        passportPersonalInformationId: user.value.personalInfoId,
+        passportPersonalInformationId: selectedProfileId.value,
         firstName: user.value.motherFirstName,
         middleName: motherHasMiddleName.value ? user.value.motherMiddleName : null,
         lastName: user.value.motherSurname,
@@ -2095,7 +2101,7 @@ const updateContact = async () => {
     isLoading.value = true;
     const payload = {
       id: contact.value.id,
-      passportPersonalInformationId: user.value.personalInfoId,
+      passportPersonalInformationId: selectedProfileId.value,
 
       // Address
       currentStreet: address.value.street || null,
@@ -2140,7 +2146,7 @@ const updateWork = async () => {
     isLoading.value = true;
     const payload = {
       id: work.value.id,
-      passportPersonalInformationId: user.value.personalInfoId,
+      passportPersonalInformationId: selectedProfileId.value,
 
       // Job details
       occupation: work.value.occupation || null,
