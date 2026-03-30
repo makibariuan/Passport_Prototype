@@ -1848,6 +1848,15 @@ const proceedWithProfile = () => {
 
 const submit = async () => {
   try {
+    // ── Debug logs FIRST ────────────────────────────────
+    console.log("selectedDate:", selectedDate.value);
+    console.log("selectedTime:", selectedTime.value);
+    console.log("selectedProfile:", selectedProfile.value);
+    console.log("appTypeForm:", appTypeForm.value);
+    console.log("processingType:", processingType.value);
+    console.log("paymentMethod:", paymentMethod.value);
+    console.log("deliveryOption:", deliveryOption.value);
+
     const formData = new FormData();
 
     // Profile
@@ -1858,17 +1867,24 @@ const submit = async () => {
     formData.append("Country", siteForm.value.country);
     formData.append("Site", siteForm.value.site);
 
-    // Combine selectedDate + selectedTime into a DateTime string
-    // selectedDate is like "2026-3-29", selectedTime like "9:00 AM - 9:30 AM"
-    const timeStart = selectedTime.value?.split(" - ")[0] ?? "9:00 AM";
-    const scheduleDate = new Date(`${selectedDate.value} ${timeStart}`);
-    console.log("selectedDate:", selectedDate.value);
-    console.log("selectedTime:", selectedTime.value);
-    console.log("ValidId file:", validIdReq?.file);
-    console.log("Certificate file:", certReq?.file);
-    for (let [key, val] of formData.entries()) {
-      console.log(key, val);
-    }
+    // ── Fix: safely parse the date ──────────────────────
+    // selectedDate is "2026-3-29", pad it to "2026-03-29"
+    const [y, m, d] = selectedDate.value.split("-");
+    const paddedDate = `${y}-${String(m).padStart(2, "0")}-${String(d).padStart(2, "0")}`;
+
+    // selectedTime is "9:00 AM - 9:30 AM", take the start
+    const timeStart = selectedTime.value?.split(" - ")[0]?.trim() ?? "09:00 AM";
+
+    // Convert "9:00 AM" → 24h for reliable parsing
+    const [timePart, meridiem] = timeStart.split(" ");
+    let [hours, minutes] = timePart.split(":").map(Number);
+    if (meridiem === "PM" && hours !== 12) hours += 12;
+    if (meridiem === "AM" && hours === 12) hours = 0;
+    const paddedTime = `${String(hours).padStart(2, "0")}:${String(minutes).padStart(2, "0")}:00`;
+
+    const scheduleDate = new Date(`${paddedDate}T${paddedTime}`);
+    console.log("Parsed scheduleDate:", scheduleDate.toISOString());
+
     formData.append("Schedule", scheduleDate.toISOString());
 
     // Application Type
@@ -1883,6 +1899,9 @@ const submit = async () => {
     // Files
     const validIdReq = requirements.value.find((r) => r.id === "gov-id");
     const certReq = requirements.value.find((r) => r.id === "birth-cert");
+    console.log("ValidId file:", validIdReq?.file);
+    console.log("Certificate file:", certReq?.file);
+
     if (!validIdReq?.file || !certReq?.file) {
       alert("Please upload all required documents before submitting.");
       return;
@@ -1894,8 +1913,13 @@ const submit = async () => {
     formData.append("ProcessingType", processingType.value ?? "");
     formData.append("PaymentMethod", paymentMethod.value ?? "");
     formData.append("DeliveryOption", deliveryOption.value ?? "");
-    formData.append("isPaid", showPaymentSuccess.value); // true once user paid
+    formData.append("isPaid", showPaymentSuccess.value);
     formData.append("ApplicationStatus", showPaymentSuccess.value ? "Paid" : "Pending");
+
+    // ── Log full FormData before sending ────────────────
+    for (let [key, val] of formData.entries()) {
+      console.log("FormData →", key, val);
+    }
 
     const res = await axios.post(`${BACKEND_DOMAIN}/api/Application`, formData, {
       headers: {
@@ -1907,23 +1931,25 @@ const submit = async () => {
     alert("Application submitted successfully!");
     console.log("Response:", res.data);
   } catch (err) {
-    console.error("Full error:", err);
-    console.error("Response status:", err?.response?.status);
-    console.error("Response data:", err?.response?.data);
-    console.error("Response errors:", JSON.stringify(err?.response?.data?.errors, null, 2));
+    // ── This will now catch JS errors AND axios 4xx/5xx ─
+    if (err?.response) {
+      console.error("HTTP error status:", err.response.status);
+      console.error("HTTP error data:", err.response.data);
+      console.error("Validation errors:", JSON.stringify(err.response.data?.errors, null, 2));
 
-    const errors = err?.response?.data?.errors;
-    if (errors) {
-      const errorMessages = Object.entries(errors)
-        .map(([field, messages]) => `${field}: ${messages.join(", ")}`)
-        .join("\n");
-      alert(`Validation errors:\n${errorMessages}`);
+      const errors = err.response.data?.errors;
+      if (errors) {
+        const msg = Object.entries(errors)
+          .map(([field, messages]) => `${field}: ${messages.join(", ")}`)
+          .join("\n");
+        alert(`Validation errors:\n${msg}`);
+      } else {
+        alert(err.response.data?.message ?? err.response.data?.title ?? "Submission failed.");
+      }
     } else {
-      alert(
-        err?.response?.data?.message ??
-          err?.response?.data?.title ??
-          "Submission failed. Please try again.",
-      );
+      // JS runtime error (e.g. Invalid Date)
+      console.error("Runtime error:", err.message, err.stack);
+      alert(`Runtime error: ${err.message}`);
     }
   }
 };
