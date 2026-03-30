@@ -1368,14 +1368,7 @@
 
           <div style="padding: 18px 22px; display: flex; flex-direction: column; gap: 14px">
             <!-- Row 1: Last Name, First Name, Middle Name, Suffix -->
-            <div
-              style="
-                display: grid;
-                grid-template-columns: 1fr 1fr 1fr auto;
-                gap: 12px;
-                align-items: end;
-              "
-            >
+            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr 100px; gap: 12px">
               <div class="form-group">
                 <label class="form-label">Last Name <span class="required">*</span></label>
                 <input
@@ -1405,7 +1398,7 @@
               </div>
               <div class="form-group">
                 <label class="form-label">Suffix</label>
-                <div class="select-wrap" style="width: 90px">
+                <div class="select-wrap">
                   <select v-model="newProfile.suffix" class="form-select">
                     <option value="">—</option>
                     <option value="Jr.">Jr.</option>
