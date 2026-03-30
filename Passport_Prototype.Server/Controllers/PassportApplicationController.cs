@@ -240,6 +240,7 @@ namespace Passport_Prototype.Server.Controllers
                     ValidIdPath = app.ValidIdPath,
                     CertificatePath = app.CertificatePath,
                     ProcessingType = app.ProcessingType,
+                    ApplicationBarCodePath = app.ApplicationBarCodePath,
 
                     PaymentMethod = app.PaymentMethod,
                     DeliveryOption = app.DeliveryOption,
