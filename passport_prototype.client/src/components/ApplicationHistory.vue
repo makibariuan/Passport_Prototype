@@ -358,7 +358,7 @@ const fetchApplications = async () => {
       id: a.applicationId,
       ref: a.barcode ?? a.barcodePath ?? `APP-${a.applicationId}`,
       name: a.profileName,
-      site: "—", // not in list response, shown in detail modal if needed
+      site: a.site, // not in list response, shown in detail modal if needed
       date: formatScheduleDate(a.schedule),
       time: formatScheduleTime(a.schedule),
       status: a.status, // keep as numeric code
