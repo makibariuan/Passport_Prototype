@@ -37,7 +37,7 @@
       <!-- Cards Grid -->
       <div v-if="filteredApps.length" class="cards-grid">
         <div v-for="app in filteredApps" :key="app.ref" class="app-card">
-          <span :class="['badge', badgeClass(app.status)]">{{ app.status }}</span>
+          <span :class="['badge', badgeClass(app.status)]">{{ statusLabel(app.status) }}</span>
 
           <div class="barcode-wrap">
             <svg
@@ -1029,6 +1029,16 @@ const cancelAppointment = async (app) => {
 
 .btn-confirm-reschedule:hover {
   background: #0a2580;
+}
+
+.badge-warning {
+  background: #fde68a;
+  color: #92400e;
+}
+
+.badge-info {
+  background: #e0f2fe;
+  color: #0369a1;
 }
 
 @media (max-width: 768px) {
