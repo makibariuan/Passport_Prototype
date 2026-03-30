@@ -1214,7 +1214,14 @@
             <button v-if="currentStep < tabs.length - 1" class="btn btn-next" @click="nextStep">
               Next →
             </button>
-            <button v-else class="btn btn-submit" @click="submit">Submit Application</button>
+            <button
+              v-else
+              class="btn btn-submit"
+              :disabled="!appForm.declarationChecked || !appForm.certifyChecked"
+              @click="submit"
+            >
+              Submit Application
+            </button>
           </div>
         </div>
       </template>
@@ -1345,22 +1352,24 @@
           <p class="epay-intro">This mode of payment is requesting for...</p>
 
           <table class="epay-table">
-            <tr>
-              <td class="ep-label">Status</td>
-              <td class="ep-value ep-bold">PAID</td>
-            </tr>
-            <tr>
-              <td class="ep-label">Scheduled Date</td>
-              <td class="ep-value">{{ formatSelectedSchedule || "9 January 2025, 09:00" }}</td>
-            </tr>
-            <tr>
-              <td class="ep-label">Amount</td>
-              <td class="ep-value">PHP {{ totalAmount }}</td>
-            </tr>
-            <tr>
-              <td class="ep-label">Total Amount Due</td>
-              <td class="ep-value ep-green">PHP {{ totalAmount }}</td>
-            </tr>
+            <tbody>
+              <tr>
+                <td class="ep-label">Status</td>
+                <td class="ep-value ep-bold">PAID</td>
+              </tr>
+              <tr>
+                <td class="ep-label">Scheduled Date</td>
+                <td class="ep-value">{{ formatSelectedSchedule || "9 January 2025, 09:00" }}</td>
+              </tr>
+              <tr>
+                <td class="ep-label">Amount</td>
+                <td class="ep-value">PHP {{ totalAmount }}</td>
+              </tr>
+              <tr>
+                <td class="ep-label">Total Amount Due</td>
+                <td class="ep-value ep-green">PHP {{ totalAmount }}</td>
+              </tr>
+            </tbody>
           </table>
 
           <p class="not-receipt">This is not your e-Receipt.</p>
@@ -1376,11 +1385,12 @@
 
 <script setup>
 import LeftMenu from "@/components/LeftMenu.vue";
-  import { ref, computed, onMounted } from "vue";
-  import axios from 'axios'
-  import { useAuthStore } from "../stores/auth";
+import { ref, computed, onMounted } from "vue";
+import axios from "axios";
+import { useAuthStore } from "../stores/auth";
+import { BACKEND_DOMAIN } from "@/configs/config";
 
-  const Auth = useAuthStore();
+const Auth = useAuthStore();
 
 // ── Pre-step state ──────────────────────────────────────────────────
 const preStep = ref("terms");
@@ -1425,10 +1435,6 @@ const nextStep = () => {
 
 const prevStep = () => {
   if (currentStep.value > 0) currentStep.value--;
-};
-
-const submit = () => {
-  alert("Application submitted!");
 };
 
 // ── Tab 0: Site Location & Schedule ────────────────────────────────
@@ -1797,49 +1803,107 @@ const closePaymentSuccess = () => {
   showEReceipt.value = true;
 };
 
+// GET PROFILES LIST
+// Reactive states
+const profiles = ref([]);
+const selectedProfile = ref(null);
+const loading = ref(false);
+const error = ref(null);
 
-  // GET PROFILES LIST
-  // Reactive states
-  const profiles = ref([]);
-  const selectedProfile = ref(null);
-  const loading = ref(false);
-  const error = ref(null);
+// Fetch profiles from backend
+const fetchProfiles = async () => {
+  loading.value = true;
+  error.value = null;
+  try {
+    const res = await axios.get(`${BACKEND_DOMAIN}/api/PassportProfile/Profiles`, {
+      headers: {
+        Authorization: `Bearer ${Auth.token}`,
+      },
+    });
 
-  // Fetch profiles from backend
-  const fetchProfiles = async () => {
-    loading.value = true;
-    error.value = null;
-    try {
-      const res = await axios.get("/api/PassportProfile/Profiles", {
-        headers: {
-          Authorization: `Bearer ${Auth.token}`,
-        },
-      });
+    // Use backend-provided fullName and relationship
+    profiles.value = res.data.map((p) => ({
+      id: p.passportPersonalInformationId,
+      name: p.fullName,
+      relationship: p.relationship ?? "Personal",
+    }));
+  } catch (err) {
+    console.error(err);
+    error.value = "Failed to load profiles.";
+  } finally {
+    loading.value = false;
+  }
+};
 
-      // Use backend-provided fullName and relationship
-      profiles.value = res.data.map(p => ({
-        id: p.passportPersonalInformationId,
-        name: p.fullName,
-        relationship: p.relationship ?? "Personal"
-      }));
-    } catch (err) {
-      console.error(err);
-      error.value = "Failed to load profiles.";
-    } finally {
-      loading.value = false;
+// Trigger API call on mount
+onMounted(() => {
+  fetchProfiles();
+});
+
+// Handle proceed action
+const proceedWithProfile = () => {
+  if (!selectedProfile.value) return;
+  preStep.value = "appointmentNotice";
+};
+
+const submit = async () => {
+  try {
+    const formData = new FormData();
+
+    // Profile
+    formData.append("PassportPersonalInformationId", selectedProfile.value);
+
+    // Site & Schedule
+    formData.append("Region", siteForm.value.region);
+    formData.append("Country", siteForm.value.country);
+    formData.append("Site", siteForm.value.site);
+
+    // Combine selectedDate + selectedTime into a DateTime string
+    // selectedDate is like "2026-3-29", selectedTime like "9:00 AM - 9:30 AM"
+    const timeStart = selectedTime.value?.split(" - ")[0] ?? "9:00 AM";
+    const scheduleDate = new Date(`${selectedDate.value} ${timeStart}`);
+    formData.append("Schedule", scheduleDate.toISOString());
+
+    // Application Type
+    formData.append("ApplicationType", appTypeForm.value.applicationType);
+    formData.append("CitizenshipBasis", appTypeForm.value.citizenshipBasis);
+    formData.append("isForeignPassportHolder", appTypeForm.value.foreignPassportHolder ?? false);
+    formData.append("isCourtesyLane", appTypeForm.value.courtesyLane ?? false);
+    formData.append("DocumentType", appTypeForm.value.documentType);
+    formData.append("IdDocumentIdNumber", appTypeForm.value.identificationNumber);
+    formData.append("IdDocumentType", appTypeForm.value.identificationDocType);
+
+    // Files
+    const validIdReq = requirements.value.find((r) => r.id === "gov-id");
+    const certReq = requirements.value.find((r) => r.id === "birth-cert");
+    if (!validIdReq?.file || !certReq?.file) {
+      alert("Please upload all required documents before submitting.");
+      return;
     }
-  };
+    formData.append("ValidId", validIdReq.file);
+    formData.append("Certificate", certReq.file);
 
-  // Trigger API call on mount
-  onMounted(() => {
-    fetchProfiles();
-  });
+    // Payment
+    formData.append("ProcessingType", processingType.value ?? "");
+    formData.append("PaymentMethod", paymentMethod.value ?? "");
+    formData.append("DeliveryOption", deliveryOption.value ?? "");
+    formData.append("isPaid", showPaymentSuccess.value); // true once user paid
+    formData.append("ApplicationStatus", showPaymentSuccess.value ? "Paid" : "Pending");
 
-  // Handle proceed action
-  const proceedWithProfile = () => {
-    if (!selectedProfile.value) return;
-    preStep.value = "appointmentNotice";
-  };
+    const res = await axios.post(`${BACKEND_DOMAIN}/api/Application`, formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+        Authorization: `Bearer ${Auth.token}`,
+      },
+    });
+
+    alert("Application submitted successfully!");
+    console.log("Response:", res.data);
+  } catch (err) {
+    console.error(err);
+    alert(err?.response?.data?.message ?? "Submission failed. Please try again.");
+  }
+};
 </script>
 
 <style scoped>
