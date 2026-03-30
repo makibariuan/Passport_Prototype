@@ -8,7 +8,11 @@ namespace Passport_Prototype.Server.DTOs
 
         public string? Occupation { get; set; }
 
+        public string? Employer { get; set; }
+
         public string? OfficeAddress { get; set; }
+
+        public string? OfficeBarangay { get; set; }
 
         public string? OfficeCountry { get; set; }
 

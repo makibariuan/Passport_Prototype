@@ -29,7 +29,9 @@ namespace Passport_Prototype.Server.Controllers
             {
                 PassportPersonalInformationId = dto.PassportPersonalInformationId,
                 Occupation = dto.Occupation,
+                Employer = dto.Employer,
                 OfficeAddress = dto.OfficeAddress,
+                OfficeBarangay = dto.OfficeBarangay,
                 OfficeCountry = dto.OfficeCountry,
                 OfficeRegion = dto.OfficeRegion,
                 OfficeProvince = dto.OfficeProvince,
@@ -101,18 +103,40 @@ namespace Passport_Prototype.Server.Controllers
                 .FirstOrDefaultAsync(w => w.PassportPersonalInformationId == dto.PassportPersonalInformationId);
 
             if (entity == null)
-                return NotFound();
+            {
+                entity = new WorkInformation
+                {
+                    PassportPersonalInformationId = dto.PassportPersonalInformationId,
+                    Occupation = dto.Occupation,
+                    Employer = dto.Employer,
+                    OfficeAddress = dto.OfficeAddress,
+                    OfficeBarangay = dto.OfficeBarangay,
+                    OfficeCountry = dto.OfficeCountry,
+                    OfficeRegion = dto.OfficeRegion,
+                    OfficeProvince = dto.OfficeProvince,
+                    OfficeCityMunicipality = dto.OfficeCityMunicipality,
+                    OfficePostalCode = dto.OfficePostalCode,
+                    OfficeMobileNumber = dto.OfficeMobileNumber,
+                    OfficeLandlineNumber = dto.OfficeLandlineNumber
+                };
 
-            entity.PassportPersonalInformationId = dto.PassportPersonalInformationId;
-            entity.Occupation = dto.Occupation;
-            entity.OfficeAddress = dto.OfficeAddress;
-            entity.OfficeCountry = dto.OfficeCountry;
-            entity.OfficeRegion = dto.OfficeRegion;
-            entity.OfficeProvince = dto.OfficeProvince;
-            entity.OfficeCityMunicipality = dto.OfficeCityMunicipality;
-            entity.OfficePostalCode = dto.OfficePostalCode;
-            entity.OfficeMobileNumber = dto.OfficeMobileNumber;
-            entity.OfficeLandlineNumber = dto.OfficeLandlineNumber;
+                _context.WorkInformation.Add(entity);
+            }
+            else
+            {
+                entity.PassportPersonalInformationId = dto.PassportPersonalInformationId;
+                entity.Occupation = dto.Occupation;
+                entity.Employer = dto.Employer;
+                entity.OfficeAddress = dto.OfficeAddress;
+                entity.OfficeBarangay = dto.OfficeBarangay;
+                entity.OfficeCountry = dto.OfficeCountry;
+                entity.OfficeRegion = dto.OfficeRegion;
+                entity.OfficeProvince = dto.OfficeProvince;
+                entity.OfficeCityMunicipality = dto.OfficeCityMunicipality;
+                entity.OfficePostalCode = dto.OfficePostalCode;
+                entity.OfficeMobileNumber = dto.OfficeMobileNumber;
+                entity.OfficeLandlineNumber = dto.OfficeLandlineNumber;
+            }
 
             await _context.SaveChangesAsync();
 

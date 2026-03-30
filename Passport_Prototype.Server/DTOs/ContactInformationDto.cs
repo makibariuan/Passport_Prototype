@@ -6,6 +6,8 @@ namespace Passport_Prototype.Server.DTOs
     {
         public int PassportPersonalInformationId { get; set; }
 
+        public string CurrentStreet {  get; set; } = string.Empty;
+
         public string CurrentRegion { get; set; } = string.Empty;
 
         public string CurrentProvince { get; set; } = string.Empty;
@@ -15,6 +17,10 @@ namespace Passport_Prototype.Server.DTOs
         public string CurrentBarangay { get; set; } = string.Empty;
 
         public string CurrentPostalCode { get; set; } = string.Empty;
+
+        public required string CurrentCountry { get; set; }
+
+        public string? AddressAbroad { get; set; }
 
         public string PersonalMobileNumber { get; set; } = string.Empty;
 
