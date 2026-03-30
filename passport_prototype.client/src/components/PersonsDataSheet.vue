@@ -2281,7 +2281,7 @@ const saveNewRelationship = async () => {
   try {
     isLoading.value = true;
     await axios.post(
-      `${BACKEND_DOMAIN}/api/YOUR_ENDPOINT_HERE`,
+      `${BACKEND_DOMAIN}/api/PassportPersonalInformations`,
       { relationship: val },
       { headers: { Authorization: `Bearer ${Auth.token}` } },
     );
