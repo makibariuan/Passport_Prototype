@@ -549,7 +549,7 @@
           },
         },
       ],
-      pageLength: 5,
+      pageLength: 15,
       lengthChange: false,
       info: false,
       responsive: true,
@@ -573,7 +573,6 @@
     router.push(path);
   };
 </script>
-
 
 <style scoped>
 .status-approved {
@@ -619,15 +618,14 @@
 
 /* ===== MAIN ===== */
   .main-container {
-    /* margin: 0 auto;  <- Remove or keep, but the below is more robust */
     display: flex;
     justify-content: center;
     align-items: flex-start;
     width: 100%;
-    padding: 25px;
-    /* Add this to prevent padding from pushing the width past 100% */
+    min-height: 100vh; /* Ensure it covers full height */
+    padding: 30px 40px; /* Increased side padding for a premium look */
     box-sizing: border-box;
-    /* Prevent the horizontal scroll */
+    background: #eef2f7;
     overflow-x: hidden;
   }
 
@@ -635,12 +633,13 @@
   .content-card {
     background: #fff;
     border-radius: 16px;
-    padding: 20px 25px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
-    /* Use max-width instead of width: 100% to ensure it doesn't overflow */
+    padding: 25px 30px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.04);
     width: 100%;
-    max-width: 1200px;
+    /* Increased from 1200px to 1600px to handle wide data tables */
+    max-width: 1600px;
     box-sizing: border-box;
+    transition: all 0.3s ease;
   }
 
 /* ===== HEADER ===== */
@@ -680,8 +679,9 @@
 /* ===== TABLE ===== */
   .table-wrapper {
     width: 100%;
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
+    margin-top: 15px;
+    /* Removes the inner scrollbar unless absolutely necessary on tiny screens */
+    overflow-x: visible;
   }
 
 /* FORCE table to fit container */
