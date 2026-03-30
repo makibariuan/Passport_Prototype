@@ -3,6 +3,7 @@ using OnlineRegistration.Server.Data;
 using OnlineRegistration.Server.Models;
 using OnlineRegistration.Server.Services.Interfaces;
 using Passport_Prototype.Server.DTOs;
+using System.Security.Claims;
 
 namespace Passport_Prototype.Server.Controllers
 {
@@ -80,7 +81,7 @@ namespace Passport_Prototype.Server.Controllers
                 """;
             _emailQueue.QueueEmail(new EmailMessage
             {
-                To = passportAppEmailDTO.Email,
+                To = User.FindFirstValue("email"),
                 Subject = "Passport Application Notification",
                 Body = emailBody
             });
