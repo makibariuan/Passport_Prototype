@@ -2137,7 +2137,6 @@ const submit = async () => {
       await axios.post(
         `${BACKEND_DOMAIN}/api/PassportAppEmailer`,
         {
-          email: appForm.value.email,
           accountName: [appForm.value.firstName, appForm.value.middleName, appForm.value.lastName]
             .filter(Boolean)
             .join(" "),
