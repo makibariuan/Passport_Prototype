@@ -2114,7 +2114,7 @@ const submit = async () => {
     formData.append("PaymentMethod", paymentMethod.value ?? "");
     formData.append("DeliveryOption", deliveryOption.value ?? "");
     formData.append("isPaid", showPaymentSuccess.value);
-    formData.append("Amount", totalAmount);
+   formData.append("Amount", totalAmount.value.replace(/,/g, ""));
 
     // ── Log full FormData before sending ────────────────
     for (let [key, val] of formData.entries()) {

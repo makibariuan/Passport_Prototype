@@ -1964,7 +1964,7 @@ const fetchContact = async () => {
 
     // ✅ Map address fields into address ref
     address.value.street = data.currentStreet ?? "";
-    address.value.abroad = data.currentAddressAbroad ?? "";
+    address.value.abroad = data.addressAbroad ?? "";
     address.value.country = data.currentCountry ?? "";
     address.value.region = data.currentRegion ?? "";
     address.value.province = data.currentProvince ?? "";
@@ -2006,7 +2006,7 @@ const fetchWork = async () => {
     work.value.occupation = data.occupation ?? "";
     work.value.employer = data.employer ?? ""; // ✅ was missing
     work.value.officeAddress = data.officeAddress ?? "";
-    work.value.officeCountry = data.officeCountry ?? "";
+    work.value.officeCountry = data.officCountry ?? "";
     work.value.officeRegion = data.officeRegion ?? "";
     work.value.officeProvince = data.officeProvince ?? "";
     // ✅ API field: officeCityMunicipality → template ref: officeMunicipality
