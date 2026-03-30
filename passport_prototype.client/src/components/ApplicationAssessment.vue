@@ -489,9 +489,16 @@
       const baseUrl = "https://localhost:5000";
       const cleanPath = filePath.replace(/\\/g, "/");
 
+      // =========================
+      // NEW: detect barcode
+      // =========================
+      const isBarcode = cleanPath.includes("/barcodes/");
+
       viewerUrl.value = isPdf
         ? `${baseUrl}/temp_uploads/${fileName}`
-        : getFullImageUrl(cleanPath);
+        : isBarcode
+          ? `${baseUrl}${cleanPath}`   // ✅ FIX for barcode
+          : getFullImageUrl(cleanPath);
 
       viewerType.value = isPdf ? "pdf" : "image";
       showViewer.value = true;

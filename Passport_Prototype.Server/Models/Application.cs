@@ -49,5 +49,6 @@ namespace Passport_Prototype.Server.Models
 
         [Required]
         public int? ApplicationStatus { get; set; }
+        public string? ApplicationBarCodePath { get; set; }
     }
 }
