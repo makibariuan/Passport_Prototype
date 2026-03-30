@@ -137,7 +137,6 @@ namespace OnlineRegistration.Server.Models
         [ForeignKey("PersonalInformation")]
         public int PersonID { get; set; }
 
-        [Required]
         public DateTime DateFrom { get; set; }
 
         public DateTime? DateTo { get; set; }

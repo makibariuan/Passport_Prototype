@@ -9,7 +9,6 @@ namespace Passport_Prototype.Server.DTOs
     {
         public int PassportPersonalInformationId { get; set; }
 
-        [Required]
         public int UserId { get; set; }
 
         [MaxLength(255)]
