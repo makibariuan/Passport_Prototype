@@ -23,7 +23,6 @@ import ApplicationHistory from "@/components/ApplicationHistory.vue";
 import ManageExistingApplication from "@/components/ManageExistingApplication.vue";
 import PrivacyPolicy from "@/components/PrivacyPolicy.vue";
 import UserAdjudication from "@/components/UserAdjudication.vue";
-import IDDetails from "@/components/Employee/IDDetails.vue";
 /*
   DEV MODE — auth guard disabled, navigate freely to any route.
   To re-enable auth, uncomment the beforeEach block at the bottom.
@@ -81,7 +80,13 @@ const routes = [
   { path: "/profile", name: "PersonalDataSheet", component: PersonalDataSheet },
   { path: "/persons-profile", name: "PersonsDataSheet", component: PersonsDataSheet },
   { path: "/application/new", name: "Application", component: CreateApplication },
-  { path: "/id-details", name: "IDDetails", component: IDDetails },
+  { path: "/application/history", name: "ApplicationHistory", component: ApplicationHistory },
+  { path: "/privacy-policy", name: "PrivacyPolicy", component: PrivacyPolicy },
+  {
+    path: "/application/manage",
+    name: "ManageExistingApplicationHistory",
+    component: ManageExistingApplication,
+  },
 
   { path: "/id-details", name: "IDDetails", component: IDDetails },
 
@@ -104,7 +109,7 @@ const routes = [
 
   // ── Application-Assessment ──────────────────────────────────────────────────
   {
-    path: "/applicationassessment",
+    path: "/application-assessment",
     name: "ApplicationAssessment",
     component: ApplicationAssessment,
   },
