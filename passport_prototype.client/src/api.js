@@ -8,16 +8,27 @@ const api = axios.create({
   //baseURL: "https://passport.npo-pssic.com:91/api/",
 });
 
-// Request interceptor
 api.interceptors.request.use(
   (config) => {
     const auth = useAuthStore();
-    const url = config.url.toLowerCase();
+    const url = (config.url || "").toLowerCase();
 
-    // FIXED: Check for both "/auth" and "auth" at the start
-    const isAuthRoute = url.startsWith("/auth") || url.startsWith("auth");
+    // FIXED: Auth routes
+    const isAuthRoute =
+      url.startsWith("/auth") || url.startsWith("auth");
 
-    if (!isAuthRoute) {
+    // Public routes (NO session required)
+    const publicRoutes = [
+      "/hr/adjudication",
+      "/hr/employees/captured",
+    ];
+
+    const isPublicRoute = publicRoutes.some((route) =>
+      url.includes(route)
+    );
+
+    // 👉 SKIP auth logic if public route OR auth route
+    if (!isAuthRoute && !isPublicRoute) {
       if (auth.isTokenExpired()) {
         auth.idleLogoutAction();
         return Promise.reject(new Error("Session expired"));

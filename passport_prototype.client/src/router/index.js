@@ -16,13 +16,13 @@ import ManageCitizenPage from "@/components/ManageCitizenPage.vue";
 import AdjudicationDetailsPage from "@/components/HR/AdjudicationDetailsPage.vue";
 import BiometricTest from "@/components/BiometricTest.vue";
 import AttendanceManagement from "@/components/HR/AttendanceManagement.vue";
+import IDDetails from "@/components/Employee/IDDetails.vue";
 import CreateApplication from "@/components/CreateApplication.vue";
 import ApplicationAssessment from "@/components/ApplicationAssessment.vue";
 import ApplicationHistory from "@/components/ApplicationHistory.vue";
 import ManageExistingApplication from "@/components/ManageExistingApplication.vue";
 import PrivacyPolicy from "@/components/PrivacyPolicy.vue";
 import UserAdjudication from "@/components/UserAdjudication.vue";
-import IDDetails from "@/components/Employee/IDDetails.vue";
 /*
   DEV MODE — auth guard disabled, navigate freely to any route.
   To re-enable auth, uncomment the beforeEach block at the bottom.
@@ -109,7 +109,7 @@ const routes = [
 
   // ── Application-Assessment ──────────────────────────────────────────────────
   {
-    path: "/applicationassessment",
+    path: "/application-assessment",
     name: "ApplicationAssessment",
     component: ApplicationAssessment,
   },

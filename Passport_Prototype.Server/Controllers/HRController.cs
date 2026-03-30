@@ -293,7 +293,16 @@ namespace OnlineRegistration.Server.Controllers
                             Designation = reader["Designation"]?.ToString(),
                             DepartmentName = reader["DepartmentName"]?.ToString(),
                             Status = reader["Status"] != DBNull.Value ? Convert.ToInt32(reader["Status"]) : 0,
-                            RequestedDate = SafeDate("DateSchedule")
+                            RequestedDate = SafeDate("DateSchedule"),
+
+                            AFISPersonHit = reader["AFISPersonHit"] != DBNull.Value
+                            ? Convert.ToInt32(reader["AFISPersonHit"])
+                            : (int?)null,
+
+                                                    AFISHit = reader["AFISHit"] != DBNull.Value
+                            ? Convert.ToInt32(reader["AFISHit"])
+                            : (int?)null
+
                         });
                     }
                 }

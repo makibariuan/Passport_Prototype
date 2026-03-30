@@ -1,22 +1,11 @@
 <template>
   <div class="app-layout">
-    <!--<LeftMenu class="leftMenu" />-->
 
     <Header title="Employee ID" class="header" />
 
     <div class="dashboard-content">
 
       <h2 class="page-title">Employee ID Managements</h2>
-
-      <!--<div class="tab-container action-bar">
-        <button v-for="tab in tabs"
-                :key="tab"
-                @click="activeTab = tab"
-                class="tab-btn"
-                :class="{ active: activeTab === tab }">
-          {{ tab }}
-        </button>
-      </div>-->
 
       <div class="data-section-card">
         <div class="tab-content">
@@ -81,20 +70,21 @@
                 </div>
               </div>
 
-              <div v-if="activeTab === 'Adjudication'">
-                <h2 class="sub-title">Biometric Adjudication</h2>
-
-                <div class="filters">
-                  <div class="search-group">
-                    <label>Search: <input type="text" v-model="searchTermAdjudication" placeholder="App Code or Name..." class="search-input" /></label>
+                <div class="content-card">
+                  <div class="header">
+                    <div>
+                      <h2 class="sub-title">Biometric Adjudication</h2>
+                      <p class="sub">Review and resolve biometric profile conflicts.</p>
+                    </div>
+                    <div class="search-group">
+                      <input type="text" v-model="searchTermAdjudication" placeholder="Search App Code or Name..." class="search" />
+                    </div>
                   </div>
-                  <label>
-                    Department:
-                    <select v-model="selectedDepartmentAdjudication">
-                      <option value="">All</option>
-                      <option v-for="dept in departmentListAdjudication" :key="dept" :value="dept">{{ dept }}</option>
-                    </select>
-                  </label>
+
+                  <div class="table-wrapper">
+                    <table class="data-table">
+                    </table>
+                  </div>
                 </div>
 
                 <div class="table-container">
@@ -128,101 +118,100 @@
                     </tbody>
                   </table>
                 </div>
-              </div>
 
-              <div v-if="showAdjudicateModal" class="modal-overlay">
-                <div class="modal-content adjudication-modal full-width">
-                  <div class="modal-header">
-                    <h3>Biometric Adjudication Resolution</h3>
-                    <button @click="showAdjudicateModal = false" class="close-btn">&times;</button>
-                  </div>
-
-                  <div class="modal-body-scroll">
-                    <div class="comparison-grid" v-if="adjCurrent && adjHit">
-
-                      <div class="comparison-card hit">
-                        <div class="card-tag tag-hit">Original Template</div>
-                        <div class="header-info">
-                          <img :src="adjHit.photo ? `data:image/jpeg;base64,${adjHit.photo}` : '/default-user.png'" class="adj-photo">
-                          <div class="info-list">
-                            <div class="info-item"><label>Name:</label> <span>{{ adjHit.fullName }}</span></div>
-                            <div class="info-item"><label>Application Code:</label> <span>{{ adjHit.applicationCode }}</span></div>
-                            <div class="info-item"><label>Department:</label> <span>{{ adjHit.departmentName }}</span></div>
-                          </div>
-                        </div>
-
-                        <div class="biometric-grid">
-                          <h5>Left Hand</h5>
-                          <div class="finger-row">
-                            <div class="f-item" v-if="adjHit.fingers.l1"><label>Thumb</label><img :src="`data:image/png;base64,${adjHit.fingers.l1}`"></div>
-                            <div class="f-item" v-if="adjHit.fingers.l2"><label>Index</label><img :src="`data:image/png;base64,${adjHit.fingers.l2}`"></div>
-                            <div class="f-item" v-if="adjHit.fingers.l3"><label>Middle</label><img :src="`data:image/png;base64,${adjHit.fingers.l3}`"></div>
-                            <div class="f-item" v-if="adjHit.fingers.l4"><label>Ring</label><img :src="`data:image/png;base64,${adjHit.fingers.l4}`"></div>
-                            <div class="f-item" v-if="adjHit.fingers.l5"><label>Little</label><img :src="`data:image/png;base64,${adjHit.fingers.l5}`"></div>
-                          </div>
-
-                          <h5>Right Hand</h5>
-                          <div class="finger-row">
-                            <div class="f-item" v-if="adjHit.fingers.r1"><label>Thumb</label><img :src="`data:image/png;base64,${adjHit.fingers.r1}`"></div>
-                            <div class="f-item" v-if="adjHit.fingers.r2"><label>Index</label><img :src="`data:image/png;base64,${adjHit.fingers.r2}`"></div>
-                            <div class="f-item" v-if="adjHit.fingers.r3"><label>Middle</label><img :src="`data:image/png;base64,${adjHit.fingers.r3}`"></div>
-                            <div class="f-item" v-if="adjHit.fingers.r4"><label>Ring</label><img :src="`data:image/png;base64,${adjHit.fingers.r4}`"></div>
-                            <div class="f-item" v-if="adjHit.fingers.r5"><label>Little</label><img :src="`data:image/png;base64,${adjHit.fingers.r5}`"></div>
-                          </div>
-                        </div>
-                      </div>
-
-                      <div class="vs-divider"></div>
-
-                      <div class="comparison-card current">
-                        <div class="card-tag tag-new">Current Applicant</div>
-                        <div class="header-info">
-                          <img :src="adjCurrent.photo ? `data:image/jpeg;base64,${adjCurrent.photo}` : '/default-user.png'" class="adj-photo">
-                          <div class="info-list">
-                            <div class="info-item"><label>Name:</label> <span>{{ adjCurrent.fullName }}</span></div>
-                            <div class="info-item"><label>Application Code:</label> <span>{{ adjCurrent.applicationCode }}</span></div>
-                            <div class="info-item"><label>Department:</label> <span>{{ adjCurrent.departmentName }}</span></div>
-                          </div>
-                        </div>
-
-                        <div class="biometric-grid">
-                          <h5>Left Hand</h5>
-                          <div class="finger-row">
-                            <div class="f-item" v-if="adjCurrent.fingers.l1"><label>Thumb</label><img :src="`data:image/png;base64,${adjCurrent.fingers.l1}`"></div>
-                            <div class="f-item" v-if="adjCurrent.fingers.l2"><label>Index</label><img :src="`data:image/png;base64,${adjCurrent.fingers.l2}`"></div>
-                            <div class="f-item" v-if="adjCurrent.fingers.l3"><label>Middle</label><img :src="`data:image/png;base64,${adjCurrent.fingers.l3}`"></div>
-                            <div class="f-item" v-if="adjCurrent.fingers.l4"><label>Ring</label><img :src="`data:image/png;base64,${adjCurrent.fingers.l4}`"></div>
-                            <div class="f-item" v-if="adjCurrent.fingers.l5"><label>Little</label><img :src="`data:image/png;base64,${adjCurrent.fingers.l5}`"></div>
-                          </div>
-
-                          <h5>Right Hand</h5>
-                          <div class="finger-row">
-                            <div class="f-item" v-if="adjCurrent.fingers.r1"><label>Thumb</label><img :src="`data:image/png;base64,${adjCurrent.fingers.r1}`"></div>
-                            <div class="f-item" v-if="adjCurrent.fingers.r2"><label>Index</label><img :src="`data:image/png;base64,${adjCurrent.fingers.r2}`"></div>
-                            <div class="f-item" v-if="adjCurrent.fingers.r3"><label>Middle</label><img :src="`data:image/png;base64,${adjCurrent.fingers.r3}`"></div>
-                            <div class="f-item" v-if="adjCurrent.fingers.r4"><label>Ring</label><img :src="`data:image/png;base64,${adjCurrent.fingers.r4}`"></div>
-                            <div class="f-item" v-if="adjCurrent.fingers.r5"><label>Little</label><img :src="`data:image/png;base64,${adjCurrent.fingers.r5}`"></div>
-                          </div>
-                        </div>
-                      </div>
-
-
+                <div v-if="showAdjudicateModal" class="modal-overlay">
+                  <div class="modal-content adjudication-modal assessment-style">
+                    <div class="modal-header">
+                      <h3>Biometric Adjudication Resolution</h3>
+                      <button @click="showAdjudicateModal = false" class="close-btn">&times;</button>
                     </div>
 
-                  </div> <div class="decision-footer">
+                    <div class="modal-body-scroll">
+                      <div class="comparison-grid" v-if="adjCurrent && adjHit">
 
-                    <div class="button-group">
-                      <button @click="processAdjudication(true)" class="btn btn-success" :disabled="isLoading">
-                        ✅ Approve
-                      </button>
-                      <button @click="processAdjudication(false)" class="btn btn-danger" :disabled="isLoading">
-                        ❌ Reject
-                      </button>
+                        <div class="comparison-card hit">
+                          <div class="card-tag tag-hit">Original Template</div>
+                          <div class="header-info">
+                            <img :src="adjHit.photo ? `data:image/jpeg;base64,${adjHit.photo}` : '/default-user.png'" class="adj-photo">
+                            <div class="info-list">
+                              <div class="info-item"><label>Name:</label> <span>{{ adjHit.fullName }}</span></div>
+                              <div class="info-item"><label>Application Code:</label> <span>{{ adjHit.applicationCode }}</span></div>
+                              <div class="info-item"><label>Department:</label> <span>{{ adjHit.departmentName }}</span></div>
+                            </div>
+                          </div>
+
+                          <div class="biometric-grid">
+                            <h5>Left Hand</h5>
+                            <div class="finger-row">
+                              <div class="f-item" v-if="adjHit.fingers.l1"><label>Thumb</label><img :src="`data:image/png;base64,${adjHit.fingers.l1}`"></div>
+                              <div class="f-item" v-if="adjHit.fingers.l2"><label>Index</label><img :src="`data:image/png;base64,${adjHit.fingers.l2}`"></div>
+                              <div class="f-item" v-if="adjHit.fingers.l3"><label>Middle</label><img :src="`data:image/png;base64,${adjHit.fingers.l3}`"></div>
+                              <div class="f-item" v-if="adjHit.fingers.l4"><label>Ring</label><img :src="`data:image/png;base64,${adjHit.fingers.l4}`"></div>
+                              <div class="f-item" v-if="adjHit.fingers.l5"><label>Little</label><img :src="`data:image/png;base64,${adjHit.fingers.l5}`"></div>
+                            </div>
+
+                            <h5>Right Hand</h5>
+                            <div class="finger-row">
+                              <div class="f-item" v-if="adjHit.fingers.r1"><label>Thumb</label><img :src="`data:image/png;base64,${adjHit.fingers.r1}`"></div>
+                              <div class="f-item" v-if="adjHit.fingers.r2"><label>Index</label><img :src="`data:image/png;base64,${adjHit.fingers.r2}`"></div>
+                              <div class="f-item" v-if="adjHit.fingers.r3"><label>Middle</label><img :src="`data:image/png;base64,${adjHit.fingers.r3}`"></div>
+                              <div class="f-item" v-if="adjHit.fingers.r4"><label>Ring</label><img :src="`data:image/png;base64,${adjHit.fingers.r4}`"></div>
+                              <div class="f-item" v-if="adjHit.fingers.r5"><label>Little</label><img :src="`data:image/png;base64,${adjHit.fingers.r5}`"></div>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div class="vs-divider"></div>
+
+                        <div class="comparison-card current">
+                          <div class="card-tag tag-new">Current Applicant</div>
+                          <div class="header-info">
+                            <img :src="adjCurrent.photo ? `data:image/jpeg;base64,${adjCurrent.photo}` : '/default-user.png'" class="adj-photo">
+                            <div class="info-list">
+                              <div class="info-item"><label>Name:</label> <span>{{ adjCurrent.fullName }}</span></div>
+                              <div class="info-item"><label>Application Code:</label> <span>{{ adjCurrent.applicationCode }}</span></div>
+                              <div class="info-item"><label>Department:</label> <span>{{ adjCurrent.departmentName }}</span></div>
+                            </div>
+                          </div>
+
+                          <div class="biometric-grid">
+                            <h5>Left Hand</h5>
+                            <div class="finger-row">
+                              <div class="f-item" v-if="adjCurrent.fingers.l1"><label>Thumb</label><img :src="`data:image/png;base64,${adjCurrent.fingers.l1}`"></div>
+                              <div class="f-item" v-if="adjCurrent.fingers.l2"><label>Index</label><img :src="`data:image/png;base64,${adjCurrent.fingers.l2}`"></div>
+                              <div class="f-item" v-if="adjCurrent.fingers.l3"><label>Middle</label><img :src="`data:image/png;base64,${adjCurrent.fingers.l3}`"></div>
+                              <div class="f-item" v-if="adjCurrent.fingers.l4"><label>Ring</label><img :src="`data:image/png;base64,${adjCurrent.fingers.l4}`"></div>
+                              <div class="f-item" v-if="adjCurrent.fingers.l5"><label>Little</label><img :src="`data:image/png;base64,${adjCurrent.fingers.l5}`"></div>
+                            </div>
+
+                            <h5>Right Hand</h5>
+                            <div class="finger-row">
+                              <div class="f-item" v-if="adjCurrent.fingers.r1"><label>Thumb</label><img :src="`data:image/png;base64,${adjCurrent.fingers.r1}`"></div>
+                              <div class="f-item" v-if="adjCurrent.fingers.r2"><label>Index</label><img :src="`data:image/png;base64,${adjCurrent.fingers.r2}`"></div>
+                              <div class="f-item" v-if="adjCurrent.fingers.r3"><label>Middle</label><img :src="`data:image/png;base64,${adjCurrent.fingers.r3}`"></div>
+                              <div class="f-item" v-if="adjCurrent.fingers.r4"><label>Ring</label><img :src="`data:image/png;base64,${adjCurrent.fingers.r4}`"></div>
+                              <div class="f-item" v-if="adjCurrent.fingers.r5"><label>Little</label><img :src="`data:image/png;base64,${adjCurrent.fingers.r5}`"></div>
+                            </div>
+                          </div>
+                        </div>
+
+
+                      </div>
+
+                    </div> <div class="decision-footer">
+
+                      <div class="button-group">
+                        <button @click="processAdjudication(true)" class="btn btn-success" :disabled="isLoading">
+                          Approve
+                        </button>
+                        <button @click="processAdjudication(false)" class="btn btn-danger" :disabled="isLoading">
+                          Reject
+                        </button>
+                      </div>
+
                     </div>
-
                   </div>
                 </div>
-              </div>
 
 
             </div>
@@ -260,11 +249,11 @@
   const tabs = ["Adjudication"];
   const activeTab = ref("Adjudication");
 
-  //const auth = useAuthStore();
-  //const personId = computed(() => auth.userId); // logged in user’s ID
-  //const personEmail = computed(() => auth.email);
-  //const firstName = computed(() => auth.firstName);
-  //const lastName = computed(() => auth.lastName);
+  const auth = useAuthStore();
+  const personId = computed(() => auth.userId); // logged in user’s ID
+  const personEmail = computed(() => auth.email);
+  const firstName = computed(() => auth.firstName);
+  const lastName = computed(() => auth.lastName);
 
   // --- Added for Layout (Required for LeftMenu) ---
   const current = ref("Employee ID");
@@ -1265,31 +1254,31 @@
 
   // ------------------ Load Data ------------------
   // Load dropdown options
-  async function loadLookups() {
-    try {
-      isLoading.value = true; // show hourglass
-      const g = await api.get("/employee/gender");
-      genders.value = g.data;
+  //async function loadLookups() {
+  //  try {
+  //    isLoading.value = true; // show hourglass
+  //    const g = await api.get("/employee/gender");
+  //    genders.value = g.data;
 
-      const cs = await api.get("/employee/civilstatus");
-      civilStatuses.value = cs.data;
-    } catch (err) {
-      console.error("AxiosError:", err);
+  //    const cs = await api.get("/employee/civilstatus");
+  //    civilStatuses.value = cs.data;
+  //  } catch (err) {
+  //    console.error("AxiosError:", err);
 
-      if (err.response) {
-        console.error("🔴 Backend responded with error:");
-        console.error("Status:", err.response.status);
-        console.error("Data:", err.response.data);
-      } else if (err.request) {
-        console.error("🔴 No response received from server");
-        console.error("Request:", err.request);
-      } else {
-        console.error("🔴 Axios setup error:", err.message);
-      }
-    } finally {
-      isLoading.value = false;  // hide hourglass
-    }
-  }
+  //    if (err.response) {
+  //      console.error("🔴 Backend responded with error:");
+  //      console.error("Status:", err.response.status);
+  //      console.error("Data:", err.response.data);
+  //    } else if (err.request) {
+  //      console.error("🔴 No response received from server");
+  //      console.error("Request:", err.request);
+  //    } else {
+  //      console.error("🔴 Axios setup error:", err.message);
+  //    }
+  //  } finally {
+  //    isLoading.value = false;  // hide hourglass
+  //  }
+  //}
 
 
   // ✅ Function to call backend API
@@ -1406,44 +1395,32 @@
   });</script>
 
 <style scoped>
-  /* ************************************************************************** */
-  /* 1. DASHBOARD GRID LAYOUT STYLES (Copied from ManageHRApplicationsPage.vue) */
-  /* ************************************************************************** */
+  /* ==========================================================================
+   1. CORE LAYOUT
+   ========================================================================== */
   .app-layout {
+    display: flex;
+    justify-content: center;
     width: 100%;
     min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    background-color: #f8fafc; /* Optional: light gray background */
-  }
-
-  .leftMenu {
-    grid-column: 1;
-    grid-row: 1 / span 2;
-    z-index: 100;
-  }
-
-  .header {
-    grid-column: 2;
-    grid-row: 1;
-    z-index: 90;
+    padding: 30px 40px;
+    box-sizing: border-box;
+    background: #eef2f7;
   }
 
   .dashboard-content {
-    grid-column: 2;
-    grid-row: 2;
     width: 100%;
-    height: 100%;
-    padding: 30px;
-    box-sizing: border-box;
-    overflow-y: auto;
+    max-width: 1600px;
     display: flex;
     flex-direction: column;
   }
 
-  /* ************************************************************************** */
-  /* 2. PAGE CONTENT & ACTION BAR STYLES (Copied/Adapted from ManageHRApplicationsPage.vue) */
-  /* ************************************************************************** */
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+  }
 
   .page-title {
     font-size: 1.8rem;
@@ -1452,139 +1429,73 @@
     margin-bottom: 25px;
   }
 
-  .sub-title {
-    font-size: 1.5rem;
-    color: #06195e;
-    padding-bottom: 10px;
-    border-bottom: 2px solid #f0f4f8;
-    font-weight: 700;
-    margin-bottom: 20px;
-  }
-
-  .action-bar {
-    /* Base style for the row where tabs are placed */
-    display: flex;
-    justify-content: flex-start;
-    align-items: center;
-    margin-bottom: 25px;
-    padding: 0;
-  }
-
-  /* Tabs Styling - Adopted to match dashboard aesthetic */
+  /* ==========================================================================
+   2. COMPONENTS (TABS, FILTERS, CARDS)
+   ========================================================================== */
   .tab-container {
     display: flex;
-    width: 100%;
-    margin-bottom: 25px;
-    background: #ffffff;
+    background: #fff;
     border-radius: 12px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
     border: 1px solid #e2e8f0;
     overflow: hidden;
+    margin-bottom: 25px;
   }
 
   .tab-btn {
     flex: 1;
-    padding: 14px 10px;
-    text-align: center;
-    background: #fff;
+    padding: 14px;
     border: none;
-    cursor: pointer;
+    background: #fff;
     color: #64748b;
     font-weight: 600;
-    transition: all 0.3s ease;
+    cursor: pointer;
+    transition: 0.3s;
     border-right: 1px solid #e2e8f0;
-    white-space: nowrap;
   }
-
-    .tab-btn:last-child {
-      border-right: none;
-    }
-
-    .tab-btn:hover:not(.active) {
-      background: #e0e0e0;
-      color: #06195e;
-    }
 
     .tab-btn.active {
       background: #06195e;
       color: white;
-      font-weight: 700;
     }
 
   .filters {
     display: flex;
     gap: 15px;
-    margin-bottom: 25px;
     padding: 20px;
     background: #f8fafc;
     border-radius: 10px;
     border: 1px solid #e2e8f0;
+    margin-bottom: 25px;
     align-items: flex-end;
   }
 
     .filters label {
       font-weight: 600;
-      color: #333;
+      font-size: 0.9rem;
       display: flex;
       flex-direction: column;
       gap: 5px;
-      flex-grow: 0;
-      font-size: 0.95em;
     }
 
-    .filters input,
-    .filters select,
-    .action-btn {
-      height: 42px; /* Fixed height makes them align perfectly */
+    .search-input, .filters select {
+      height: 42px;
       padding: 8px 12px;
       border: 1px solid #ddd;
       border-radius: 6px;
-      font-size: 0.95rem;
-      box-sizing: border-box; /* Critical for keeping padding inside the height */
       outline: none;
-      transition: border-color 0.2s;
     }
-
-      .action-btn:hover:not(:disabled) {
-        background-color: #2980b9;
-      }
-
-      .action-btn:disabled {
-        background-color: #bdc3c7;
-        cursor: not-allowed;
-      }
-
-  /* Fix for the "Bigger Date Container" */
-  input[type="date"] {
-    /* Some browsers add extra padding to date pickers; this normalizes it */
-    padding: 6px 10px;
-    cursor: pointer;
-  }
-
-  .filters button:disabled {
-    background-color: #6c757d;
-    cursor: not-allowed;
-  }
-
-  /* Focus states */
-  .filters input:focus,
-  .filters select:focus {
-    border-color: #3498db;
-  }
 
   .data-section-card {
     background: white;
-    border-radius: 0 12px 12px 12px; /* Top-left is sharp to align with tabs */
+    border-radius: 12px;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
     padding: 25px;
-    overflow: hidden;
-    border: none;
   }
 
-  /* ************************************************************************** */
-  /* 3. DATA TABLE STYLES (Copied from ManageHRApplicationsPage.vue) */
-  /* ************************************************************************** */
-
+  /* ==========================================================================
+   3. DATA TABLES
+   ========================================================================== */
   .table-container {
     overflow-x: auto;
   }
@@ -1595,654 +1506,246 @@
     border-spacing: 0;
   }
 
-    .data-table th, .data-table td {
-      border: none;
-      padding: 15px 20px;
-      text-align: left;
-    }
-
     .data-table th {
       background-color: #f1f4f8;
       color: #333;
       text-transform: uppercase;
-      font-size: 0.8em;
+      font-size: 0.75rem;
       font-weight: 700;
-      letter-spacing: 0.5px;
-      border-bottom: 2px solid #e0e0e0;
+      padding: 15px 20px;
+      border-bottom: 2px solid #e2e8f0;
+      text-align: left;
     }
 
-    .data-table tbody tr {
-      border-bottom: 1px solid #eeeeee;
-      transition: background-color 0.15s;
+    .data-table td {
+      padding: 15px 20px;
+      border-bottom: 1px solid #eee;
+      color: #004085;
+      font-weight: 600;
     }
-
-      .data-table tbody tr:last-child {
-        border-bottom: none;
-      }
 
     .data-table tr:hover {
       background-color: #f7faff;
     }
 
-    .data-table tbody tr td:nth-child(1),
-    .data-table tbody tr td:nth-child(2),
-    .data-table tbody tr td:nth-child(3),
-    .data-table tbody tr td:nth-child(4),
-    .data-table tbody tr td:nth-child(5),
-    .data-table tbody tr td:nth-child(6) {
-      color: #004085;
-      font-weight: 600;
-    }
-
-    .data-table input[type="checkbox"] {
-      width: auto;
-      margin: 0;
-      accent-color: #007bff; /* Use primary color for checkboxes */
-    }
-
-  .action-cell {
-    white-space: nowrap;
+  /* ==========================================================================
+   4. ADJUDICATION MODAL & COMPARISON
+   ========================================================================== */
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.75);
+    backdrop-filter: blur(4px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 2000;
   }
 
-  /* Table Loading/Empty State */
-  .table-loading-state {
-    padding: 20px;
-    text-align: center;
-    color: #6c757d;
-  }
-
-  .table-photo {
-    width: 50px;
-    height: 75px;
-    border-radius: 3px;
-    border: 1px solid #ddd;
-    object-fit: cover;
-  }
-
-  .table-date-input {
-    border: 1px solid #ddd;
-    padding: 4px 8px;
-    border-radius: 4px;
-    font-family: inherit;
-    font-size: 0.9rem;
-    color: #333;
-  }
-
-  .status-badge.pending {
-    background-color: #fff3cd;
-    color: #856404;
-    border: 1px solid #ffeeba;
-  }
-
-
-  /* --- BUTTON STYLES (Copied from ManageHRApplicationsPage.vue) --- */
-
-  .action-btn.view-btn {
-    /* Used for "Save Schedule" */
-    background-color: #007bff;
-    color: white;
-    border-color: #007bff;
-  }
-
-    .action-btn.view-btn:hover {
-      background-color: #0056b3;
-      border-color: #0056b3;
-    }
-
-  /* Custom style for the Download button */
-  .action-btn.download-btn {
-    background-color: #28a745; /* Green */
-    border-color: #28a745;
-  }
-
-    .action-btn.download-btn:hover {
-      background-color: #1e7e34;
-      border-color: #1c7430;
-    }
-
-
-  /* --- STATUS BADGES (Copied from ManageHRApplicationsPage.vue) --- */
-  .status-badge {
-    padding: 6px 12px;
-    border-radius: 50px;
-    font-weight: 700;
-    font-size: 0.75em;
-    text-transform: uppercase;
-    display: inline-block;
-    min-width: 90px;
-    text-align: center;
-  }
-
-    /* Colors matching DashboardHR card left borders: */
-    /* Status 0: "For Schedule" -> schedule (Yellow) */
-    .status-badge.schedule {
-      background-color: #ffc107;
-      color: white;
-    }
-
-    /* Status 7: "For Approval" -> approval (Teal/Cyan) */
-    .status-badge.approval {
-      background-color: #17a2b8; /* Info Cyan */
-      color: white;
-    }
-
-    /* Status 1: "Scheduled" -> scheduled (Blue) */
-    .status-badge.scheduled {
-      background-color: #007bff;
-      color: white;
-    }
-    /* Captured (2), For Printing (3), Active Cards (4) kept for reference */
-    .status-badge.captured {
-      background-color: #28a745;
-      color: white;
-    }
-
-    /* Status 3: "Pending Adjudication" -> adjudication (Orange) */
-    .status-badge.adjudication {
-      background-color: #fd7e14; /* Safety Orange */
-      color: white;
-    }
-
-    /* Status 99: "Rejected" -> rejected (Dark Grey/Black) */
-    .status-badge.rejected {
-      background-color: #d14249; /* Red */
-      color: white;
-    }
-
-    .status-badge.forprinting {
-      background-color: #6f42c1;
-      color: white;
-    }
-
-    /* Status 5: "For Activation" -> foractivation (Orange-Yellow or Bright Green) */
-    .status-badge.foractivation {
-      background-color: #20c997; /* Teal-Green: Indicates ready but not yet final */
-      color: white;
-      /*      border: 1px solid #1ba37a;*/
-    }
-
-    /* Status 6: "Active" -> activecards (Deep Success Green) */
-    .status-badge.activecards {
-      background-color: #198754;
-      color: white;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.1); /* Slight shadow to show it's "Final" */
-    }
-
-    .status-badge.default {
-      background-color: #6c757d;
-      color: white;
-    }
-
-  /* Tab transition styles (optional but good practice) */
-  .fade-slide-enter-active,
-  .fade-slide-leave-active {
-    transition: opacity 0.3s ease, transform 0.3s ease;
-  }
-
-  .fade-slide-enter-from,
-  .fade-slide-leave-to {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-
-  .date-approval-cell {
+  .modal-content.assessment-style {
+    background: #f1f4f8;
+    width: 95vw;
+    max-width: 1300px;
+    max-height: 90vh;
+    border-radius: 20px;
     display: flex;
     flex-direction: column;
-    gap: 4px;
+    overflow: hidden;
+    box-shadow: 0 25px 50px rgba(0,0,0,0.25);
   }
 
-  .requested-label {
-    font-size: 0.75rem;
-    color: #718096;
-    font-weight: 600;
-    display: block;
+  .modal-header {
+    background: transparent; /* Removed background */
+    color: #06195e; /* Dark text for contrast against light modal */
+    padding: 20px 25px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #e2e8f0;
   }
 
-  .table-date-input {
-    padding: 4px;
-    border: 1px solid #cbd5e0;
-    border-radius: 4px;
-    font-size: 0.9rem;
-  }
-
-  /* ************************************************************************** */
-  /* 4. RESPONSIVENESS (Copied from ManageHRApplicationsPage.vue) */
-  /* ************************************************************************** */
-  @media (max-width: 1200px) {
-    .app-layout {
-      grid-template-columns: 20vw 1fr;
-    }
-  }
-
-  @media (max-width: 992px) {
-    .app-layout {
-      grid-template-columns: 80px 1fr;
-    }
-
-    .tab-container {
-      flex-wrap: wrap;
-      border: none;
-      box-shadow: none;
-      background: none;
-    }
-
-    .tab-btn {
-      flex: 1 1 auto;
-      border: 1px solid #e0e0e0;
-      border-radius: 6px;
-      margin: 5px;
-    }
-  }
-
-  @media (max-width: 768px) {
-    .app-layout {
-      grid-template-columns: 1fr;
-      grid-template-rows: auto auto 1fr;
-    }
-
-    .leftMenu, .header, .dashboard-content {
-      grid-column: 1;
-    }
-
-    .leftMenu {
-      grid-row: 2;
-      width: 100%;
-      min-height: auto;
-    }
-
-    .header {
-      grid-row: 1;
-    }
-
-    .dashboard-content {
-      grid-row: 3;
-      padding: 20px 15px;
-    }
-
-    .filters {
-      flex-direction: column;
-      align-items: stretch;
-    }
-
-      .filters input[type="date"],
-      .filters select,
-      .filters .action-btn {
-        min-width: 100%;
-        max-width: 100%;
-      }
-  }
-
-  /* Search input specifically */
-  .search-input {
-    width: 100%;
-    min-width: 200px;
-  }
-
-  .comparison-grid {
-    display: grid;
-    grid-template-columns: 1fr 60px 1fr;
-    gap: 20px;
-    padding: 10px;
-  }
-
-  .card-tag {
-    font-size: 0.75rem;
-    font-weight: bold;
-    margin-bottom: 10px;
-    color: #fff;
-    padding: 2px 8px;
-    border-radius: 4px;
-    display: inline-block;
-  }
-
-  .tag-new {
-    background: #007bff;
-  }
-
-  .tag-hit {
-    background: #dc3545;
-  }
-
-  .adj-photo {
-    width: 100%;
-    height: 180px;
-    object-fit: cover;
-    background: #eee;
-    border-radius: 4px;
-    margin-bottom: 10px;
-  }
-
-  .vs-divider {
-    font-weight: bold;
-    color: #999;
-    text-align: center;
-  }
-
-  .btn {
-    padding: 10px 20px;
-    border-radius: 6px;
-    cursor: pointer;
+  .close-btn {
+    background: #f1f5f9; /* Subtle background for the button */
     border: none;
-    font-weight: bold;
-  }
-
-  .btn-success {
-    background: #28a745;
-    color: white;
-  }
-
-  .btn-danger {
-    background: #dc3545;
-    color: white;
-  }
-
-  /* Status Badge Base Styles */
-  .status-badge {
-    padding: 4px 10px;
-    border-radius: 12px;
-    font-size: 0.85rem;
-    font-weight: 600;
-    display: inline-block;
-    text-transform: uppercase;
-  }
-
-    /* Specific Style for Pending AFIS */
-    .status-badge.processing {
-      background-color: #fff4e5; /* Light Orange/Cream */
-      color: #b76e00; /* Darker Orange/Brown */
-      border: 1px solid #ffe2b3;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      width: fit-content;
-    }
-
-      /* The Animated Pulse Dot */
-      .status-badge.processing::before {
-        content: "";
-        width: 8px;
-        height: 8px;
-        background-color: #ffa500;
-        border-radius: 50%;
-        display: inline-block;
-        animation: pulse-dot 1.5s infinite;
-        margin-right: 6px;
-      }
-
-  @keyframes pulse-dot {
-    0% {
-      transform: scale(0.95);
-      box-shadow: 0 0 0 0 rgba(255, 165, 0, 0.7);
-    }
-
-    70% {
-      transform: scale(1);
-      box-shadow: 0 0 0 6px rgba(255, 165, 0, 0);
-    }
-
-    100% {
-      transform: scale(0.95);
-      box-shadow: 0 0 0 0 rgba(255, 165, 0, 0);
-    }
-  }
-
-  .btn-primary, .submit-btn {
-    background: #06195e;
-    color: white;
-    padding: 12px 25px;
-    border-radius: 8px;
-    font-weight: 700;
-    border: none;
+    color: #64748b;
+    font-size: 1.25rem;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     cursor: pointer;
-    transition: all 0.2s;
+    transition: all 0.2s ease;
+    line-height: 1;
+    padding-bottom: 2px; /* Visual nudge for the '×' character */
   }
 
-    .btn-primary:hover {
-      background: #04103d;
-      transform: translateY(-1px);
+    .close-btn:hover {
+      background: #fee2e2;
+      color: #ef4444;
+      transform: rotate(90deg);
     }
 
-  /* --- COMPARISON AREA --- */
   .modal-body-scroll {
     flex: 1;
     overflow-y: auto;
     padding: 20px;
-    background-color: #f1f4f8; /* Light gray background to make white cards pop */
   }
 
   .comparison-grid {
     display: grid;
-    grid-template-columns: 1fr 60px 1fr;
-    gap: 15px;
+    grid-template-columns: 1fr 50px 1fr;
+    gap: 20px;
     align-items: start;
   }
 
-  /* --- BIOMETRICS SECTION --- */
+  .comparison-card {
+    background: white;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+  }
+
+    .comparison-card.hit {
+      border-top: 6px solid #3b82f6;
+    }
+
+    /* Current Applicant -> Red */
+    .comparison-card.current {
+      border-top: 6px solid #ef4444;
+    }
+
+  .header-info {
+    display: flex;
+    flex-direction: row; /* Information now in a row */
+    align-items: center; /* Vertically centers the photo and info */
+    gap: 20px;
+    margin-bottom: 20px;
+    padding: 10px;
+  }
+
+  .adj-photo {
+    width: 100px; /* Slightly smaller for row layout */
+    height: 100px;
+    flex-shrink: 0; /* Prevents photo from squishing */
+    object-fit: cover;
+    border-radius: 10px;
+    border: 1px solid #e2e8f0;
+    background: #f8fafc;
+  }
+
+  .info-list {
+    width: 100%;
+    text-align: left; /* Keep text aligned left for readability */
+  }
+
   .biometric-grid {
     margin-top: 20px;
     padding: 15px;
     background: #f8f9ff;
     border-radius: 8px;
-    border: 1px solid #eef0f7;
   }
-
-    .biometric-grid h5 {
-      color: #004085;
-      margin: 10px 0;
-      text-transform: uppercase;
-      font-size: 0.85rem;
-      letter-spacing: 1px;
-      border-left: 3px solid #004085;
-      padding-left: 8px;
-    }
 
   .finger-row {
     display: flex;
-    justify-content: flex-start;
-    gap: 12px;
+    gap: 10px;
     flex-wrap: wrap;
   }
 
-  .f-item label {
-    font-size: 10px;
-    font-weight: 800;
-    color: #666;
-    margin-bottom: 4px;
-    display: block;
-  }
-
   .f-item img {
-    width: 90px;
-    height: 110px;
+    width: 70px;
+    height: 90px;
     background: white;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    object-fit: contain;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-  }
-
-  .header-info {
-    display: flex;
-    gap: 15px;
-    align-items: center;
-  }
-
-  /* Modal Layout */
-  .modal-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.75);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 2000;
-    backdrop-filter: blur(4px); /* Modern touch */
-  }
-
-  .adjudication-modal.full-width {
-    background: #fdfdfd;
-    width: 95vw;
-    max-width: 1400px;
-    height: 90vh;
-    display: flex;
-    flex-direction: column;
-    border-radius: 12px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-    overflow: hidden;
-  }
-
-  /* --- HEADERS --- */
-  .modal-header {
-    background: #004085; /* Matches your page theme */
-    color: white;
-    padding: 15px 25px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-
-    .modal-header h3 {
-      margin: 0;
-      font-weight: 700;
-      letter-spacing: 0.5px;
-    }
-
-  .close-btn {
-    background: none;
-    border: none;
-    color: white;
-    font-size: 2rem;
-    cursor: pointer;
-    line-height: 1;
-  }
-
-  /* --- DIVIDER --- */
-  .vs-divider {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: 900;
-    font-size: 1.5rem;
-    color: #004085;
-    opacity: 0.5;
-  }
-
-  /* --- CARDS --- */
-  .comparison-card {
-    background: white;
-    border-radius: 10px;
-    padding: 20px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-    border: 1px solid #e0e0e0;
-  }
-
-    .comparison-card.current {
-      border-top: 5px solid #dc3545;
-    }
-
-    .comparison-card.hit {
-      border-top: 5px solid #007bff;
-    }
-
-  /* --- INFO LIST STYLES (MATCHING MAIN STYLE) --- */
-  .info-list {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    flex: 1;
-  }
-
-  .info-item {
-    display: flex;
-    gap: 10px;
-    font-size: 0.95em;
-    border-bottom: 1px solid #f0f0f0;
-    padding: 6px 0;
-  }
-
-    .info-item label {
-      font-weight: 700;
-      color: #06195e;
-      min-width: 90px;
-    }
-
-    .info-item span {
-      color: #333;
-      font-weight: 600;
-    }
-
-  /* Photo and Fingerprint sizing */
-  .adj-photo {
-    width: 150px;
-    height: 150px;
-    object-fit: cover;
-    border-radius: 8px;
-    border: 1px solid #ccc;
-  }
-
-  .finger-row {
-    display: flex;
-    justify-content: space-around;
-    gap: 10px;
-    margin-top: 10px;
-  }
-
-  .f-item img {
-    width: 80px;
-    height: 100px;
-    background: #eee;
     border: 1px solid #ddd;
     object-fit: contain;
   }
 
-  /* --- FOOTER --- */
+  /* ==========================================================================
+   5. BUTTONS & BADGES
+   ========================================================================== */
   .decision-footer {
-    padding: 20px 40px;
-    background: white;
-    border-top: 2px solid #e0e0e0;
+    padding: 20px;
+    background: #fff;
+    border-top: 1px solid #e2e8f0;
     display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
-
-  .button-group {
-    display: flex;
-    gap: 20px;
+    justify-content: center;
+    gap: 12px;
   }
 
   .btn {
     padding: 12px 30px;
     border-radius: 8px;
-    font-size: 1rem;
     font-weight: 700;
     cursor: pointer;
-    transition: transform 0.1s, background 0.2s;
+    border: none;
+    transition: 0.2s;
   }
 
-    .btn:active {
-      transform: scale(0.98);
+  /* Simple Success */
+  .btn-success {
+    background: #ecfdf5;
+    color: #059669;
+    border-color: #10b981;
+  }
+
+  /* Simple Danger */
+  .btn-danger {
+    background: #fef2f2;
+    color: #dc2626;
+    border-color: #ef4444;
+  }
+
+  .btn:hover:not(:disabled) {
+    opacity: 0.9;
+    transform: translateY(-1px);
+  }
+
+  .status-badge {
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+  }
+
+  /* ==========================================================================
+   6. RESPONSIVENESS
+   ========================================================================== */
+  @media (max-width: 992px) {
+    .comparison-grid {
+      grid-template-columns: 1fr;
     }
 
-  .btn-success {
-    background: #28a745;
-    color: white;
-    border: none;
+    .vs-divider {
+      transform: rotate(90deg);
+      padding: 20px 0;
+    }
+
+    .app-layout {
+      padding: 20px;
+    }
   }
 
-  .btn-danger {
-    background: #dc3545;
-    color: white;
-    border: none;
+  @media (max-width: 768px) {
+    .filters {
+      flex-direction: column;
+      align-items: stretch;
+    }
+
+    .tab-btn {
+      padding: 10px;
+      font-size: 0.8rem;
+    }
   }
 
-  .decision-footer textarea {
-    width: 100%;
-    height: 80px;
-    margin-bottom: 15px;
-    padding: 10px;
-    border-radius: 4px;
+  /* Animations */
+  .fade-slide-enter-active, .fade-slide-leave-active {
+    transition: opacity 0.3s, transform 0.3s;
+  }
+
+  .fade-slide-enter-from, .fade-slide-leave-to {
+    opacity: 0;
+    transform: translateY(10px);
   }
 </style>
