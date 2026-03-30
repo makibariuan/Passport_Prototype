@@ -92,7 +92,9 @@
       <div class="modal">
         <button class="modal-close" @click="closeModal">&#x2715;</button>
 
-        <span :class="['badge', badgeClass(selectedApp.status)]">{{ selectedApp.status }}</span>
+        <span :class="['badge', badgeClass(selectedApp.status)]">{{
+          statusLabel(selectedApp.status)
+        }}</span>
 
         <div class="modal-barcode">
           <svg
@@ -136,13 +138,13 @@
 
         <div class="modal-actions">
           <button
-            v-if="selectedApp.status === 'Document pending' || selectedApp.status === 'Completed'"
+            v-if="selectedApp.status === 6"
             class="btn-download"
             @click="downloadPDF(selectedApp)"
           >
             Download PDF
           </button>
-          <template v-if="selectedApp.status === 'In progress'">
+          <template v-if="selectedApp.status === 1">
             <button class="btn-reschedule" @click="openRescheduleModal(selectedApp)">
               Re-schedule
             </button>
