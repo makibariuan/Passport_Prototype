@@ -1,7 +1,6 @@
 <template>
   <div class="app-layout">
     <LeftMenu class="leftMenu" />
-    <Header title="Manage Existing Applications" class="header" />
 
     <div class="dashboard-content">
       <h2 class="page-title">Manage Existing Applications</h2>
@@ -271,7 +270,6 @@
 import { ref, computed, onMounted } from "vue";
 import axios from "axios";
 import LeftMenu from "@/components/LeftMenu.vue";
-import Header from "@/components/Header.vue";
 import DialogBox from "@/components/DialogBox.vue";
 import LoadingDialog from "./LoadingDialog.vue";
 import { useAuthStore } from "../stores/auth";
