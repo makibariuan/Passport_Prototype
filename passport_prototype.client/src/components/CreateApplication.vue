@@ -887,7 +887,15 @@
                 <div v-else-if="currentStep === 4">
                   <div class="pds-section">
                     <p class="appt-title">
-                      Appointment for <span class="hname">MARVIN ALFRED MERCADO PICO</span>
+                      Appointment for
+                      <span class="hname">
+                        {{
+                          [appForm.firstName, appForm.middleName, appForm.lastName]
+                            .filter(Boolean)
+                            .join(" ")
+                            .toUpperCase()
+                        }}
+                      </span>
                     </p>
 
                     <div class="file-notice">
@@ -1613,37 +1621,48 @@ const addCompanion = () => {
 
 // ── Tab 3: Application Form ─────────────────────────────────────────
 const appForm = ref({
-  firstName: "MARVIN ALFRED",
-  middleName: "MERCADO",
-  lastName: "PICO",
-  birthDate: "Jun 26, 1988",
-  gender: "Male",
-  nationality: "Philippines",
-  civilStatus: "Married",
-  psaBirthCert: "Yes",
-  birthLegitimacy: "Legitimate",
-  currentAddress: "T1 U2124 LINEAR CONDOMINIUM, MALUGAY, SAN ANTONIO, MAKATI",
-  currentCountry: "Philippines",
-  currentRegion: "National Capital Region (NCR)",
-  currentBarangay: "San Antonio",
-  postalCode: "1105",
-  personalMobile: "+63 9064331425",
-  email: "marvinpico3@gmail.com",
-  emergencyPerson: "IVY PICO",
-  emergencyPhone: "+63 9064331425",
-  fatherFirstName: "ALFREDO",
-  fatherLastName: "PICO",
-  fatherCitizenship: "Philippines",
-  fatherLifeStatus: "Alive",
-  motherFirstName: "ESPERANZA",
-  motherLastName: "PICO",
-  motherCitizenship: "Philippines",
-  motherLifeStatus: "Alive",
-  spouseFirstName: "IVY",
-  spouseMiddleName: "SANTIAGO",
-  spouseLastName: "PICO",
-  spouseCitizenship: "Philippines",
-  spouseLifeStatus: "Alive",
+  // Personal
+  firstName: "",
+  middleName: "",
+  lastName: "",
+  birthDate: "",
+  gender: "",
+  nationality: "",
+  civilStatus: "",
+  psaBirthCert: "",
+  birthLegitimacy: "",
+
+  // Contact
+  currentAddress: "",
+  currentCountry: "",
+  currentRegion: "",
+  currentBarangay: "",
+  postalCode: "",
+  personalMobile: "",
+  email: "",
+  emergencyPerson: "",
+  emergencyPhone: "",
+
+  // Father
+  fatherFirstName: "",
+  fatherLastName: "",
+  fatherCitizenship: "",
+  fatherLifeStatus: "",
+
+  // Mother
+  motherFirstName: "",
+  motherLastName: "",
+  motherCitizenship: "",
+  motherLifeStatus: "",
+
+  // Spouse
+  spouseFirstName: "",
+  spouseMiddleName: "",
+  spouseLastName: "",
+  spouseCitizenship: "",
+  spouseLifeStatus: "",
+
+  // Checkboxes
   declarationChecked: false,
   certifyChecked: false,
 });
@@ -1679,7 +1698,7 @@ const conflictRows = computed(() => [
   {
     field: "Full Name",
     detected: `${detectedData.value.givenName} ${detectedData.value.middleName} ${detectedData.value.surname}`,
-    inserted: "MARVIN ALFRED MERCADO PICO",
+    inserted: `${appForm.value.firstName} ${appForm.value.middleName} ${appForm.value.lastName}`,
   },
   {
     field: "Address",
@@ -1688,13 +1707,13 @@ const conflictRows = computed(() => [
       detectedData.value.addressLine2,
       detectedData.value.addressLine3,
     ].join(" "),
-    inserted: "T1 U2124 LINEAR CONDOMINIUM, MALUGAY, SAN ANTONIO, MAKATI",
+    inserted: appForm.value.currentAddress,
   },
-  { field: "Date Of Birth", detected: "1960-01-28", inserted: "1988-06-26" },
-  { field: "Gender", detected: detectedData.value.sex, inserted: "M" },
+  { field: "Date Of Birth", detected: "1960-01-28", inserted: appForm.value.birthDate },
+  { field: "Gender", detected: detectedData.value.sex, inserted: appForm.value.gender },
   { field: "Place Of Birth", detected: "", inserted: "" },
   { field: "Occupation", detected: "", inserted: "" },
-  { field: "Nationality", detected: "", inserted: "PHILIPPINES, FILIPINO" },
+  { field: "Nationality", detected: "", inserted: appForm.value.nationality },
 ]);
 
 const setFileInputRef = (id, el) => {
@@ -1841,9 +1860,91 @@ onMounted(() => {
 });
 
 // Handle proceed action
-const proceedWithProfile = () => {
+const proceedWithProfile = async () => {
   if (!selectedProfile.value) return;
-  preStep.value = "appointmentNotice";
+
+  try {
+    const res = await axios.get(`${BACKEND_DOMAIN}/api/PassportProfile/${selectedProfile.value}`, {
+      headers: { Authorization: `Bearer ${Auth.token}` },
+    });
+
+    const { personal, family, contact } = res.data;
+
+    // ── Find family members by relationship ──────────────
+    const father = family?.find((f) => f.relationship === "Father");
+    const mother = family?.find((f) => f.relationship === "Mother");
+    const spouse = family?.find((f) => f.relationship === "Spouse");
+
+    // ── Map API response → appForm ───────────────────────
+    appForm.value = {
+      ...appForm.value, // keep declarationChecked / certifyChecked as false
+
+      // Personal
+      firstName: personal.firstName ?? "",
+      middleName: personal.middleName ?? "",
+      lastName: personal.lastName ?? "",
+      birthDate: personal.birthdate
+        ? new Date(personal.birthdate).toLocaleDateString("en-US", {
+            month: "short",
+            day: "numeric",
+            year: "numeric",
+          })
+        : "",
+      gender: personal.gender ?? "",
+      nationality: personal.nationality ?? "",
+      civilStatus: personal.civilStatusId ?? "",
+      psaBirthCert: personal.hasPSABirthcert ? "Yes" : "No",
+      birthLegitimacy: personal.birthLegitimacy ?? "",
+
+      // Contact
+      currentAddress: [
+        contact?.currentBarangay,
+        contact?.currentCityMunicipality,
+        contact?.currentProvince,
+        contact?.currentRegion,
+      ]
+        .filter(Boolean)
+        .join(", "),
+      currentCountry: personal.birthCountry ?? "",
+      currentRegion: contact?.currentRegion ?? "",
+      currentBarangay: contact?.currentBarangay ?? "",
+      postalCode: contact?.currentPostalCode ?? "",
+      personalMobile: contact?.personalMobileNumber ?? "",
+      email: contact?.email ?? "",
+
+      // Emergency — not in API yet, keep existing or blank
+      emergencyPerson: appForm.value.emergencyPerson,
+      emergencyPhone: appForm.value.emergencyPhone,
+
+      // Father
+      fatherFirstName: father?.firstName ?? "",
+      fatherLastName: father?.lastName ?? "",
+      fatherCitizenship: father?.citizenship ?? "",
+      fatherLifeStatus: father?.isAlive ? "Alive" : "Deceased",
+
+      // Mother
+      motherFirstName: mother?.firstName ?? "",
+      motherLastName: mother?.lastName ?? "",
+      motherCitizenship: mother?.citizenship ?? "",
+      motherLifeStatus: mother?.isAlive ? "Alive" : "Deceased",
+
+      // Spouse
+      spouseFirstName: spouse?.firstName ?? "",
+      spouseMiddleName: spouse?.middleName ?? "",
+      spouseLastName: spouse?.lastName ?? "",
+      spouseCitizenship: spouse?.citizenship ?? "",
+      spouseLifeStatus: spouse?.isAlive ? "Alive" : "Deceased",
+
+      // Keep checkboxes untouched
+      declarationChecked: false,
+      certifyChecked: false,
+    };
+
+    preStep.value = "appointmentNotice";
+  } catch (err) {
+    console.error("Failed to fetch profile:", err);
+    alert("Failed to load profile data. Please try again.");
+  }
 };
 
 const submit = async () => {
