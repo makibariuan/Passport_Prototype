@@ -43,11 +43,15 @@
 
         <select class="filter-select" v-model="statusFilter">
           <option value="">Status</option>
-          <option value="Init">Init</option>
-          <option value="In progress">In progress</option>
-          <option value="Document pending">Document pending</option>
-          <option value="Completed">Completed</option>
-          <option value="Cancelled">Cancelled</option>
+          <option value="Pending Schedule">Pending Schedule</option>
+          <option value="Scheduled">Scheduled</option>
+          <option value="Captured">Captured</option>
+          <option value="Adjudication">Adjudication</option>
+          <option value="Validated">Validated</option>
+          <option value="Printed">Printed</option>
+          <option value="Active / Card Issued">Active / Card Issued</option>
+          <option value="Schedule for Approval">Schedule for Approval</option>
+          <option value="Rejected">Rejected</option>
         </select>
 
         <button class="help-btn">
@@ -69,7 +73,7 @@
       <div v-if="filteredApps.length" class="cards-grid">
         <div v-for="app in filteredApps" :key="app.id" class="app-card">
           <!-- Status badge -->
-          <span :class="['badge', badgeClass(app.status)]">{{ app.status }}</span>
+          <span :class="['badge', badgeClass(app.status)]">{{ statusLabel(app.status) }}</span>
 
           <!-- Profile info -->
           <div class="card-field">
@@ -148,7 +152,7 @@
         <!-- Header -->
         <div class="manage-modal-header">
           <span :class="['badge', badgeClass(selectedApp.status)]" style="margin-bottom: 0">
-            {{ selectedApp.status }}
+            {{ statusLabel(selectedApp.status) }}
           </span>
           <h3 class="manage-modal-title">{{ selectedApp.name }}</h3>
           <p class="manage-modal-ref">Ref: {{ selectedApp.ref }}</p>
@@ -219,7 +223,7 @@
             Download Form
           </button>
 
-          <template v-if="selectedApp.status === 'In progress' || selectedApp.status === 'Init'">
+          <template v-if="selectedApp.status === 1 || selectedApp.status === 0">
             <button class="btn-reschedule" @click="goToReschedule">Re-schedule</button>
             <button class="btn-cancel-appt" @click="confirmCancel(selectedApp)">Cancel</button>
           </template>
@@ -264,11 +268,16 @@
 </template>
 
 <script setup>
-import { ref, computed } from "vue";
+import { ref, computed, onMounted } from "vue";
+import axios from "axios";
 import LeftMenu from "@/components/LeftMenu.vue";
+import Header from "@/components/Header.vue";
 import DialogBox from "@/components/DialogBox.vue";
 import LoadingDialog from "./LoadingDialog.vue";
+import { useAuthStore } from "../stores/auth";
+import { BACKEND_DOMAIN } from "@/configs/config";
 
+const Auth = useAuthStore();
 const isLoading = ref(false);
 const showDialog = ref(false);
 const dialogTitle = ref("");
@@ -281,53 +290,73 @@ const selectedApp = ref(null);
 const showCancelConfirm = ref(false);
 const cancelTarget = ref(null);
 
-// ── Mock data — replace with API call ─────────────────────────
-const applications = ref([
-  {
-    id: 1,
-    ref: "PH250203754564213",
-    name: "Juan Santos Cruz",
-    scheduledDate: "14 August 2025, 11:30 AM",
-    site: "DFA Manila (Aseana)",
-    type: "New Passport",
-    status: "Init",
-    documents: [
-      { name: "PSA Birth Certificate", submitted: true },
-      { name: "Valid Government ID", submitted: true },
-      { name: "Accomplished Application Form", submitted: false },
-      { name: "Proof of Filipino Citizenship", submitted: false },
-    ],
-  },
-  {
-    id: 2,
-    ref: "PH250301882345610",
-    name: "Maria Reyes Dela Cruz",
-    scheduledDate: "20 August 2025, 9:00 AM",
-    site: "DFA Cebu",
-    type: "Renewal",
-    status: "In progress",
-    documents: [
-      { name: "Old Passport (Original)", submitted: true },
-      { name: "PSA Birth Certificate", submitted: true },
-      { name: "Valid Government ID", submitted: true },
-      { name: "Accomplished Application Form", submitted: true },
-    ],
-  },
-  {
-    id: 3,
-    ref: "PH250112993847201",
-    name: "Pedro Lim Santos",
-    scheduledDate: "2 September 2025, 2:00 PM",
-    site: "DFA Quezon City",
-    type: "New Passport",
-    status: "Document pending",
-    documents: [
-      { name: "PSA Birth Certificate", submitted: false },
-      { name: "Valid Government ID", submitted: true },
-      { name: "Accomplished Application Form", submitted: false },
-    ],
-  },
-]);
+// ── Status map ─────────────────────────────────────────────────
+const STATUS_MAP = {
+  0: { label: "Pending Schedule", badge: "badge-pending" },
+  1: { label: "Scheduled", badge: "badge-progress" },
+  2: { label: "Captured", badge: "badge-progress" },
+  3: { label: "Adjudication", badge: "badge-init" },
+  4: { label: "Validated", badge: "badge-info" },
+  5: { label: "Printed", badge: "badge-info" },
+  6: { label: "Active / Card Issued", badge: "badge-done" },
+  7: { label: "Schedule for Approval", badge: "badge-pending" },
+  99: { label: "Rejected", badge: "badge-cancelled" },
+  100: { label: "Display Only", badge: "badge-cancelled" },
+};
+
+const statusLabel = (code) => STATUS_MAP[code]?.label ?? `Status ${code}`;
+const statusBadge = (code) => STATUS_MAP[code]?.badge ?? "badge-cancelled";
+
+// ── Format helpers ─────────────────────────────────────────────
+const formatScheduleDate = (iso) => {
+  if (!iso) return "—";
+  return new Date(iso).toLocaleDateString("en-PH", {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  });
+};
+
+const formatScheduleTime = (iso) => {
+  if (!iso) return "—";
+  return new Date(iso).toLocaleTimeString("en-PH", {
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: true,
+  });
+};
+
+// ── Applications data ──────────────────────────────────────────
+const applications = ref([]);
+
+const fetchApplications = async () => {
+  try {
+    isLoading.value = true;
+    const res = await axios.get(`${BACKEND_DOMAIN}/api/Application/My-Applications`, {
+      headers: { Authorization: `Bearer ${Auth.token}` },
+    });
+
+    applications.value = res.data.map((a) => ({
+      id: a.applicationId,
+      ref: a.barcode ?? a.barcodePath ?? `APP-${a.applicationId}`,
+      name: a.profileName,
+      scheduledDate: `${formatScheduleDate(a.schedule)}, ${formatScheduleTime(a.schedule)}`,
+      site: "—",
+      type: "—",
+      status: a.status,
+      documents: [],
+    }));
+  } catch (err) {
+    console.error(err);
+    dialogTitle.value = "Error";
+    dialogMessage.value = "Failed to load applications.";
+    showDialog.value = true;
+  } finally {
+    isLoading.value = false;
+  }
+};
+
+onMounted(fetchApplications);
 
 // ── Filtering ─────────────────────────────────────────────────
 const filteredApps = computed(() => {
@@ -336,18 +365,12 @@ const filteredApps = computed(() => {
   return applications.value.filter(
     (a) =>
       (!q || a.name.toLowerCase().includes(q) || a.ref.toLowerCase().includes(q)) &&
-      (!s || a.status === s),
+      (!s || statusLabel(a.status) === s),
   );
 });
 
-// ── Badge class ───────────────────────────────────────────────
-const badgeClass = (status) => {
-  if (status === "Init") return "badge-init";
-  if (status === "In progress") return "badge-progress";
-  if (status === "Document pending") return "badge-pending";
-  if (status === "Completed") return "badge-done";
-  return "badge-cancelled";
-};
+// ── Badge class (numeric code) ─────────────────────────────────
+const badgeClass = (code) => statusBadge(code);
 
 // ── Modal ─────────────────────────────────────────────────────
 const openManageModal = (app) => {
@@ -361,12 +384,6 @@ const closeManageModal = () => {
 const downloadForm = async (app) => {
   try {
     isLoading.value = true;
-    // TODO: const res = await axios.get(
-    //   `https://localhost:5000/api/Applications/${app.ref}/download-form`,
-    //   { responseType: "blob", headers: { Authorization: `Bearer ${Auth.token}` } }
-    // );
-    // const url = URL.createObjectURL(new Blob([res.data]));
-    // const a = document.createElement("a"); a.href = url; a.download = `${app.ref}.pdf`; a.click();
     dialogTitle.value = "Download";
     dialogMessage.value = `Application form for ${app.ref} will be downloaded.`;
     showDialog.value = true;
@@ -383,7 +400,6 @@ const downloadForm = async (app) => {
 
 const goToReschedule = () => {
   closeManageModal();
-  // TODO: router.push({ name: "reschedule", params: { ref: selectedApp.value?.ref } });
   dialogTitle.value = "Re-schedule";
   dialogMessage.value = "Redirecting to re-schedule page...";
   showDialog.value = true;
@@ -397,13 +413,8 @@ const confirmCancel = (app) => {
 const executeCancel = async () => {
   try {
     isLoading.value = true;
-    // TODO: await axios.patch(
-    //   `https://localhost:5000/api/Applications/${cancelTarget.value.ref}/cancel`,
-    //   {},
-    //   { headers: { Authorization: `Bearer ${Auth.token}` } }
-    // );
     const idx = applications.value.findIndex((a) => a.id === cancelTarget.value.id);
-    if (idx !== -1) applications.value[idx].status = "Cancelled";
+    if (idx !== -1) applications.value[idx].status = 99;
     showCancelConfirm.value = false;
     closeManageModal();
     dialogTitle.value = "Cancelled";
@@ -947,6 +958,11 @@ const executeCancel = async () => {
   color: #4a5568;
   text-align: center;
   line-height: 1.6;
+}
+
+.badge-info {
+  background: #e0f2fe;
+  color: #0369a1;
 }
 
 /* ── Responsive ── */
