@@ -4,6 +4,8 @@ using OnlineRegistration.Server.Models;
 using OnlineRegistration.Server.Services.Interfaces;
 using Passport_Prototype.Server.DTOs;
 using System.Security.Claims;
+using System.Diagnostics;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Passport_Prototype.Server.Controllers
 {
@@ -12,13 +14,16 @@ namespace Passport_Prototype.Server.Controllers
     public class PassportAppEmailerController : ControllerBase
     {
         private readonly IEmailQueue _emailQueue;
+        private readonly AppDbContext _context;
 
-        public PassportAppEmailerController(IEmailQueue emailQueue)
+        public PassportAppEmailerController(IEmailQueue emailQueue, AppDbContext context)
         {
             _emailQueue = emailQueue;
+            _context = context;
         }
 
         [HttpPost]
+        [Authorize]
         public async Task<IActionResult> SendAppEmail(PassportAppEmailDTO passportAppEmailDTO)
         {
             var random = new Random();
@@ -79,9 +84,20 @@ namespace Passport_Prototype.Server.Controllers
                   </table>
                 </body>
                 """;
+
+
+            var userIdstring = User.FindFirstValue("id");
+
+            if (!int.TryParse(userIdstring, out int userId))
+                return BadRequest("Invalid recipient");
+
+            var user = await _context.Users.FindAsync(userId);
+
+            Debug.WriteLine(user.Email);
+
             _emailQueue.QueueEmail(new EmailMessage
             {
-                To = User.FindFirstValue("email"),
+                To = user.Email,
                 Subject = "Passport Application Notification",
                 Body = emailBody
             });
