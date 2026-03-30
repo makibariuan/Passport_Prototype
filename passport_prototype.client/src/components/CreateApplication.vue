@@ -887,7 +887,15 @@
                 <div v-else-if="currentStep === 4">
                   <div class="pds-section">
                     <p class="appt-title">
-                      Appointment for <span class="hname">MARVIN ALFRED MERCADO PICO</span>
+                      Appointment for
+                      <span class="hname">
+                        {{
+                          [appForm.firstName, appForm.middleName, appForm.lastName]
+                            .filter(Boolean)
+                            .join(" ")
+                            .toUpperCase()
+                        }}
+                      </span>
                     </p>
 
                     <div class="file-notice">
@@ -1145,18 +1153,20 @@
                       <p class="status-intro">This mode of payment is requesting for:</p>
 
                       <table class="status-table">
-                        <tr>
-                          <td class="st-label">Status</td>
-                          <td class="st-value st-initiated">Initiated</td>
-                        </tr>
-                        <tr>
-                          <td class="st-label">Amount</td>
-                          <td class="st-value">₱ {{ totalAmount }}</td>
-                        </tr>
-                        <tr>
-                          <td class="st-label">Total Amount Due</td>
-                          <td class="st-value st-green">₱ {{ totalAmount }}</td>
-                        </tr>
+                        <tbody>
+                          <tr>
+                            <td class="st-label">Status</td>
+                            <td class="st-value st-initiated">Initiated</td>
+                          </tr>
+                          <tr>
+                            <td class="st-label">Amount</td>
+                            <td class="st-value">₱ {{ totalAmount }}</td>
+                          </tr>
+                          <tr>
+                            <td class="st-label">Total Amount Due</td>
+                            <td class="st-value st-green">₱ {{ totalAmount }}</td>
+                          </tr>
+                        </tbody>
                       </table>
 
                       <div class="guidelines-title">General guidelines:</div>
@@ -1214,7 +1224,14 @@
             <button v-if="currentStep < tabs.length - 1" class="btn btn-next" @click="nextStep">
               Next →
             </button>
-            <button v-else class="btn btn-submit" @click="submit">Submit Application</button>
+            <button
+              v-else
+              class="btn btn-submit"
+              :disabled="!appForm.declarationChecked || !appForm.certifyChecked"
+              @click="submit"
+            >
+              Submit Application
+            </button>
           </div>
         </div>
       </template>
@@ -1329,6 +1346,103 @@
     </teleport>
 
     <!-- ═══════════════════════════════════════════════════════════ -->
+    <!-- ADD PROFILE MODAL                                          -->
+    <!-- ═══════════════════════════════════════════════════════════ -->
+    <teleport to="body">
+      <div v-if="showAddProfileModal" class="modal-overlay" @click.self="closeAddProfileModal">
+        <div class="modal-box" style="width: 560px">
+          <h3 class="modal-title" style="padding: 18px 22px 0">Add Profile</h3>
+          <p
+            style="
+              font-size: 12.5px;
+              color: #718096;
+              text-align: center;
+              margin: 6px 0 0;
+              padding: 0 22px;
+            "
+          >
+            Fill in the details to create a new profile.
+          </p>
+
+          <div style="padding: 18px 22px; display: flex; flex-direction: column; gap: 14px">
+            <!-- Row 1: Last Name, First Name, Middle Name, Suffix -->
+            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr 100px; gap: 12px">
+              <div class="form-group">
+                <label class="form-label">Last Name <span class="required">*</span></label>
+                <input
+                  v-model="newProfile.lastName"
+                  type="text"
+                  class="form-input"
+                  placeholder="Last Name"
+                />
+              </div>
+              <div class="form-group">
+                <label class="form-label">First Name <span class="required">*</span></label>
+                <input
+                  v-model="newProfile.firstName"
+                  type="text"
+                  class="form-input"
+                  placeholder="First Name"
+                />
+              </div>
+              <div class="form-group">
+                <label class="form-label">Middle Name</label>
+                <input
+                  v-model="newProfile.middleName"
+                  type="text"
+                  class="form-input"
+                  placeholder="Middle Name"
+                />
+              </div>
+              <div class="form-group">
+                <label class="form-label">Suffix</label>
+                <div class="select-wrap">
+                  <select v-model="newProfile.suffix" class="form-select">
+                    <option value="">—</option>
+                    <option value="Jr.">Jr.</option>
+                    <option value="Sr.">Sr.</option>
+                    <option value="II">II</option>
+                    <option value="III">III</option>
+                    <option value="IV">IV</option>
+                  </select>
+                  <span class="select-arrow">▾</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Row 2: Relationship -->
+            <div class="form-group">
+              <label class="form-label">Relationship <span class="required">*</span></label>
+              <div class="select-wrap">
+                <select v-model="newProfile.relationship" class="form-select">
+                  <option value="" disabled>Select relationship</option>
+                  <option value="Father">Father</option>
+                  <option value="Mother">Mother</option>
+                  <option value="Spouse">Spouse</option>
+                  <option value="Sibling">Sibling</option>
+                  <option value="Child">Child</option>
+                  <option value="Guardian">Guardian</option>
+                  <option value="Self">Self</option>
+                </select>
+                <span class="select-arrow">▾</span>
+              </div>
+            </div>
+
+            <!-- Error -->
+            <p v-if="addProfileError" style="font-size: 0.78rem; color: #e53e3e; margin: 0">
+              {{ addProfileError }}
+            </p>
+          </div>
+
+          <div class="modal-foot">
+            <button class="btn-modal-cancel" @click="closeAddProfileModal">Cancel</button>
+            <button class="btn-modal-agree" @click="submitAddProfile">Add Profile</button>
+          </div>
+        </div>
+      </div>
+    </teleport>
+
+    <!-- ═══════════════════════════════════════════════════════════ -->
     <!-- DFA ePAYMENT RECEIPT MODAL                                 -->
     <!-- ═══════════════════════════════════════════════════════════ -->
     <teleport to="body">
@@ -1345,22 +1459,24 @@
           <p class="epay-intro">This mode of payment is requesting for...</p>
 
           <table class="epay-table">
-            <tr>
-              <td class="ep-label">Status</td>
-              <td class="ep-value ep-bold">PAID</td>
-            </tr>
-            <tr>
-              <td class="ep-label">Scheduled Date</td>
-              <td class="ep-value">{{ formatSelectedSchedule || "9 January 2025, 09:00" }}</td>
-            </tr>
-            <tr>
-              <td class="ep-label">Amount</td>
-              <td class="ep-value">PHP {{ totalAmount }}</td>
-            </tr>
-            <tr>
-              <td class="ep-label">Total Amount Due</td>
-              <td class="ep-value ep-green">PHP {{ totalAmount }}</td>
-            </tr>
+            <tbody>
+              <tr>
+                <td class="ep-label">Status</td>
+                <td class="ep-value ep-bold">PAID</td>
+              </tr>
+              <tr>
+                <td class="ep-label">Scheduled Date</td>
+                <td class="ep-value">{{ formatSelectedSchedule || "9 January 2025, 09:00" }}</td>
+              </tr>
+              <tr>
+                <td class="ep-label">Amount</td>
+                <td class="ep-value">PHP {{ totalAmount }}</td>
+              </tr>
+              <tr>
+                <td class="ep-label">Total Amount Due</td>
+                <td class="ep-value ep-green">PHP {{ totalAmount }}</td>
+              </tr>
+            </tbody>
           </table>
 
           <p class="not-receipt">This is not your e-Receipt.</p>
@@ -1376,11 +1492,12 @@
 
 <script setup>
 import LeftMenu from "@/components/LeftMenu.vue";
-  import { ref, computed, onMounted } from "vue";
-  import axios from 'axios'
-  import { useAuthStore } from "../stores/auth";
+import { ref, computed, onMounted } from "vue";
+import axios from "axios";
+import { useAuthStore } from "../stores/auth";
+import { BACKEND_DOMAIN } from "@/configs/config";
 
-  const Auth = useAuthStore();
+const Auth = useAuthStore();
 
 // ── Pre-step state ──────────────────────────────────────────────────
 const preStep = ref("terms");
@@ -1425,10 +1542,6 @@ const nextStep = () => {
 
 const prevStep = () => {
   if (currentStep.value > 0) currentStep.value--;
-};
-
-const submit = () => {
-  alert("Application submitted!");
 };
 
 // ── Tab 0: Site Location & Schedule ────────────────────────────────
@@ -1607,37 +1720,48 @@ const addCompanion = () => {
 
 // ── Tab 3: Application Form ─────────────────────────────────────────
 const appForm = ref({
-  firstName: "MARVIN ALFRED",
-  middleName: "MERCADO",
-  lastName: "PICO",
-  birthDate: "Jun 26, 1988",
-  gender: "Male",
-  nationality: "Philippines",
-  civilStatus: "Married",
-  psaBirthCert: "Yes",
-  birthLegitimacy: "Legitimate",
-  currentAddress: "T1 U2124 LINEAR CONDOMINIUM, MALUGAY, SAN ANTONIO, MAKATI",
-  currentCountry: "Philippines",
-  currentRegion: "National Capital Region (NCR)",
-  currentBarangay: "San Antonio",
-  postalCode: "1105",
-  personalMobile: "+63 9064331425",
-  email: "marvinpico3@gmail.com",
-  emergencyPerson: "IVY PICO",
-  emergencyPhone: "+63 9064331425",
-  fatherFirstName: "ALFREDO",
-  fatherLastName: "PICO",
-  fatherCitizenship: "Philippines",
-  fatherLifeStatus: "Alive",
-  motherFirstName: "ESPERANZA",
-  motherLastName: "PICO",
-  motherCitizenship: "Philippines",
-  motherLifeStatus: "Alive",
-  spouseFirstName: "IVY",
-  spouseMiddleName: "SANTIAGO",
-  spouseLastName: "PICO",
-  spouseCitizenship: "Philippines",
-  spouseLifeStatus: "Alive",
+  // Personal
+  firstName: "",
+  middleName: "",
+  lastName: "",
+  birthDate: "",
+  gender: "",
+  nationality: "",
+  civilStatus: "",
+  psaBirthCert: "",
+  birthLegitimacy: "",
+
+  // Contact
+  currentAddress: "",
+  currentCountry: "",
+  currentRegion: "",
+  currentBarangay: "",
+  postalCode: "",
+  personalMobile: "",
+  email: "",
+  emergencyPerson: "",
+  emergencyPhone: "",
+
+  // Father
+  fatherFirstName: "",
+  fatherLastName: "",
+  fatherCitizenship: "",
+  fatherLifeStatus: "",
+
+  // Mother
+  motherFirstName: "",
+  motherLastName: "",
+  motherCitizenship: "",
+  motherLifeStatus: "",
+
+  // Spouse
+  spouseFirstName: "",
+  spouseMiddleName: "",
+  spouseLastName: "",
+  spouseCitizenship: "",
+  spouseLifeStatus: "",
+
+  // Checkboxes
   declarationChecked: false,
   certifyChecked: false,
 });
@@ -1673,7 +1797,7 @@ const conflictRows = computed(() => [
   {
     field: "Full Name",
     detected: `${detectedData.value.givenName} ${detectedData.value.middleName} ${detectedData.value.surname}`,
-    inserted: "MARVIN ALFRED MERCADO PICO",
+    inserted: `${appForm.value.firstName} ${appForm.value.middleName} ${appForm.value.lastName}`,
   },
   {
     field: "Address",
@@ -1682,13 +1806,13 @@ const conflictRows = computed(() => [
       detectedData.value.addressLine2,
       detectedData.value.addressLine3,
     ].join(" "),
-    inserted: "T1 U2124 LINEAR CONDOMINIUM, MALUGAY, SAN ANTONIO, MAKATI",
+    inserted: appForm.value.currentAddress,
   },
-  { field: "Date Of Birth", detected: "1960-01-28", inserted: "1988-06-26" },
-  { field: "Gender", detected: detectedData.value.sex, inserted: "M" },
+  { field: "Date Of Birth", detected: "1960-01-28", inserted: appForm.value.birthDate },
+  { field: "Gender", detected: detectedData.value.sex, inserted: appForm.value.gender },
   { field: "Place Of Birth", detected: "", inserted: "" },
   { field: "Occupation", detected: "", inserted: "" },
-  { field: "Nationality", detected: "", inserted: "PHILIPPINES, FILIPINO" },
+  { field: "Nationality", detected: "", inserted: appForm.value.nationality },
 ]);
 
 const setFileInputRef = (id, el) => {
@@ -1797,49 +1921,238 @@ const closePaymentSuccess = () => {
   showEReceipt.value = true;
 };
 
+// GET PROFILES LIST
+// Reactive states
+const profiles = ref([]);
+const selectedProfile = ref(null);
+const loading = ref(false);
+const error = ref(null);
 
-  // GET PROFILES LIST
-  // Reactive states
-  const profiles = ref([]);
-  const selectedProfile = ref(null);
-  const loading = ref(false);
-  const error = ref(null);
+// Fetch profiles from backend
+const fetchProfiles = async () => {
+  loading.value = true;
+  error.value = null;
+  try {
+    const res = await axios.get(`${BACKEND_DOMAIN}/api/PassportProfile/Profiles`, {
+      headers: {
+        Authorization: `Bearer ${Auth.token}`,
+      },
+    });
 
-  // Fetch profiles from backend
-  const fetchProfiles = async () => {
-    loading.value = true;
-    error.value = null;
-    try {
-      const res = await axios.get("/api/PassportProfile/Profiles", {
-        headers: {
-          Authorization: `Bearer ${Auth.token}`,
-        },
-      });
+    // Use backend-provided fullName and relationship
+    profiles.value = res.data.map((p) => ({
+      id: p.passportPersonalInformationId,
+      name: p.fullName,
+      relationship: p.relationship ?? "Personal",
+    }));
+  } catch (err) {
+    console.error(err);
+    error.value = "Failed to load profiles.";
+  } finally {
+    loading.value = false;
+  }
+};
 
-      // Use backend-provided fullName and relationship
-      profiles.value = res.data.map(p => ({
-        id: p.passportPersonalInformationId,
-        name: p.fullName,
-        relationship: p.relationship ?? "Personal"
-      }));
-    } catch (err) {
-      console.error(err);
-      error.value = "Failed to load profiles.";
-    } finally {
-      loading.value = false;
-    }
-  };
+// Trigger API call on mount
+onMounted(() => {
+  fetchProfiles();
+});
 
-  // Trigger API call on mount
-  onMounted(() => {
-    fetchProfiles();
-  });
+// Handle proceed action
+const proceedWithProfile = async () => {
+  if (!selectedProfile.value) return;
 
-  // Handle proceed action
-  const proceedWithProfile = () => {
-    if (!selectedProfile.value) return;
+  try {
+    const res = await axios.get(`${BACKEND_DOMAIN}/api/PassportProfile/${selectedProfile.value}`, {
+      headers: { Authorization: `Bearer ${Auth.token}` },
+    });
+
+    const { personal, family, contact } = res.data;
+
+    // ── Find family members by relationship ──────────────
+    const father = family?.find((f) => f.relationship === "Father");
+    const mother = family?.find((f) => f.relationship === "Mother");
+    const spouse = family?.find((f) => f.relationship === "Spouse");
+
+    // ── Map API response → appForm ───────────────────────
+    appForm.value = {
+      ...appForm.value, // keep declarationChecked / certifyChecked as false
+
+      // Personal
+      firstName: personal.firstName ?? "",
+      middleName: personal.middleName ?? "",
+      lastName: personal.lastName ?? "",
+      birthDate: personal.birthdate
+        ? new Date(personal.birthdate).toLocaleDateString("en-US", {
+            month: "short",
+            day: "numeric",
+            year: "numeric",
+          })
+        : "",
+      gender: personal.gender ?? "",
+      nationality: personal.nationality ?? "",
+      civilStatus: personal.civilStatusId ?? "",
+      psaBirthCert: personal.hasPSABirthcert ? "Yes" : "No",
+      birthLegitimacy: personal.birthLegitimacy ?? "",
+
+      // Contact
+      currentAddress: [
+        contact?.currentBarangay,
+        contact?.currentCityMunicipality,
+        contact?.currentProvince,
+        contact?.currentRegion,
+      ]
+        .filter(Boolean)
+        .join(", "),
+      currentCountry: personal.birthCountry ?? "",
+      currentRegion: contact?.currentRegion ?? "",
+      currentBarangay: contact?.currentBarangay ?? "",
+      postalCode: contact?.currentPostalCode ?? "",
+      personalMobile: contact?.personalMobileNumber ?? "",
+      email: contact?.email ?? "",
+
+      // Emergency — not in API yet, keep existing or blank
+      emergencyPerson: appForm.value.emergencyPerson,
+      emergencyPhone: appForm.value.emergencyPhone,
+
+      // Father
+      fatherFirstName: father?.firstName ?? "",
+      fatherLastName: father?.lastName ?? "",
+      fatherCitizenship: father?.citizenship ?? "",
+      fatherLifeStatus: father?.isAlive ? "Alive" : "Deceased",
+
+      // Mother
+      motherFirstName: mother?.firstName ?? "",
+      motherLastName: mother?.lastName ?? "",
+      motherCitizenship: mother?.citizenship ?? "",
+      motherLifeStatus: mother?.isAlive ? "Alive" : "Deceased",
+
+      // Spouse
+      spouseFirstName: spouse?.firstName ?? "",
+      spouseMiddleName: spouse?.middleName ?? "",
+      spouseLastName: spouse?.lastName ?? "",
+      spouseCitizenship: spouse?.citizenship ?? "",
+      spouseLifeStatus: spouse?.isAlive ? "Alive" : "Deceased",
+
+      // Keep checkboxes untouched
+      declarationChecked: false,
+      certifyChecked: false,
+    };
+
     preStep.value = "appointmentNotice";
-  };
+  } catch (err) {
+    console.error("Failed to fetch profile:", err);
+    alert("Failed to load profile data. Please try again.");
+  }
+};
+
+const submit = async () => {
+  try {
+    // ── Debug logs FIRST ────────────────────────────────
+    console.log("selectedDate:", selectedDate.value);
+    console.log("selectedTime:", selectedTime.value);
+    console.log("selectedProfile:", selectedProfile.value);
+    console.log("appTypeForm:", appTypeForm.value);
+    console.log("processingType:", processingType.value);
+    console.log("paymentMethod:", paymentMethod.value);
+    console.log("deliveryOption:", deliveryOption.value);
+
+    const formData = new FormData();
+
+    // Profile
+    formData.append("PassportPersonalInformationId", selectedProfile.value);
+
+    // Site & Schedule
+    formData.append("Region", siteForm.value.region);
+    formData.append("Country", siteForm.value.country);
+    formData.append("Site", siteForm.value.site);
+
+    // ── Fix: safely parse the date ──────────────────────
+    // selectedDate is "2026-3-29", pad it to "2026-03-29"
+    const [y, m, d] = selectedDate.value.split("-");
+    const paddedDate = `${y}-${String(m).padStart(2, "0")}-${String(d).padStart(2, "0")}`;
+
+    // selectedTime is "9:00 AM - 9:30 AM", take the start
+    const timeStart = selectedTime.value?.split(" - ")[0]?.trim() ?? "09:00 AM";
+
+    // Convert "9:00 AM" → 24h for reliable parsing
+    const [timePart, meridiem] = timeStart.split(" ");
+    let [hours, minutes] = timePart.split(":").map(Number);
+    if (meridiem === "PM" && hours !== 12) hours += 12;
+    if (meridiem === "AM" && hours === 12) hours = 0;
+    const paddedTime = `${String(hours).padStart(2, "0")}:${String(minutes).padStart(2, "0")}:00`;
+
+    const scheduleDate = new Date(`${paddedDate}T${paddedTime}`);
+    console.log("Parsed scheduleDate:", scheduleDate.toISOString());
+
+    formData.append("Schedule", scheduleDate.toISOString());
+
+    // Application Type
+    formData.append("ApplicationType", appTypeForm.value.applicationType);
+    formData.append("CitizenshipBasis", appTypeForm.value.citizenshipBasis);
+    formData.append("isForeignPassportHolder", appTypeForm.value.foreignPassportHolder ?? false);
+    formData.append("isCourtesyLane", appTypeForm.value.courtesyLane ?? false);
+    formData.append("DocumentType", appTypeForm.value.documentType);
+    formData.append("IdDocumentIdNumber", appTypeForm.value.identificationNumber);
+    formData.append("IdDocumentType", appTypeForm.value.identificationDocType);
+
+    // Files
+    const validIdReq = requirements.value.find((r) => r.id === "gov-id");
+    const certReq = requirements.value.find((r) => r.id === "birth-cert");
+    console.log("ValidId file:", validIdReq?.file);
+    console.log("Certificate file:", certReq?.file);
+
+    if (!validIdReq?.file || !certReq?.file) {
+      alert("Please upload all required documents before submitting.");
+      return;
+    }
+    formData.append("ValidId", validIdReq.file);
+    formData.append("Certificate", certReq.file);
+
+    // Payment
+    formData.append("ProcessingType", processingType.value ?? "");
+    formData.append("PaymentMethod", paymentMethod.value ?? "");
+    formData.append("DeliveryOption", deliveryOption.value ?? "");
+    formData.append("isPaid", showPaymentSuccess.value);
+    formData.append("Amount", totalAmount);
+
+    // ── Log full FormData before sending ────────────────
+    for (let [key, val] of formData.entries()) {
+      console.log("FormData →", key, val);
+    }
+
+    const res = await axios.post(`${BACKEND_DOMAIN}/api/Application`, formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+        Authorization: `Bearer ${Auth.token}`,
+      },
+    });
+
+    alert("Application submitted successfully!");
+    console.log("Response:", res.data);
+  } catch (err) {
+    // ── This will now catch JS errors AND axios 4xx/5xx ─
+    if (err?.response) {
+      console.error("HTTP error status:", err.response.status);
+      console.error("HTTP error data:", err.response.data);
+      console.error("Validation errors:", JSON.stringify(err.response.data?.errors, null, 2));
+
+      const errors = err.response.data?.errors;
+      if (errors) {
+        const msg = Object.entries(errors)
+          .map(([field, messages]) => `${field}: ${messages.join(", ")}`)
+          .join("\n");
+        alert(`Validation errors:\n${msg}`);
+      } else {
+        alert(err.response.data?.message ?? err.response.data?.title ?? "Submission failed.");
+      }
+    } else {
+      // JS runtime error (e.g. Invalid Date)
+      console.error("Runtime error:", err.message, err.stack);
+      alert(`Runtime error: ${err.message}`);
+    }
+  }
+};
 </script>
 
 <style scoped>

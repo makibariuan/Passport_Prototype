@@ -10,7 +10,7 @@
           <h2 class="page-title">Manage Citizens (Kit Assignment)</h2>
 
           <div class="action-bar">
-            <div class="search-group">
+            <div class="search-group">axio
               <input type="text" v-model="searchTerm" placeholder="Search by ID or Application Code..." class="search-input" />
               <i class="fas fa-search search-icon"></i>
             </div>

@@ -113,7 +113,6 @@ builder.Services.AddScoped<IFileService, FileService>(); // For file handling
 builder.Services.AddScoped<IPgpService, PgpService>(); // For PGP encryption
 builder.Services.AddScoped<IPasswordHasher<UsersEmployee>, PasswordHasher<UsersEmployee>>(); // For password hashing
 
-
 // AFIS queue
 builder.Services.AddSingleton<AfisQueueService>(); // Service shared with controller
 builder.Services.AddHostedService<AfisQueueWorker>(); // Background worker
