@@ -28,11 +28,14 @@ namespace Passport_Prototype.Server.Controllers
             var entity = new ContactInformation
             {
                 PassportPersonalInformationId = dto.PassportPersonalInformationId,
+                CurrentStreet = dto.CurrentStreet,
                 CurrentRegion = dto.CurrentRegion,
                 CurrentProvince = dto.CurrentProvince,
                 CurrentCityMunicipality = dto.CurrentCityMunicipality,
                 CurrentBarangay = dto.CurrentBarangay,
                 CurrentPostalCode = dto.CurrentPostalCode,
+                CurrentCountry = dto.CurrentCountry,
+                AddressAbroad = dto.AddressAbroad,
                 PersonalMobileNumber = dto.PersonalMobileNumber,
                 PersonalLandlineNumber = dto.PersonalLandlineNumber,
                 Email = dto.Email
@@ -99,16 +102,39 @@ namespace Passport_Prototype.Server.Controllers
                 .FirstOrDefaultAsync(c => c.PassportPersonalInformationId == dto.PassportPersonalInformationId);
 
             if (entity == null)
-                return NotFound();
+            {
+                entity = new ContactInformation
+                {
+                    PassportPersonalInformationId = dto.PassportPersonalInformationId,
+                    CurrentStreet = dto.CurrentStreet,
+                    CurrentRegion = dto.CurrentRegion,
+                    CurrentProvince = dto.CurrentProvince,
+                    CurrentCityMunicipality = dto.CurrentCityMunicipality,
+                    CurrentBarangay = dto.CurrentBarangay,
+                    CurrentPostalCode = dto.CurrentPostalCode,
+                    CurrentCountry = dto.CurrentCountry,
+                    AddressAbroad = dto.AddressAbroad,
+                    PersonalMobileNumber = dto.PersonalMobileNumber,
+                    PersonalLandlineNumber = dto.PersonalLandlineNumber,
+                    Email = dto.Email
+                };
 
-            entity.CurrentRegion = dto.CurrentRegion;
-            entity.CurrentProvince = dto.CurrentProvince;
-            entity.CurrentCityMunicipality = dto.CurrentCityMunicipality;
-            entity.CurrentBarangay = dto.CurrentBarangay;
-            entity.CurrentPostalCode = dto.CurrentPostalCode;
-            entity.PersonalMobileNumber = dto.PersonalMobileNumber;
-            entity.PersonalLandlineNumber = dto.PersonalLandlineNumber;
-            entity.Email = dto.Email;
+                _context.ContactInformation.Add(entity);
+            }
+            else
+            {
+                entity.CurrentStreet = dto.CurrentStreet;
+                entity.CurrentRegion = dto.CurrentRegion;
+                entity.CurrentProvince = dto.CurrentProvince;
+                entity.CurrentCityMunicipality = dto.CurrentCityMunicipality;
+                entity.CurrentBarangay = dto.CurrentBarangay;
+                entity.CurrentPostalCode = dto.CurrentPostalCode;
+                entity.CurrentCountry = dto.CurrentCountry;
+                entity.AddressAbroad = dto.AddressAbroad;
+                entity.PersonalMobileNumber = dto.PersonalMobileNumber;
+                entity.PersonalLandlineNumber = dto.PersonalLandlineNumber;
+                entity.Email = dto.Email;
+            }
 
             await _context.SaveChangesAsync();
 

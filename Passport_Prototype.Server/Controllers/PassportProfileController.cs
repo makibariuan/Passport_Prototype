@@ -70,11 +70,14 @@ namespace Passport_Prototype.Server.Controllers
                 var contact = new ContactInformation
                 {
                     PassportPersonalInformationId = personal.PassportPersonalInformationId,
+                    CurrentStreet = dto.Contact.CurrentStreet,
                     CurrentRegion = dto.Contact.CurrentRegion,
                     CurrentProvince = dto.Contact.CurrentProvince,
                     CurrentCityMunicipality = dto.Contact.CurrentCityMunicipality,
                     CurrentBarangay = dto.Contact.CurrentBarangay,
                     CurrentPostalCode = dto.Contact.CurrentPostalCode,
+                    CurrentCountry = dto.Contact.CurrentCountry,
+                    AddressAbroad = dto.Contact.AddressAbroad,
                     PersonalMobileNumber = dto.Contact.PersonalMobileNumber,
                     PersonalLandlineNumber = dto.Contact.PersonalLandlineNumber,
                     Email = dto.Contact.Email
@@ -85,8 +88,10 @@ namespace Passport_Prototype.Server.Controllers
                 var work = new WorkInformation
                 {
                     PassportPersonalInformationId = personal.PassportPersonalInformationId,
+                    Employer = dto.Work.Employer,
                     Occupation = dto.Work.Occupation,
                     OfficeAddress = dto.Work.OfficeAddress,
+                    OfficeBarangay = dto.Work.OfficeBarangay,
                     OfficeCountry = dto.Work.OfficeCountry,
                     OfficeRegion = dto.Work.OfficeRegion,
                     OfficeProvince = dto.Work.OfficeProvince,
