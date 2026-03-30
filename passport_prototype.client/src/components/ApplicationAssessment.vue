@@ -30,7 +30,6 @@
 
             <tbody>
               <tr v-for="item in tableData" :key="item.id">
-                <td class="app-number">{{ item.number }}</td>
 
                 <td class="app-number">
                   <span class="clickable-code">{{ item.number }}</span>
@@ -45,9 +44,10 @@
 
                 <td>
                   <span :class="['badge', statusClass(item.status)]">
-                    {{ item.status }}
+                    {{ getStatusLabel(item.status) }}
                   </span>
                 </td>
+
               </tr>
             </tbody>
           </table>
@@ -345,10 +345,13 @@
      STATUS HELPERS
   ----------------------------*/
   const statusClass = (status) => {
-    if ([4, 5, 6].includes(status)) return "status-approved";
-    if ([0, 7].includes(status)) return "status-pending";
-    if (status === 99) return "status-rejected";
-    return "status-pending";
+    const s = Number(status); // 👈 force to number
+
+    if ([4, 5, 6].includes(s)) return "status-approved";
+    if ([0, 7].includes(s)) return "status-pending";
+    if (s === 99) return "status-rejected";
+
+    return "status-default"; // fallback
   };
 
   const getStatusLabel = (status) => {
