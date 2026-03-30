@@ -1157,18 +1157,20 @@
                       <p class="status-intro">This mode of payment is requesting for:</p>
 
                       <table class="status-table">
-                        <tr>
-                          <td class="st-label">Status</td>
-                          <td class="st-value st-initiated">Initiated</td>
-                        </tr>
-                        <tr>
-                          <td class="st-label">Amount</td>
-                          <td class="st-value">₱ {{ totalAmount }}</td>
-                        </tr>
-                        <tr>
-                          <td class="st-label">Total Amount Due</td>
-                          <td class="st-value st-green">₱ {{ totalAmount }}</td>
-                        </tr>
+                        <tbody>
+                          <tr>
+                            <td class="st-label">Status</td>
+                            <td class="st-value st-initiated">Initiated</td>
+                          </tr>
+                          <tr>
+                            <td class="st-label">Amount</td>
+                            <td class="st-value">₱ {{ totalAmount }}</td>
+                          </tr>
+                          <tr>
+                            <td class="st-label">Total Amount Due</td>
+                            <td class="st-value st-green">₱ {{ totalAmount }}</td>
+                          </tr>
+                        </tbody>
                       </table>
 
                       <div class="guidelines-title">General guidelines:</div>
@@ -2216,6 +2218,7 @@ const submitAddProfile = async () => {
     });
 
     closeAddProfileModal();
+    await fetchProfiles();
   } catch (err) {
     console.error("Failed to add profile:", err);
     addProfileError.value =
