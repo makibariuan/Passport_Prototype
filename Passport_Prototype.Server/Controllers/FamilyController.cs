@@ -2,10 +2,11 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using OnlineRegistration.Server.Data;
+using OnlineRegistration.Server.Models;
 using Passport_Prototype.Server.DTOs;
 using Passport_Prototype.Server.Models;
-using System.Security.Claims;
 using System.Diagnostics;
+using System.Security.Claims;
 
 namespace Passport_Prototype.Server.Controllers
 {
@@ -88,39 +89,58 @@ namespace Passport_Prototype.Server.Controllers
             return Ok(family);
         }
 
-        // UPDATE
         [HttpPatch]
-        public async Task<IActionResult> Update([FromBody]List<UpdateFamilyDTO> dtos)
+        [Authorize]
+        public async Task<IActionResult> Upsert([FromBody] List<UpdateFamilyDTO> dtos)
         {
+            if (dtos == null || !dtos.Any())
+                return BadRequest("No data provided.");
+
             var personalInfoId = dtos[0].passportPersonalInformationId;
 
+            // Fetch existing family records for this personal info
             var families = await _context.Family
                 .Where(f => f.PassportPersonalInformationId == personalInfoId)
                 .ToListAsync();
-
-            if (families == null || !families.Any())
-                return NotFound($"No family records found. id = {personalInfoId}");
 
             foreach (var dto in dtos)
             {
                 var family = families.FirstOrDefault(f => f.FamilyId == dto.FamilyId);
 
-                if (family == null)
-                    continue; // or return NotFound($"Family with ID {dto.Id} not found");
+                if (family != null)
+                {
+                    // ✅ UPDATE
+                    family.FirstName = dto.FirstName;
+                    family.MiddleName = dto.MiddleName;
+                    family.LastName = dto.LastName;
+                    family.Suffix = dto.Suffix;
+                    family.Relationship = dto.Relationship;
+                    family.isAlive = dto.IsAlive ?? false;
+                    family.Citizenship = dto.Citizenship;
+                }
+                else
+                {
+                    // ✅ CREATE FAMILY
+                    var newFamily = new Family
+                    {
+                        PassportPersonalInformationId = (int)dto.passportPersonalInformationId!,
+                        FirstName = dto.FirstName,
+                        MiddleName = dto.MiddleName,
+                        LastName = dto.LastName,
+                        Suffix = dto.Suffix,
+                        Relationship = dto.Relationship,
+                        isAlive = dto.IsAlive ?? false,
+                        Citizenship = dto.Citizenship
+                    };
 
-                // Manual mapping
-                family.FirstName = dto.FirstName;
-                family.MiddleName = dto.MiddleName;
-                family.LastName = dto.LastName;
-                family.Suffix = dto.Suffix;
-                family.Relationship = dto.Relationship;
-                family.isAlive = dto.IsAlive ?? false; // safe handling
-                family.Citizenship = dto.Citizenship;
+                    _context.Family.Add(newFamily);
+                    families.Add(newFamily); // Add to local list for later checks
+                }
             }
 
             await _context.SaveChangesAsync();
 
-            return NoContent();
+            return Ok("Upsert");
         }
 
         // DELETE

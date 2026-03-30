@@ -48,9 +48,6 @@ namespace Passport_Prototype.Server.Controllers
                 throw new Exception("Invalid user ID in claims.");
             }
 
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
-
             // 1. Handle File Uploads
             string tempPath = Path.Combine(_env.WebRootPath, "temp_uploads");
             if (!Directory.Exists(tempPath)) Directory.CreateDirectory(tempPath);
@@ -273,6 +270,7 @@ namespace Passport_Prototype.Server.Controllers
                 select new
                 {
                     applicationId = app.ApplicationId,
+                    site = app.Site ?? "",  
                     status = (int?)app.ApplicationStatus,
                     barcodePath = app.ApplicationBarCodePath ?? "",
                     barcode = app.ApplicationBarCodePath ?? "",

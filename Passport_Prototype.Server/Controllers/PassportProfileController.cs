@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using OnlineRegistration.Server.Data;
 using Passport_Prototype.Server.DTOs;
 using Passport_Prototype.Server.Models;
+using System.Runtime.InteropServices;
 using System.Security.Claims;
 
 namespace Passport_Prototype.Server.Controllers
@@ -19,108 +20,12 @@ namespace Passport_Prototype.Server.Controllers
             _context = context;
         }
 
-        [HttpPost]
-        public async Task<IActionResult> CreateFullProfile(UnifiedProfileDTO dto)
+        [HttpGet("{personalId}")]
+        public async Task<IActionResult> GetFullProfile(int personalId)
         {
-            using var transaction = await _context.Database.BeginTransactionAsync();
-
-            try
-            {
-                // Personal
-                var personal = new PassportPersonalInformation
-                {
-                    UserId = dto.Personal.UserId,
-                    FirstName = dto.Personal.FirstName,
-                    MiddleName = dto.Personal.MiddleName,
-                    LastName = dto.Personal.LastName,
-                    Suffix = dto.Personal.Suffix,
-                    Birthdate = dto.Personal.Birthdate,
-                    Gender = dto.Personal.Gender,
-                    Nationality = dto.Personal.Nationality,
-                    CivilStatusId = dto.Personal.CivilStatus,
-                    hasPSABirthcert = dto.Personal.HasPSABirthcert,
-                    BirthLegitimacy = dto.Personal.BirthLegitimacy,
-                    BirthCountry = dto.Personal.BirthCountry,
-                    BirthRegion = dto.Personal.BirthRegion,
-                    BirthProvince = dto.Personal.BirthProvince,
-                    BirthCity = dto.Personal.BirthCity,
-                    BirthBarangay = dto.Personal.BirthBarangay
-                };
-                await _context.PassportPersonalInformation.AddAsync(personal);
-                await _context.SaveChangesAsync();
-
-                // Family
-                if (dto.Family.Count > 0)
-                {
-                    var familyMembers = dto.Family.Select(f => new Family
-                    {
-                        PassportPersonalInformationId = personal.PassportPersonalInformationId,
-                        FirstName = f.FirstName,
-                        MiddleName = f.MiddleName,
-                        LastName = f.LastName,
-                        Suffix = f.Suffix,
-                        Relationship = f.Relationship,
-                        isAlive = f.IsAlive,
-                        Citizenship = f.Citizenship
-                    }).ToList();
-
-                    await _context.Family.AddRangeAsync(familyMembers);
-                }
-
-                var contact = new ContactInformation
-                {
-                    PassportPersonalInformationId = personal.PassportPersonalInformationId,
-                    CurrentRegion = dto.Contact.CurrentRegion,
-                    CurrentProvince = dto.Contact.CurrentProvince,
-                    CurrentCityMunicipality = dto.Contact.CurrentCityMunicipality,
-                    CurrentBarangay = dto.Contact.CurrentBarangay,
-                    CurrentPostalCode = dto.Contact.CurrentPostalCode,
-                    PersonalMobileNumber = dto.Contact.PersonalMobileNumber,
-                    PersonalLandlineNumber = dto.Contact.PersonalLandlineNumber,
-                    Email = dto.Contact.Email
-                };
-                await _context.ContactInformation.AddAsync(contact);
-
-                // Work
-                var work = new WorkInformation
-                {
-                    PassportPersonalInformationId = personal.PassportPersonalInformationId,
-                    Occupation = dto.Work.Occupation,
-                    OfficeAddress = dto.Work.OfficeAddress,
-                    OfficeCountry = dto.Work.OfficeCountry,
-                    OfficeRegion = dto.Work.OfficeRegion,
-                    OfficeProvince = dto.Work.OfficeProvince,
-                    OfficeCityMunicipality = dto.Work.OfficeCityMunicipality,
-                    OfficePostalCode = dto.Work.OfficePostalCode,
-                    OfficeMobileNumber = dto.Work.OfficeMobileNumber,
-                    OfficeLandlineNumber = dto.Work.OfficeLandlineNumber
-                };
-                await _context.WorkInformation.AddAsync(work);
-
-                await _context.SaveChangesAsync();
-                await transaction.CommitAsync();
-
-                return Ok(new { Personal = personal, Family = dto.Family, Contact = contact, Work = work });
-            }
-
-            catch (Exception ex)
-            {
-                await transaction.RollbackAsync();
-                return StatusCode(500, ex.Message);
-            }
-        }
-
-        [HttpGet("Personal")]
-        public async Task<IActionResult> GetFullProfile()
-        {
-            var userIdString = User.FindFirstValue("id");
-
-            if (!int.TryParse(userIdString, out int userId))
-                return BadRequest("Invalid user ID in claims.");
-
             // 1️⃣ Personal Info
             var personal = await _context.PassportPersonalInformation
-                .FirstOrDefaultAsync(p => p.UserId == userId && p.Relationship == null);
+                .FirstOrDefaultAsync(p => p.PassportPersonalInformationId == personalId);
 
             if (personal == null)
                 return NotFound("Personal information not found.");

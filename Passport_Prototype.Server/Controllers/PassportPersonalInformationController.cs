@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using OnlineRegistration.Server.Data;
 using OnlineRegistration.Server.DTOs;
@@ -18,42 +19,26 @@ public class PassportPersonalInformationsController : ControllerBase
         _context = context;
     }
 
-    // CREATE
     [HttpPost]
-    public async Task<IActionResult> Create(CreatePassportPersonalInformationDTO dto)
+    [Authorize]
+    public async Task<IActionResult> CreateProfile(CreatePassportPersonalInformationDTO dto)
     {
         var userIdString = User.FindFirstValue("id");
 
         if (!int.TryParse(userIdString, out int userId))
-        {
-            throw new Exception("Invalid user ID in claims.");
-        }
+            return BadRequest("Invalid user ID in claims.");
 
-        var passportPersonalInformation = new PassportPersonalInformation
+        await _context.PassportPersonalInformation.AddAsync(new PassportPersonalInformation
         {
+            FirstName = "",
+            LastName = "",
+            Relationship = dto.Relationship,
             UserId = userId,
-            FirstName = dto.FirstName,
-            MiddleName = dto.MiddleName,
-            LastName = dto.LastName,
-            Suffix = dto.Suffix,
-            Birthdate = dto.Birthdate,
-            Gender = dto.Gender,
-            Nationality = dto.Nationality,
-            CivilStatusId = dto.CivilStatus,
-            hasPSABirthcert = dto.HasPSABirthcert,
-            BirthLegitimacy = dto.BirthLegitimacy,
-            BirthCountry = dto.BirthCountry,
-            BirthRegion = dto.BirthRegion,
-            BirthProvince = dto.BirthProvince,
-            BirthCity = dto.BirthCity,
-            BirthBarangay = dto.BirthBarangay,
-            Relationship = dto.Relationship
-        };
+        });
 
-        var newPassportPersonalInformation = await _context.PassportPersonalInformation.AddAsync(passportPersonalInformation);
         await _context.SaveChangesAsync();
 
-        return CreatedAtAction(nameof(GetById), new { id = newPassportPersonalInformation.Entity.PassportPersonalInformationId }, newPassportPersonalInformation.Entity);
+        return Created();
     }
 
     // READ BY ID
