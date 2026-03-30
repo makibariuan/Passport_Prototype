@@ -1862,6 +1862,13 @@ const submit = async () => {
     // selectedDate is like "2026-3-29", selectedTime like "9:00 AM - 9:30 AM"
     const timeStart = selectedTime.value?.split(" - ")[0] ?? "9:00 AM";
     const scheduleDate = new Date(`${selectedDate.value} ${timeStart}`);
+    console.log("selectedDate:", selectedDate.value);
+    console.log("selectedTime:", selectedTime.value);
+    console.log("ValidId file:", validIdReq?.file);
+    console.log("Certificate file:", certReq?.file);
+    for (let [key, val] of formData.entries()) {
+      console.log(key, val);
+    }
     formData.append("Schedule", scheduleDate.toISOString());
 
     // Application Type
@@ -1900,8 +1907,24 @@ const submit = async () => {
     alert("Application submitted successfully!");
     console.log("Response:", res.data);
   } catch (err) {
-    console.error(err);
-    alert(err?.response?.data?.message ?? "Submission failed. Please try again.");
+    console.error("Full error:", err);
+    console.error("Response status:", err?.response?.status);
+    console.error("Response data:", err?.response?.data);
+    console.error("Response errors:", JSON.stringify(err?.response?.data?.errors, null, 2));
+
+    const errors = err?.response?.data?.errors;
+    if (errors) {
+      const errorMessages = Object.entries(errors)
+        .map(([field, messages]) => `${field}: ${messages.join(", ")}`)
+        .join("\n");
+      alert(`Validation errors:\n${errorMessages}`);
+    } else {
+      alert(
+        err?.response?.data?.message ??
+          err?.response?.data?.title ??
+          "Submission failed. Please try again.",
+      );
+    }
   }
 };
 </script>
