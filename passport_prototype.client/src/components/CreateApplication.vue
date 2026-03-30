@@ -2132,6 +2132,30 @@ const submit = async () => {
       },
     });
 
+    // ── Send confirmation email after successful submission ──
+    try {
+      await axios.post(
+        `${BACKEND_DOMAIN}/api/PassportAppEmailer`,
+        {
+          email: appForm.value.email,
+          accountName: [appForm.value.firstName, appForm.value.middleName, appForm.value.lastName]
+            .filter(Boolean)
+            .join(" "),
+          site: selectedSiteInfo.value.name,
+          schedule: formatSelectedSchedule.value,
+          amount: `₱ ${totalAmount.value}`,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${Auth.token}`,
+          },
+        },
+      );
+    } catch (emailErr) {
+      // Non-blocking — app was already submitted, just log the email failure
+      console.warn("Email notification failed:", emailErr);
+    }
+
     alert("Application submitted successfully!");
     console.log("Response:", res.data);
   } catch (err) {
