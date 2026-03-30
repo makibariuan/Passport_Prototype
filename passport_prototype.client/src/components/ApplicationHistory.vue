@@ -1,7 +1,6 @@
 <template>
   <div class="app-layout">
     <LeftMenu class="leftMenu" />
-    <Header title="Application History" class="header" />
 
     <div class="dashboard-content">
       <h2 class="page-title">Application History</h2>
@@ -23,10 +22,15 @@
 
         <select class="filter-select" v-model="statusFilter">
           <option value="">All Status</option>
-          <option value="Document pending">Document pending</option>
-          <option value="In progress">In progress</option>
-          <option value="Completed">Completed</option>
-          <option value="Cancelled">Cancelled</option>
+          <option value="Pending Schedule">Pending Schedule</option>
+          <option value="Scheduled">Scheduled</option>
+          <option value="Captured">Captured</option>
+          <option value="Adjudication">Adjudication</option>
+          <option value="Validated">Validated</option>
+          <option value="Printed">Printed</option>
+          <option value="Active / Card Issued">Active / Card Issued</option>
+          <option value="Schedule for Approval">Schedule for Approval</option>
+          <option value="Rejected">Rejected</option>
         </select>
       </div>
 
@@ -251,11 +255,15 @@
 </template>
 
 <script setup>
-import { ref, computed } from "vue";
+import { ref, computed, onMounted } from "vue";
+import axios from "axios";
 import LeftMenu from "@/components/LeftMenu.vue";
 import DialogBox from "@/components/DialogBox.vue";
 import LoadingDialog from "./LoadingDialog.vue";
+import { useAuthStore } from "../stores/auth";
+import { BACKEND_DOMAIN } from "@/configs/config";
 
+const Auth = useAuthStore();
 const isLoading = ref(false);
 const showDialog = ref(false);
 const dialogTitle = ref("");
@@ -298,57 +306,72 @@ const timeSlots = [
   "2:30 PM - 3:00 PM",
 ];
 
-// ── Mock data — replace with API call ──────────────────────────
-const applications = ref([
-  {
-    ref: "PH241219661237450",
-    name: "MARVIN ALFRED MERCADO PICO",
-    site: "DFA Manila (Aseana)",
-    date: "20 December 2024",
-    time: "9:30 AM - 10:00 AM",
-    status: "Document pending",
-  },
-  {
-    ref: "PH250109405997305",
-    name: "MARVIN ALFRED MERCADO PICO",
-    site: "DFA Cebu",
-    date: "14 January 2025",
-    time: "9:30 AM - 10:00 AM",
-    status: "Document pending",
-  },
-  {
-    ref: "PH250108272372321",
-    name: "MARVIN ALFRED MERCADO PICO",
-    site: "DFA Davao",
-    date: "9 January 2025",
-    time: "9:00 AM - 9:30 AM",
-    status: "Document pending",
-  },
-  {
-    ref: "PH250203754564213",
-    name: "PETER GARCIA SING",
-    site: "DFA Manila (Aseana)",
-    date: "4 February 2025",
-    time: "10:00 AM - 10:30 AM",
-    status: "In progress",
-  },
-  {
-    ref: "PH241105332198874",
-    name: "ANNA REYES FLORES",
-    site: "DFA Quezon City",
-    date: "5 November 2024",
-    time: "8:00 AM - 8:30 AM",
-    status: "Completed",
-  },
-  {
-    ref: "PH240918114783920",
-    name: "CARLOS SANTOS LIM",
-    site: "DFA Manila (Aseana)",
-    date: "18 September 2024",
-    time: "2:00 PM - 2:30 PM",
-    status: "Cancelled",
-  },
-]);
+// ── Status map ─────────────────────────────────────────────────
+const STATUS_MAP = {
+  0: { label: "Pending Schedule", badge: "badge-pending" },
+  1: { label: "Scheduled", badge: "badge-progress" },
+  2: { label: "Captured", badge: "badge-progress" },
+  3: { label: "Adjudication", badge: "badge-warning" },
+  4: { label: "Validated", badge: "badge-info" },
+  5: { label: "Printed", badge: "badge-info" },
+  6: { label: "Active / Card Issued", badge: "badge-done" },
+  7: { label: "Schedule for Approval", badge: "badge-pending" },
+  99: { label: "Rejected", badge: "badge-cancelled" },
+  100: { label: "Display Only", badge: "badge-cancelled" },
+};
+
+const statusLabel = (code) => STATUS_MAP[code]?.label ?? `Status ${code}`;
+const statusBadge = (code) => STATUS_MAP[code]?.badge ?? "badge-cancelled";
+
+// ── Format schedule ────────────────────────────────────────────
+const formatScheduleDate = (iso) => {
+  if (!iso) return "—";
+  return new Date(iso).toLocaleDateString("en-PH", {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  });
+};
+
+const formatScheduleTime = (iso) => {
+  if (!iso) return "—";
+  return new Date(iso).toLocaleTimeString("en-PH", {
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: true,
+  });
+};
+
+// ── Applications data ──────────────────────────────────────────
+const applications = ref([]);
+
+const fetchApplications = async () => {
+  try {
+    isLoading.value = true;
+    const res = await axios.get(`${BACKEND_DOMAIN}/api/Application/My-Applications`, {
+      headers: { Authorization: `Bearer ${Auth.token}` },
+    });
+
+    applications.value = res.data.map((a) => ({
+      id: a.applicationId,
+      ref: a.barcode ?? a.barcodePath ?? `APP-${a.applicationId}`,
+      name: a.profileName,
+      site: "—", // not in list response, shown in detail modal if needed
+      date: formatScheduleDate(a.schedule),
+      time: formatScheduleTime(a.schedule),
+      status: a.status, // keep as numeric code
+    }));
+  } catch (err) {
+    console.error(err);
+    dialogTitle.value = "Error";
+    dialogMessage.value = "Failed to load applications.";
+    showDialog.value = true;
+  } finally {
+    isLoading.value = false;
+  }
+};
+
+onMounted(fetchApplications);
 
 // ── Filtering ──────────────────────────────────────────────────
 const filteredApps = computed(() => {
@@ -357,17 +380,12 @@ const filteredApps = computed(() => {
   return applications.value.filter(
     (a) =>
       (!q || a.name.toLowerCase().includes(q) || a.ref.toLowerCase().includes(q)) &&
-      (!s || a.status === s),
+      (!s || statusLabel(a.status) === s),
   );
 });
 
-// ── Badge class ────────────────────────────────────────────────
-const badgeClass = (status) => {
-  if (status === "Document pending") return "badge-pending";
-  if (status === "In progress") return "badge-progress";
-  if (status === "Completed") return "badge-done";
-  return "badge-cancelled";
-};
+// ── Badge class (now uses numeric code) ───────────────────────
+const badgeClass = (code) => statusBadge(code);
 
 // ── Barcode helpers ────────────────────────────────────────────
 const barcodeBars = (ref) => {
@@ -397,17 +415,10 @@ const closeModal = () => {
   selectedApp.value = null;
 };
 
-// ── Actions (wire to real API endpoints) ──────────────────────
+// ── Actions ───────────────────────────────────────────────────
 const downloadPDF = async (app) => {
   try {
     isLoading.value = true;
-    // TODO: replace with real endpoint
-    // const res = await axios.get(`/api/Applications/${app.ref}/pdf`, {
-    //   responseType: "blob",
-    //   headers: { Authorization: `Bearer ${Auth.token}` },
-    // });
-    // const url = URL.createObjectURL(new Blob([res.data]));
-    // const a = document.createElement("a"); a.href = url; a.download = `${app.ref}.pdf`; a.click();
     dialogTitle.value = "Download";
     dialogMessage.value = `PDF for ${app.ref} will be downloaded.`;
     showDialog.value = true;
@@ -443,18 +454,7 @@ const confirmReschedule = async () => {
 
   try {
     isLoading.value = true;
-    // TODO: await axios.patch(
-    //   `https://localhost:5000/api/Applications/${rescheduleApp.value.ref}/reschedule`,
-    //   {
-    //     newDate: rescheduleDate.value,
-    //     site: reschedulesite.value,
-    //     timeSlot: rescheduleTime.value,
-    //   },
-    //   { headers: { Authorization: `Bearer ${Auth.token}` } }
-    // );
-
-    // Update local state optimistically
-    const idx = applications.value.findIndex((a) => a.ref === rescheduleApp.value.ref);
+    const idx = applications.value.findIndex((a) => a.id === rescheduleApp.value.id);
     if (idx !== -1) {
       const d = new Date(rescheduleDate.value);
       applications.value[idx].date = d.toLocaleDateString("en-PH", {
@@ -465,7 +465,6 @@ const confirmReschedule = async () => {
       applications.value[idx].time = rescheduleTime.value;
       applications.value[idx].site = reschedulesite.value;
     }
-
     closeRescheduleModal();
     dialogTitle.value = "Re-scheduled";
     dialogMessage.value = "Your appointment has been successfully re-scheduled.";
@@ -483,9 +482,8 @@ const confirmReschedule = async () => {
 const cancelAppointment = async (app) => {
   try {
     isLoading.value = true;
-    // TODO: await axios.patch(`/api/Applications/${app.ref}/cancel`, {}, { headers: { Authorization: `Bearer ${Auth.token}` } });
-    const idx = applications.value.findIndex((a) => a.ref === app.ref);
-    if (idx !== -1) applications.value[idx].status = "Cancelled";
+    const idx = applications.value.findIndex((a) => a.id === app.id);
+    if (idx !== -1) applications.value[idx].status = 99;
     dialogTitle.value = "Cancelled";
     dialogMessage.value = `Appointment ${app.ref} has been cancelled.`;
     showDialog.value = true;
