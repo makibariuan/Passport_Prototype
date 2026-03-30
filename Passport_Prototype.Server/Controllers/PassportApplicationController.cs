@@ -146,6 +146,7 @@ namespace Passport_Prototype.Server.Controllers
                 ProcessingType = dto.ProcessingType,
                 PaymentMethod = dto.PaymentMethod,
                 DeliveryOption = dto.DeliveryOption,
+                Amount = dto.Amount,
                 isPaid = false,
                 ApplicationStatus = 1,
                 ApplicationCode = sharedCode,
