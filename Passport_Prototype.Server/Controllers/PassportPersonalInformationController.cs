@@ -97,6 +97,7 @@ public class PassportPersonalInformationsController : ControllerBase
         passportPersonalInformation.BirthProvince = dto.BirthProvince;
         passportPersonalInformation.BirthCity = dto.BirthCity;
         passportPersonalInformation.BirthBarangay = dto.BirthBarangay;
+        passportPersonalInformation.IsAdoptee = dto.IsAdoptee;
 
         await _context.SaveChangesAsync();
 

@@ -56,5 +56,7 @@ namespace Passport_Prototype.Server.Models
         public string? BirthBarangay { get; set; }
 
         public string? Relationship { get; set; }
+
+        public bool? IsAdoptee { get; set; }
     }
 }

@@ -91,5 +91,7 @@ namespace Passport_Prototype.Server.DTOs
         public string? BirthCity { get; set; }
 
         public string? BirthBarangay { get; set; }
+
+        public bool? IsAdoptee { get; set; }
     }
 }
