@@ -1381,6 +1381,7 @@ import axios from "axios";
 import DialogBox from "@/components/DialogBox.vue";
 import LoadingDialog from "./LoadingDialog.vue";
 import { useAuthStore } from "../stores/auth";
+import { BACKEND_DOMAIN } from "../configs/config";
 
 // ─────────────────────────────────────────────
 // GLOBAL STATE
@@ -1792,7 +1793,7 @@ const officeLocationSummary = computed(() => {
 const fetchRelationship = async () => {
   try {
     isLoading.value = true;
-    const { data } = await axios.get("https://localhost:5000/api/PassportProfile/Profiles", {
+    const { data } = await axios.get(`${BACKEND_DOMAIN}/api/PassportProfile/Profiles`, {
       headers: { Authorization: `Bearer ${Auth.token}` },
     });
 
@@ -1823,7 +1824,7 @@ const fetchPersonal = async () => {
   try {
     isLoading.value = true;
     const { data } = await axios.get(
-      `https://localhost:5000/api/PassportPersonalInformations/${selectedProfileId.value}`,
+      `${BACKEND_DOMAIN}/api/PassportPersonalInformations/${selectedProfileId.value}`,
       { headers: { Authorization: `Bearer ${Auth.token}` } },
     );
 
@@ -1864,7 +1865,7 @@ const fetchFamily = async () => {
   try {
     isLoading.value = true;
     const { data } = await axios.get(
-      `https://localhost:5000/api/Families/${selectedProfileId.value}`,
+      `${BACKEND_DOMAIN}/api/Families/${selectedProfileId.value}`,
       { headers: { Authorization: `Bearer ${Auth.token}` } },
     );
 
@@ -1928,7 +1929,7 @@ const fetchContact = async () => {
   try {
     isLoading.value = true;
     const { data } = await axios.get(
-      `https://localhost:5000/api/ContactInformation/${selectedProfileId.value}`,
+      `${BACKEND_DOMAIN}/api/ContactInformation/${selectedProfileId.value}`,
       {
         headers: { Authorization: `Bearer ${Auth.token}` },
       },
@@ -1972,7 +1973,7 @@ const fetchWork = async () => {
   try {
     isLoading.value = true;
     const { data } = await axios.get(
-      `https://localhost:5000/api/WorkInformation/${selectedProfileId.value}`,
+      `${BACKEND_DOMAIN}/api/WorkInformation/${selectedProfileId.value}`,
       {
         headers: { Authorization: `Bearer ${Auth.token}` },
       },
@@ -2036,7 +2037,7 @@ const updatePersonal = async () => {
       birthCity: birthCity.value,
       birthBarangay: birthBarangay.value,
     };
-    await axios.patch(`https://localhost:5000/api/PassportPersonalInformations`, payload, {
+    await axios.patch(`${BACKEND_DOMAIN}/api/PassportPersonalInformations`, payload, {
       headers: { Authorization: `Bearer ${Auth.token}` },
     });
     dialogTitle.value = "Success";
@@ -2082,7 +2083,7 @@ const updateFamily = async () => {
         citizenship: user.value.motherCitizenship,
       },
     ];
-    await axios.patch(`https://localhost:5000/api/Families`, payload, {
+    await axios.patch(`${BACKEND_DOMAIN}/api/Families`, payload, {
       headers: { Authorization: `Bearer ${Auth.token}` },
     });
     dialogTitle.value = "Success";
@@ -2127,7 +2128,7 @@ const updateContact = async () => {
         ? `${contact.value.landlineCountry} ${contact.value.landlineNumber}`.trim()
         : null,
     };
-    await axios.patch("https://localhost:5000/api/ContactInformation", payload, {
+    await axios.patch(`${BACKEND_DOMAIN}/api/ContactInformation`, payload, {
       headers: { Authorization: `Bearer ${Auth.token}` },
     });
     dialogTitle.value = "Success";
@@ -2175,7 +2176,7 @@ const updateWork = async () => {
         ? `${work.value.workLandlineCountry} ${work.value.workLandlineNumber}`.trim()
         : null,
     };
-    await axios.patch("https://localhost:5000/api/WorkInformation", payload, {
+    await axios.patch(`${BACKEND_DOMAIN}/api/WorkInformation`, payload, {
       headers: { Authorization: `Bearer ${Auth.token}` },
     });
     dialogTitle.value = "Success";
