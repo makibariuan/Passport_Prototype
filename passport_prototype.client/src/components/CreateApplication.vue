@@ -138,10 +138,6 @@
               </label>
             </div>
 
-            <button class="btn btn-add-relationship" @click="showAddProfileModal = true">
-              + Add Profile
-            </button>
-
             <button
               class="btn btn-proceed"
               :disabled="!selectedProfile"
@@ -2156,75 +2152,6 @@ const submit = async () => {
     }
   }
 };
-
-// ── Add Profile Modal ───────────────────────────────────────────────
-const showAddProfileModal = ref(false);
-const addProfileError = ref("");
-const newProfile = ref({
-  lastName: "",
-  firstName: "",
-  middleName: "",
-  suffix: "",
-  relationship: "",
-});
-
-const closeAddProfileModal = () => {
-  showAddProfileModal.value = false;
-  addProfileError.value = "";
-  newProfile.value = {
-    lastName: "",
-    firstName: "",
-    middleName: "",
-    suffix: "",
-    relationship: "",
-  };
-};
-
-const submitAddProfile = async () => {
-  if (!newProfile.value.lastName || !newProfile.value.firstName) {
-    addProfileError.value = "Last name and first name are required.";
-    return;
-  }
-  if (!newProfile.value.relationship) {
-    addProfileError.value = "Please select a relationship.";
-    return;
-  }
-
-  try {
-    const res = await axios.post(
-      `${BACKEND_DOMAIN}/api/YOUR_ENDPOINT_HERE`,
-      {
-        lastName: newProfile.value.lastName,
-        firstName: newProfile.value.firstName,
-        middleName: newProfile.value.middleName,
-        suffix: newProfile.value.suffix,
-        relationship: newProfile.value.relationship,
-      },
-      { headers: { Authorization: `Bearer ${Auth.token}` } },
-    );
-
-    // Push the new profile into the list so it appears immediately
-    profiles.value.push({
-      id: res.data.passportPersonalInformationId,
-      name: [
-        newProfile.value.firstName,
-        newProfile.value.middleName,
-        newProfile.value.lastName,
-        newProfile.value.suffix,
-      ]
-        .filter(Boolean)
-        .join(" "),
-      relationship: newProfile.value.relationship,
-    });
-
-    closeAddProfileModal();
-    await fetchProfiles();
-  } catch (err) {
-    console.error("Failed to add profile:", err);
-    addProfileError.value =
-      err?.response?.data?.message ?? "Failed to add profile. Please try again.";
-  }
-};
 </script>
 
 <style scoped>
@@ -4063,23 +3990,6 @@ const submitAddProfile = async () => {
   text-align: center;
   padding: 12px 22px 4px;
   margin: 0;
-}
-
-.btn-add-relationship {
-  background: #fff;
-  color: #06195e;
-  border: 1.5px dashed #a3b4e8;
-  border-radius: 8px;
-  padding: 8px 18px;
-  font-size: 0.82rem;
-  font-weight: 600;
-  cursor: pointer;
-  margin-top: 10px;
-  width: 100%;
-  transition: background 0.15s;
-}
-.btn-add-relationship:hover {
-  background: #eef2fb;
 }
 
 /* ── Responsive ──────────────────────────────────────────────────── */

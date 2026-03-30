@@ -31,16 +31,19 @@
           <div class="pds-relationship-label">
             <p class="pds-relationship-title">This profile is for:</p>
           </div>
-          <select
-            v-model="selectedProfileId"
-            class="pds-input pds-relationship-select"
-            :class="{ 'pds-input-error': showValidationErrors && !selectedProfileId }"
-          >
-            <option disabled value="">— Select Relationship —</option>
-            <option v-for="profile in validProfiles" :key="profile.id" :value="profile.id">
-              {{ profile.relationship }}
-            </option>
-          </select>
+          <div style="display: flex; align-items: center; gap: 10px">
+            <select
+              v-model="selectedProfileId"
+              class="pds-input pds-relationship-select"
+              :class="{ 'pds-input-error': showValidationErrors && !selectedProfileId }"
+            >
+              <option disabled value="">— Select Relationship —</option>
+              <option v-for="profile in validProfiles" :key="profile.id" :value="profile.id">
+                {{ profile.relationship }}
+              </option>
+            </select>
+            <button class="btn-add-rel" @click="showAddRelModal = true">+ Add</button>
+          </div>
         </div>
       </div>
 
@@ -1372,6 +1375,37 @@
 
   <!-- Loading Dialog -->
   <LoadingDialog :visible="isLoading" />
+
+  <!-- ADD RELATIONSHIP MODAL -->
+  <teleport to="body">
+    <div v-if="showAddRelModal" class="modal-overlay-rel" @click.self="closeAddRelModal">
+      <div class="modal-box-rel">
+        <h3 class="modal-title-rel">Add Relationship</h3>
+        <p class="modal-sub-rel">Enter a relationship type to add it to the dropdown.</p>
+
+        <div style="padding: 0 22px 18px">
+          <label class="pds-label" style="margin-bottom: 6px; display: block">
+            Relationship <span class="required-star">*</span>
+          </label>
+          <input
+            v-model="newRelationshipName"
+            type="text"
+            class="pds-input"
+            placeholder="e.g. Father, Mother..."
+            @keyup.enter="saveNewRelationship"
+          />
+          <p v-if="addRelError" style="font-size: 0.78rem; color: #e53e3e; margin: 6px 0 0">
+            {{ addRelError }}
+          </p>
+        </div>
+
+        <div class="modal-foot-rel">
+          <button class="btn-rel-cancel" @click="closeAddRelModal">Cancel</button>
+          <button class="btn-rel-save" @click="saveNewRelationship">Add</button>
+        </div>
+      </div>
+    </div>
+  </teleport>
 </template>
 
 <script setup>
@@ -1864,10 +1898,9 @@ const fetchFamily = async () => {
   if (!selectedProfileId.value) return;
   try {
     isLoading.value = true;
-    const { data } = await axios.get(
-      `${BACKEND_DOMAIN}/api/Families/${selectedProfileId.value}`,
-      { headers: { Authorization: `Bearer ${Auth.token}` } },
-    );
+    const { data } = await axios.get(`${BACKEND_DOMAIN}/api/Families/${selectedProfileId.value}`, {
+      headers: { Authorization: `Bearer ${Auth.token}` },
+    });
 
     const father = data.find((f) => f.relationship === "Father");
     const mother = data.find((f) => f.relationship === "Mother");
@@ -2226,6 +2259,42 @@ const handleCloseDialog = () => {
 onMounted(async () => {
   await fetchRelationship();
 });
+
+// ── Add Relationship Modal ──────────────────────────────────────────
+const showAddRelModal = ref(false);
+const newRelationshipName = ref("");
+const addRelError = ref("");
+
+const closeAddRelModal = () => {
+  showAddRelModal.value = false;
+  newRelationshipName.value = "";
+  addRelError.value = "";
+};
+
+const saveNewRelationship = async () => {
+  const val = newRelationshipName.value.trim();
+  if (!val) {
+    addRelError.value = "Please enter a relationship.";
+    return;
+  }
+
+  try {
+    isLoading.value = true;
+    await axios.post(
+      `${BACKEND_DOMAIN}/api/YOUR_ENDPOINT_HERE`,
+      { relationship: val },
+      { headers: { Authorization: `Bearer ${Auth.token}` } },
+    );
+
+    closeAddRelModal();
+    await fetchRelationship(); // refetch so the new relationship appears in the dropdown
+  } catch (err) {
+    console.error("Failed to add relationship:", err);
+    addRelError.value = err?.response?.data?.message ?? "Failed to save. Please try again.";
+  } finally {
+    isLoading.value = false;
+  }
+};
 </script>
 
 <style>
@@ -2901,6 +2970,98 @@ onMounted(async () => {
 .button-group-row {
   display: flex;
   margin-top: 20px;
+}
+
+.btn-add-rel {
+  padding: 8px 16px;
+  background: #06195e;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.15s;
+  flex-shrink: 0;
+}
+.btn-add-rel:hover {
+  background: #04134a;
+}
+
+.modal-overlay-rel {
+  position: fixed;
+  inset: 0;
+  background: rgba(30, 40, 80, 0.35);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 300;
+  backdrop-filter: blur(2px);
+}
+
+.modal-box-rel {
+  background: #fff;
+  border-radius: 14px;
+  width: 380px;
+  max-width: 92vw;
+  box-shadow: 0 8px 40px rgba(6, 25, 94, 0.18);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.modal-title-rel {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #06195e;
+  text-align: center;
+  padding: 20px 22px 4px;
+  margin: 0;
+}
+
+.modal-sub-rel {
+  font-size: 0.78rem;
+  color: #718096;
+  text-align: center;
+  margin: 0 0 16px;
+  padding: 0 22px;
+}
+
+.modal-foot-rel {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  padding: 12px 22px 18px;
+  border-top: 1px solid #e2e8f0;
+}
+
+.btn-rel-cancel {
+  background: #f1f5f9;
+  color: #4a5568;
+  border: 1.5px solid #d1d9e6;
+  border-radius: 8px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  padding: 8px 20px;
+  cursor: pointer;
+}
+.btn-rel-cancel:hover {
+  background: #e2e8f0;
+}
+
+.btn-rel-save {
+  background: #06195e;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  padding: 8px 20px;
+  cursor: pointer;
+}
+.btn-rel-save:hover {
+  background: #04134a;
 }
 
 /* ═══════════════════════════════════════════
