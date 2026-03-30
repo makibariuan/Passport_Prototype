@@ -138,8 +138,8 @@
               </label>
             </div>
 
-            <button class="btn btn-add-relationship" @click="showAddRelationshipModal = true">
-              + Add Relationship
+            <button class="btn btn-add-relationship" @click="showAddProfileModal = true">
+              + Add Profile
             </button>
 
             <button
@@ -1348,99 +1348,104 @@
     </teleport>
 
     <!-- ═══════════════════════════════════════════════════════════ -->
-    <!-- ADD RELATIONSHIP MODAL                                      -->
+    <!-- ADD PROFILE MODAL                                          -->
     <!-- ═══════════════════════════════════════════════════════════ -->
     <teleport to="body">
-      <div
-        v-if="showAddRelationshipModal"
-        class="modal-overlay"
-        @click.self="closeRelationshipModal"
-      >
-        <div class="modal-box modal-small">
-          <h3 class="modal-title" style="padding: 18px 22px 0">Add Relationship</h3>
-          <p style="font-size: 12.5px; color: #718096; text-align: center; margin: 6px 0 0">
-            Enter a relationship type to add it to the list.
+      <div v-if="showAddProfileModal" class="modal-overlay" @click.self="closeAddProfileModal">
+        <div class="modal-box" style="width: 560px">
+          <h3 class="modal-title" style="padding: 18px 22px 0">Add Profile</h3>
+          <p
+            style="
+              font-size: 12.5px;
+              color: #718096;
+              text-align: center;
+              margin: 6px 0 0;
+              padding: 0 22px;
+            "
+          >
+            Fill in the details to create a new profile.
           </p>
 
-          <div style="padding: 18px 22px">
-            <label
+          <div style="padding: 18px 22px; display: flex; flex-direction: column; gap: 14px">
+            <!-- Row 1: Last Name, First Name, Middle Name, Suffix -->
+            <div
               style="
-                font-size: 0.82rem;
-                font-weight: 600;
-                color: #4a5568;
-                display: block;
-                margin-bottom: 6px;
+                display: grid;
+                grid-template-columns: 1fr 1fr 1fr auto;
+                gap: 12px;
+                align-items: end;
               "
             >
-              Relationship <span class="required">*</span>
-            </label>
-            <input
-              v-model="newRelationship"
-              type="text"
-              class="form-input"
-              placeholder="e.g. Father, Mother, Spouse..."
-              @keyup.enter="saveRelationship"
-            />
-            <p v-if="relationshipError" style="font-size: 0.78rem; color: #e53e3e; margin: 6px 0 0">
-              {{ relationshipError }}
-            </p>
-
-            <!-- Preview of existing relationships -->
-            <div v-if="customRelationships.length" style="margin-top: 14px">
-              <p
-                style="
-                  font-size: 0.75rem;
-                  font-weight: 700;
-                  color: #718096;
-                  text-transform: uppercase;
-                  letter-spacing: 0.04em;
-                  margin-bottom: 8px;
-                "
-              >
-                Added relationships
-              </p>
-              <div style="display: flex; flex-wrap: wrap; gap: 6px">
-                <span
-                  v-for="(rel, i) in customRelationships"
-                  :key="i"
-                  style="
-                    display: inline-flex;
-                    align-items: center;
-                    gap: 6px;
-                    background: #eef2fb;
-                    border: 1px solid #a3b4e8;
-                    border-radius: 6px;
-                    padding: 4px 10px;
-                    font-size: 0.78rem;
-                    color: #2b4b9e;
-                    font-weight: 600;
-                  "
-                >
-                  {{ rel }}
-                  <button
-                    @click="customRelationships.splice(i, 1)"
-                    style="
-                      background: none;
-                      border: none;
-                      cursor: pointer;
-                      color: #718096;
-                      font-size: 0.75rem;
-                      padding: 0;
-                      line-height: 1;
-                      display: flex;
-                      align-items: center;
-                    "
-                  >
-                    ✕
-                  </button>
-                </span>
+              <div class="form-group">
+                <label class="form-label">Last Name <span class="required">*</span></label>
+                <input
+                  v-model="newProfile.lastName"
+                  type="text"
+                  class="form-input"
+                  placeholder="Last Name"
+                />
+              </div>
+              <div class="form-group">
+                <label class="form-label">First Name <span class="required">*</span></label>
+                <input
+                  v-model="newProfile.firstName"
+                  type="text"
+                  class="form-input"
+                  placeholder="First Name"
+                />
+              </div>
+              <div class="form-group">
+                <label class="form-label">Middle Name</label>
+                <input
+                  v-model="newProfile.middleName"
+                  type="text"
+                  class="form-input"
+                  placeholder="Middle Name"
+                />
+              </div>
+              <div class="form-group">
+                <label class="form-label">Suffix</label>
+                <div class="select-wrap" style="width: 90px">
+                  <select v-model="newProfile.suffix" class="form-select">
+                    <option value="">—</option>
+                    <option value="Jr.">Jr.</option>
+                    <option value="Sr.">Sr.</option>
+                    <option value="II">II</option>
+                    <option value="III">III</option>
+                    <option value="IV">IV</option>
+                  </select>
+                  <span class="select-arrow">▾</span>
+                </div>
               </div>
             </div>
+
+            <!-- Row 2: Relationship -->
+            <div class="form-group">
+              <label class="form-label">Relationship <span class="required">*</span></label>
+              <div class="select-wrap">
+                <select v-model="newProfile.relationship" class="form-select">
+                  <option value="" disabled>Select relationship</option>
+                  <option value="Father">Father</option>
+                  <option value="Mother">Mother</option>
+                  <option value="Spouse">Spouse</option>
+                  <option value="Sibling">Sibling</option>
+                  <option value="Child">Child</option>
+                  <option value="Guardian">Guardian</option>
+                  <option value="Self">Self</option>
+                </select>
+                <span class="select-arrow">▾</span>
+              </div>
+            </div>
+
+            <!-- Error -->
+            <p v-if="addProfileError" style="font-size: 0.78rem; color: #e53e3e; margin: 0">
+              {{ addProfileError }}
+            </p>
           </div>
 
           <div class="modal-foot">
-            <button class="btn-modal-cancel" @click="closeRelationshipModal">Cancel</button>
-            <button class="btn-modal-agree" @click="saveRelationship">Save</button>
+            <button class="btn-modal-cancel" @click="closeAddProfileModal">Cancel</button>
+            <button class="btn-modal-agree" @click="submitAddProfile">Add Profile</button>
           </div>
         </div>
       </div>
@@ -2157,42 +2162,71 @@ const submit = async () => {
   }
 };
 
-// ── Add Relationship Modal ──────────────────────────────────────────
-const showAddRelationshipModal = ref(false);
-const newRelationship = ref("");
-const relationshipError = ref("");
-const customRelationships = ref([]);
+// ── Add Profile Modal ───────────────────────────────────────────────
+const showAddProfileModal = ref(false);
+const addProfileError = ref("");
+const newProfile = ref({
+  lastName: "",
+  firstName: "",
+  middleName: "",
+  suffix: "",
+  relationship: "",
+});
 
-const closeRelationshipModal = () => {
-  showAddRelationshipModal.value = false;
-  newRelationship.value = "";
-  relationshipError.value = "";
+const closeAddProfileModal = () => {
+  showAddProfileModal.value = false;
+  addProfileError.value = "";
+  newProfile.value = {
+    lastName: "",
+    firstName: "",
+    middleName: "",
+    suffix: "",
+    relationship: "",
+  };
 };
 
-const saveRelationship = async () => {
-  const val = newRelationship.value.trim();
-  if (!val) {
-    relationshipError.value = "Please enter a relationship.";
+const submitAddProfile = async () => {
+  if (!newProfile.value.lastName || !newProfile.value.firstName) {
+    addProfileError.value = "Last name and first name are required.";
     return;
   }
-  if (customRelationships.value.map((r) => r.toLowerCase()).includes(val.toLowerCase())) {
-    relationshipError.value = "This relationship already exists.";
+  if (!newProfile.value.relationship) {
+    addProfileError.value = "Please select a relationship.";
     return;
   }
 
   try {
-    await axios.post(
+    const res = await axios.post(
       `${BACKEND_DOMAIN}/api/YOUR_ENDPOINT_HERE`,
-      { relationship: val },
+      {
+        lastName: newProfile.value.lastName,
+        firstName: newProfile.value.firstName,
+        middleName: newProfile.value.middleName,
+        suffix: newProfile.value.suffix,
+        relationship: newProfile.value.relationship,
+      },
       { headers: { Authorization: `Bearer ${Auth.token}` } },
     );
 
-    customRelationships.value.push(val);
-    newRelationship.value = "";
-    relationshipError.value = "";
+    // Push the new profile into the list so it appears immediately
+    profiles.value.push({
+      id: res.data.passportPersonalInformationId,
+      name: [
+        newProfile.value.firstName,
+        newProfile.value.middleName,
+        newProfile.value.lastName,
+        newProfile.value.suffix,
+      ]
+        .filter(Boolean)
+        .join(" "),
+      relationship: newProfile.value.relationship,
+    });
+
+    closeAddProfileModal();
   } catch (err) {
-    console.error("Failed to save relationship:", err);
-    relationshipError.value = err?.response?.data?.message ?? "Failed to save. Please try again.";
+    console.error("Failed to add profile:", err);
+    addProfileError.value =
+      err?.response?.data?.message ?? "Failed to add profile. Please try again.";
   }
 };
 </script>
