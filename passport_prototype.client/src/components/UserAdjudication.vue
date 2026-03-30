@@ -344,9 +344,9 @@
 
       //Adjudication
 
-        //case "Adjudication":
-        //  await getPendingAdjudication();
-        //  break;
+        case "Adjudication":
+          await getPendingAdjudication();
+          break;
 
       //Adjudication
 
@@ -863,20 +863,20 @@
     }
   }
 
-  //async function getPendingAdjudication() {
-  //  try {
-  //    isLoading.value = true;
-  //    const res = await api.get(`/hr/adjudication`);
-  //    console.log("1. API Raw Response:", res.data); // Should show an array
+  async function getPendingAdjudication() {
+    try {
+      isLoading.value = true;
+      const res = await api.get(`/hr/adjudication`);
+      console.log("1. API Raw Response:", res.data); // Should show an array
 
-  //    employeeForAdjudication.value = res.data || [];
-  //    console.log("2. Assigned to Ref:", employeeForAdjudication.value.length, "items");
-  //  } catch (err) {
-  //    console.error("Adjudication fetch failed:", err);
-  //  } finally {
-  //    isLoading.value = false;
-  //  }
-  //}
+      employeeForAdjudication.value = res.data || [];
+      console.log("2. Assigned to Ref:", employeeForAdjudication.value.length, "items");
+    } catch (err) {
+      console.error("Adjudication fetch failed:", err);
+    } finally {
+      isLoading.value = false;
+    }
+  }
 
   // Helper to handle base64 images from backend
   const renderImage = (base64) => {
@@ -919,6 +919,8 @@
 
   // 5. Modal Logic
   const openAdjudication = async (emp) => {
+    console.log(emp);
+
     adjCurrent.value = null;
     adjHit.value = null;
     isLoading.value = true;
