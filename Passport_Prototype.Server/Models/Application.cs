@@ -45,6 +45,8 @@ namespace Passport_Prototype.Server.Models
 
         public string? DeliveryOption { get; set; }
 
+        public int? Amount { get; set; }
+
         public bool? isPaid { get; set; }
 
         public int ApplicationStatus { get; set; }
