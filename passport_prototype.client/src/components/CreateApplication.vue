@@ -1899,11 +1899,15 @@ const showPaymentStatus = ref(false); // controls selection vs status panel insi
 const showPaymentSuccess = ref(false);
 const showEReceipt = ref(false);
 
-const totalAmount = computed(() => {
+const totalAmountRaw = computed(() => {
   let base = processingType.value === "special" ? 1200 : 950;
   if (paymentMethod.value === "otc") base += 50;
-  return base.toLocaleString("en-PH", { minimumFractionDigits: 2 });
+  return base; // plain number: 950, 1200, 1000, 1250
 });
+
+const totalAmount = computed(() =>
+  totalAmountRaw.value.toLocaleString("en-PH", { minimumFractionDigits: 2 }),
+);
 
 // Step 1: User clicks "I Agree" on Payment Confirmation modal
 //         → hide modal, show Status panel inside step 5
@@ -2114,7 +2118,7 @@ const submit = async () => {
     formData.append("PaymentMethod", paymentMethod.value ?? "");
     formData.append("DeliveryOption", deliveryOption.value ?? "");
     formData.append("isPaid", showPaymentSuccess.value);
-   formData.append("Amount", totalAmount.value.replace(/,/g, ""));
+    formData.append("Amount", totalAmountRaw.value);
 
     // ── Log full FormData before sending ────────────────
     for (let [key, val] of formData.entries()) {

@@ -1440,7 +1440,7 @@
 
 <script setup>
 import LeftMenu from "@/components/LeftMenu.vue";
-import { ref, computed, onMounted } from "vue";
+import { ref, computed, onMounted, nextTick } from "vue";
 import axios from "axios";
 import DialogBox from "@/components/DialogBox.vue";
 import LoadingDialog from "./LoadingDialog.vue";
@@ -1956,24 +1956,29 @@ const fetchContact = async () => {
     });
 
     contact.value.id = data.id;
-
-    // personalInfoId fallback
     if (!user.value.personalInfoId) {
       user.value.personalInfoId = data.passportPersonalInformationId;
     }
 
-    // ✅ Map address fields into address ref
     address.value.street = data.currentStreet ?? "";
     address.value.abroad = data.addressAbroad ?? "";
-    address.value.country = data.currentCountry ?? "";
-    address.value.region = data.currentRegion ?? "";
-    address.value.province = data.currentProvince ?? "";
-    // API field: currentCityMunicipality → template: municipality
-    address.value.municipality = data.currentCityMunicipality ?? "";
-    address.value.barangay = data.currentBarangay ?? "";
     address.value.postal = data.currentPostalCode ?? "";
 
-    // ✅ Parse phone strings back into split fields
+    // ── Set parent first, then children after nextTick ──
+    address.value.country = data.currentCountry ?? "";
+    await nextTick();
+
+    address.value.region = data.currentRegion ?? "";
+    await nextTick();
+
+    address.value.province = data.currentProvince ?? "";
+    await nextTick();
+
+    address.value.municipality = data.currentCityMunicipality ?? "";
+    await nextTick();
+
+    address.value.barangay = data.currentBarangay ?? "";
+
     const mob = parseMobile(data.personalMobileNumber);
     contact.value.mobileCountry = mob.country;
     contact.value.mobilePrefix = mob.prefix;
@@ -1997,24 +2002,30 @@ const fetchWork = async () => {
     });
 
     work.value.id = data.id;
-
-    // personalInfoId fallback
     if (!user.value.personalInfoId) {
       user.value.personalInfoId = data.passportPersonalInformationId;
     }
 
     work.value.occupation = data.occupation ?? "";
-    work.value.employer = data.employer ?? ""; // ✅ was missing
+    work.value.employer = data.employer ?? "";
     work.value.officeAddress = data.officeAddress ?? "";
-    work.value.officeCountry = data.officCountry ?? "";
-    work.value.officeRegion = data.officeRegion ?? "";
-    work.value.officeProvince = data.officeProvince ?? "";
-    // ✅ API field: officeCityMunicipality → template ref: officeMunicipality
-    work.value.officeMunicipality = data.officeCityMunicipality ?? "";
-    work.value.officeBarangay = data.officeBarangay ?? "";
     work.value.postalCode = data.officePostalCode ?? "";
 
-    // ✅ Parse phone strings back into split fields
+    // ── Set parent first, then children after nextTick ──
+    work.value.officeCountry = data.officCountry ?? ""; // note: keep your existing typo if API has it
+    await nextTick();
+
+    work.value.officeRegion = data.officeRegion ?? "";
+    await nextTick();
+
+    work.value.officeProvince = data.officeProvince ?? "";
+    await nextTick();
+
+    work.value.officeMunicipality = data.officeCityMunicipality ?? "";
+    await nextTick();
+
+    work.value.officeBarangay = data.officeBarangay ?? "";
+
     const mob = parseMobile(data.officeMobileNumber);
     work.value.workMobileCountry = mob.country;
     work.value.workMobilePrefix = mob.prefix;
