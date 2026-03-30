@@ -138,6 +138,10 @@
               </label>
             </div>
 
+            <button class="btn btn-add-relationship" @click="showAddRelationshipModal = true">
+              + Add Relationship
+            </button>
+
             <button
               class="btn btn-proceed"
               :disabled="!selectedProfile"
@@ -1344,6 +1348,105 @@
     </teleport>
 
     <!-- ═══════════════════════════════════════════════════════════ -->
+    <!-- ADD RELATIONSHIP MODAL                                      -->
+    <!-- ═══════════════════════════════════════════════════════════ -->
+    <teleport to="body">
+      <div
+        v-if="showAddRelationshipModal"
+        class="modal-overlay"
+        @click.self="closeRelationshipModal"
+      >
+        <div class="modal-box modal-small">
+          <h3 class="modal-title" style="padding: 18px 22px 0">Add Relationship</h3>
+          <p style="font-size: 12.5px; color: #718096; text-align: center; margin: 6px 0 0">
+            Enter a relationship type to add it to the list.
+          </p>
+
+          <div style="padding: 18px 22px">
+            <label
+              style="
+                font-size: 0.82rem;
+                font-weight: 600;
+                color: #4a5568;
+                display: block;
+                margin-bottom: 6px;
+              "
+            >
+              Relationship <span class="required">*</span>
+            </label>
+            <input
+              v-model="newRelationship"
+              type="text"
+              class="form-input"
+              placeholder="e.g. Father, Mother, Spouse..."
+              @keyup.enter="saveRelationship"
+            />
+            <p v-if="relationshipError" style="font-size: 0.78rem; color: #e53e3e; margin: 6px 0 0">
+              {{ relationshipError }}
+            </p>
+
+            <!-- Preview of existing relationships -->
+            <div v-if="customRelationships.length" style="margin-top: 14px">
+              <p
+                style="
+                  font-size: 0.75rem;
+                  font-weight: 700;
+                  color: #718096;
+                  text-transform: uppercase;
+                  letter-spacing: 0.04em;
+                  margin-bottom: 8px;
+                "
+              >
+                Added relationships
+              </p>
+              <div style="display: flex; flex-wrap: wrap; gap: 6px">
+                <span
+                  v-for="(rel, i) in customRelationships"
+                  :key="i"
+                  style="
+                    display: inline-flex;
+                    align-items: center;
+                    gap: 6px;
+                    background: #eef2fb;
+                    border: 1px solid #a3b4e8;
+                    border-radius: 6px;
+                    padding: 4px 10px;
+                    font-size: 0.78rem;
+                    color: #2b4b9e;
+                    font-weight: 600;
+                  "
+                >
+                  {{ rel }}
+                  <button
+                    @click="customRelationships.splice(i, 1)"
+                    style="
+                      background: none;
+                      border: none;
+                      cursor: pointer;
+                      color: #718096;
+                      font-size: 0.75rem;
+                      padding: 0;
+                      line-height: 1;
+                      display: flex;
+                      align-items: center;
+                    "
+                  >
+                    ✕
+                  </button>
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <div class="modal-foot">
+            <button class="btn-modal-cancel" @click="closeRelationshipModal">Cancel</button>
+            <button class="btn-modal-agree" @click="saveRelationship">Save</button>
+          </div>
+        </div>
+      </div>
+    </teleport>
+
+    <!-- ═══════════════════════════════════════════════════════════ -->
     <!-- DFA ePAYMENT RECEIPT MODAL                                 -->
     <!-- ═══════════════════════════════════════════════════════════ -->
     <teleport to="body">
@@ -2051,6 +2154,45 @@ const submit = async () => {
       console.error("Runtime error:", err.message, err.stack);
       alert(`Runtime error: ${err.message}`);
     }
+  }
+};
+
+// ── Add Relationship Modal ──────────────────────────────────────────
+const showAddRelationshipModal = ref(false);
+const newRelationship = ref("");
+const relationshipError = ref("");
+const customRelationships = ref([]);
+
+const closeRelationshipModal = () => {
+  showAddRelationshipModal.value = false;
+  newRelationship.value = "";
+  relationshipError.value = "";
+};
+
+const saveRelationship = async () => {
+  const val = newRelationship.value.trim();
+  if (!val) {
+    relationshipError.value = "Please enter a relationship.";
+    return;
+  }
+  if (customRelationships.value.map((r) => r.toLowerCase()).includes(val.toLowerCase())) {
+    relationshipError.value = "This relationship already exists.";
+    return;
+  }
+
+  try {
+    await axios.post(
+      `${BACKEND_DOMAIN}/api/YOUR_ENDPOINT_HERE`,
+      { relationship: val },
+      { headers: { Authorization: `Bearer ${Auth.token}` } },
+    );
+
+    customRelationships.value.push(val);
+    newRelationship.value = "";
+    relationshipError.value = "";
+  } catch (err) {
+    console.error("Failed to save relationship:", err);
+    relationshipError.value = err?.response?.data?.message ?? "Failed to save. Please try again.";
   }
 };
 </script>
@@ -3891,6 +4033,23 @@ const submit = async () => {
   text-align: center;
   padding: 12px 22px 4px;
   margin: 0;
+}
+
+.btn-add-relationship {
+  background: #fff;
+  color: #06195e;
+  border: 1.5px dashed #a3b4e8;
+  border-radius: 8px;
+  padding: 8px 18px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 10px;
+  width: 100%;
+  transition: background 0.15s;
+}
+.btn-add-relationship:hover {
+  background: #eef2fb;
 }
 
 /* ── Responsive ──────────────────────────────────────────────────── */
