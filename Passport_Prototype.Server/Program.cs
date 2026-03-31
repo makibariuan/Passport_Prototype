@@ -23,15 +23,17 @@ using System.Text;
 
 QuestPDF.Settings.License = LicenseType.Community;
 
+// Original Directory settings
+//var builder = WebApplication.CreateBuilder(new WebApplicationOptions
+//{
+//    Args = args,
+//    ContentRootPath = AppContext.BaseDirectory,
+//    WebRootPath = "wwwroot" // Explicitly tell it to look for this folder
+//});
 
-var builder = WebApplication.CreateBuilder(new WebApplicationOptions
-{
-    Args = args,
-    ContentRootPath = AppContext.BaseDirectory,
-    WebRootPath = "wwwroot" // Explicitly tell it to look for this folder
-});
-
-
+// Directory placement fix
+var builder = WebApplication.CreateBuilder(args); // uses default project root
+builder.WebHost.UseWebRoot("wwwroot"); // explicitly sets WebRootPath
 
 // ------------------ Services ------------------
 builder.Services.Configure<ForwardedHeadersOptions>(options =>
@@ -215,7 +217,7 @@ builder.Services.AddAuthorization(options =>
         policy.RequireClaim("userrole", "5"));
 });
 
-builder.Services.AddScoped<IFileUploadService, FileUploadService>();
+builder.Services.AddScoped<IFileUploadService, FileUploadService>(); // for file upload testing
 
 builder.Services.AddAuthorization();
 
