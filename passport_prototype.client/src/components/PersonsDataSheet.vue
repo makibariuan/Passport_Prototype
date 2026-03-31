@@ -1850,6 +1850,67 @@ const fetchRelationship = async () => {
   }
 };
 
+  //new fetchcontact
+  const fetchContact = async () => {
+    try {
+      isLoading.value = true;
+
+      const { data } = await axios.get(
+        `${BACKEND_DOMAIN}/api/ContactInformation/${selectedProfileId.value}`,
+        {
+          headers: { Authorization: `Bearer ${Auth.token}` },
+        },
+      );
+
+      contact.value.id = data.id;
+
+      // Fallback personalInfoId
+      if (!user.value.personalInfoId) {
+        user.value.personalInfoId = selectedProfileId.value;
+      }
+
+      // Trim strings
+      const country = (data.currentCountry ?? "").trim();
+      address.value.country = country;
+
+      address.value.street = (data.currentStreet ?? "").trim();
+      address.value.abroad = (data.addressAbroad ?? "").trim(); // ✅ correct field
+      address.value.postal = (data.currentPostalCode ?? "").trim();
+
+      if (country === "PH") {
+        // PH-specific hierarchy
+        address.value.region = (data.currentRegion ?? "").trim();
+        address.value.province = (data.currentProvince ?? "").trim();
+        address.value.municipality = (data.currentCityMunicipality ?? "").trim();
+        address.value.barangay = (data.currentBarangay ?? "").trim();
+        address.value.city = ""; // clear foreign city
+      } else {
+        // Non-PH
+        address.value.city = (data.currentCityMunicipality ?? "").trim();
+        // clear PH-specific fields
+        address.value.region = "";
+        address.value.province = "";
+        address.value.municipality = "";
+        address.value.barangay = "";
+      }
+
+      // Parse mobile and landline
+      const mob = parseMobile(data.personalMobileNumber);
+      contact.value.mobileCountry = mob.country;
+      contact.value.mobilePrefix = mob.prefix;
+      contact.value.mobileNumber = mob.number;
+
+      const land = parseLandline(data.personalLandlineNumber);
+      contact.value.landlineCountry = land.country;
+      contact.value.landlineNumber = land.number;
+
+    } catch (err) {
+      console.error("fetchContact error:", err);
+    } finally {
+      isLoading.value = false;
+    }
+  };
+
 // ─────────────────────────────────────────────
 // API — FETCH PERSONAL  (uses selectedProfileId)
 // ─────────────────────────────────────────────
@@ -1958,93 +2019,76 @@ const parseLandline = (str) => {
 // ─────────────────────────────────────────────
 // API — FETCH CONTACT  (uses selectedProfileId)
 // ─────────────────────────────────────────────
-const fetchContact = async () => {
-  try {
-    isLoading.value = true;
-    const { data } = await axios.get(
-      `${BACKEND_DOMAIN}/api/ContactInformation/${selectedProfileId.value}`,
-      {
-        headers: { Authorization: `Bearer ${Auth.token}` },
-      },
-    );
 
-    contact.value.id = data.id;
 
-    // personalInfoId fallback
-    if (!user.value.personalInfoId) {
-      user.value.personalInfoId = selectedProfileId.value;
+
+
+
+
+  //NEW FETCH WORK
+  const fetchWork = async () => {
+    try {
+      isLoading.value = true;
+
+      const { data } = await axios.get(
+        `${BACKEND_DOMAIN}/api/WorkInformation/${selectedProfileId.value}`,
+        {
+          headers: { Authorization: `Bearer ${Auth.token}` },
+        },
+      );
+
+      // Set basic IDs
+      work.value.id = data.id;
+
+      // Fallback personalInfoId
+      if (!user.value.personalInfoId) {
+        user.value.personalInfoId = selectedProfileId.value;
+      }
+
+      // Basic fields
+      work.value.occupation = data.occupation ?? "";
+      work.value.employer = data.employer ?? "";
+      work.value.officeAddress = data.officeAddress ?? "";
+      work.value.postalCode = data.officePostalCode ?? "";
+
+      // Trim country and set hierarchy
+      const country = (data.officeCountry ?? "").trim();
+      work.value.officeCountry = country;
+
+      if (country === "PH") {
+        // PH-specific fields
+        work.value.officeRegion = (data.officeRegion ?? "").trim();
+        work.value.officeProvince = (data.officeProvince ?? "").trim();
+        work.value.officeMunicipality = (data.officeCityMunicipality ?? "").trim();
+        work.value.officeBarangay = (data.officeBarangay ?? "").trim();
+        // Clear foreign city
+        work.value.officeCity = "";
+      } else {
+        // Non-PH
+        work.value.officeCity = (data.officeCityMunicipality ?? "").trim();
+        // Clear PH-specific fields
+        work.value.officeRegion = "";
+        work.value.officeProvince = "";
+        work.value.officeMunicipality = "";
+        work.value.officeBarangay = "";
+      }
+
+      // Mobile & Landline
+      const mob = parseMobile(data.officeMobileNumber);
+      work.value.workMobileCountry = mob.country;
+      work.value.workMobilePrefix = mob.prefix;
+      work.value.workMobileNumber = mob.number;
+
+      const land = parseLandline(data.officeLandlineNumber);
+      work.value.workLandlineCountry = land.country;
+      work.value.workLandlineNumber = land.number;
+
+    } catch (err) {
+      console.error("fetchWork error:", err);
+    } finally {
+      isLoading.value = false;
     }
-
-    // ✅ Map address fields into address ref
-    address.value.street = data.currentStreet ?? "";
-    address.value.abroad = data.currentAddressAbroad ?? "";
-    address.value.country = data.currentCountry ?? "";
-    address.value.region = data.currentRegion ?? "";
-    address.value.province = data.currentProvince ?? "";
-    // API field: currentCityMunicipality → template: municipality
-    address.value.municipality = data.currentCityMunicipality ?? "";
-    address.value.barangay = data.currentBarangay ?? "";
-    address.value.postal = data.currentPostalCode ?? "";
-
-    // ✅ Parse phone strings back into split fields
-    const mob = parseMobile(data.personalMobileNumber);
-    contact.value.mobileCountry = mob.country;
-    contact.value.mobilePrefix = mob.prefix;
-    contact.value.mobileNumber = mob.number;
-
-    const land = parseLandline(data.personalLandlineNumber);
-    contact.value.landlineCountry = land.country;
-    contact.value.landlineNumber = land.number;
-  } catch (err) {
-    console.log("fetchContact error:", err);
-  } finally {
-    isLoading.value = false;
-  }
-};
-
-const fetchWork = async () => {
-  try {
-    isLoading.value = true;
-    const { data } = await axios.get(
-      `${BACKEND_DOMAIN}/api/WorkInformation/${selectedProfileId.value}`,
-      {
-        headers: { Authorization: `Bearer ${Auth.token}` },
-      },
-    );
-
-    work.value.id = data.id;
-
-    // personalInfoId fallback
-    if (!user.value.personalInfoId) {
-      user.value.personalInfoId = selectedProfileId.value;
-    }
-
-    work.value.occupation = data.occupation ?? "";
-    work.value.employer = data.employer ?? ""; // ✅ was missing
-    work.value.officeAddress = data.officeAddress ?? "";
-    work.value.officeCountry = data.officeCountry ?? "";
-    work.value.officeRegion = data.officeRegion ?? "";
-    work.value.officeProvince = data.officeProvince ?? "";
-    // ✅ API field: officeCityMunicipality → template ref: officeMunicipality
-    work.value.officeMunicipality = data.officeCityMunicipality ?? "";
-    work.value.officeBarangay = data.officeBarangay ?? "";
-    work.value.postalCode = data.officePostalCode ?? "";
-
-    // ✅ Parse phone strings back into split fields
-    const mob = parseMobile(data.officeMobileNumber);
-    work.value.workMobileCountry = mob.country;
-    work.value.workMobilePrefix = mob.prefix;
-    work.value.workMobileNumber = mob.number;
-
-    const land = parseLandline(data.officeLandlineNumber);
-    work.value.workLandlineCountry = land.country;
-    work.value.workLandlineNumber = land.number;
-  } catch (err) {
-    console.log("fetchWork error:", err);
-  } finally {
-    isLoading.value = false;
-  }
-};
+  };
 
 // ─────────────────────────────────────────────
 // API — PATCH PERSONAL
@@ -2132,50 +2176,57 @@ const updateFamily = async () => {
   }
 };
 
-const updateContact = async () => {
-  try {
-    isLoading.value = true;
-    const payload = {
-      id: contact.value.id,
-      passportPersonalInformationId: selectedProfileId.value,
+  //new update contact
+  const updateContact = async () => {
+    try {
+      isLoading.value = true;
 
-      // Address
-      currentStreet: address.value.street || null,
-      currentAddressAbroad: address.value.abroad || null,
-      currentCountry: address.value.country || null,
-      currentRegion: address.value.country === "PH" ? address.value.region || null : null,
-      currentProvince: address.value.country === "PH" ? address.value.province || null : null,
-      currentCityMunicipality:
-        address.value.country === "PH"
-          ? address.value.municipality || null
-          : address.value.city || null,
-      currentBarangay: address.value.country === "PH" ? address.value.barangay || null : null,
-      currentPostalCode: address.value.postal || null,
+      // Prepare payload to match backend DTO
+      const payload = {
+        passportPersonalInformationId: selectedProfileId.value, // always required
 
-      // Contact numbers — stored as full formatted strings
-      personalMobileNumber:
-        contact.value.mobilePrefix || contact.value.mobileNumber
-          ? `${contact.value.mobileCountry} ${contact.value.mobilePrefix}${contact.value.mobileNumber}`.trim()
+        // ── Address fields ──
+        currentStreet: address.value.street?.trim() || null,
+        addressAbroad: address.value.abroad?.trim() || null, // ✅ use correct field name
+        currentCountry: address.value.country?.trim() || null,
+        currentRegion: address.value.country === "PH" ? address.value.region?.trim() || null : null,
+        currentProvince: address.value.country === "PH" ? address.value.province?.trim() || null : null,
+        currentCityMunicipality:
+          address.value.country === "PH"
+            ? address.value.municipality?.trim() || null
+            : address.value.city?.trim() || null,
+        currentBarangay: address.value.country === "PH" ? address.value.barangay?.trim() || null : null,
+        currentPostalCode: address.value.postal?.trim() || null,
+
+        // ── Contact numbers ──
+        personalMobileNumber: contact.value.mobileNumber
+          ? `${contact.value.mobileCountry || ""}${contact.value.mobilePrefix || ""}${contact.value.mobileNumber}`.trim()
           : null,
-      personalLandlineNumber: contact.value.landlineNumber
-        ? `${contact.value.landlineCountry} ${contact.value.landlineNumber}`.trim()
-        : null,
-    };
-    await axios.patch(`${BACKEND_DOMAIN}/api/ContactInformation`, payload, {
-      headers: { Authorization: `Bearer ${Auth.token}` },
-    });
-    dialogTitle.value = "Success";
-    dialogMessage.value = "Contact info saved.";
-    showDialog.value = true;
-  } catch (err) {
-    console.log("updateContact error:", err);
-    dialogTitle.value = "Error";
-    dialogMessage.value = "Failed to save contact info.";
-    showDialog.value = true;
-  } finally {
-    isLoading.value = false;
-  }
-};
+        personalLandlineNumber: contact.value.landlineNumber
+          ? `${contact.value.landlineCountry || ""}${contact.value.landlineNumber}`.trim()
+          : null,
+
+        // Optional email
+        email: contact.value.email?.trim() || null,
+      };
+
+      // Send PATCH request
+      await axios.patch(`${BACKEND_DOMAIN}/api/ContactInformation`, payload, {
+        headers: { Authorization: `Bearer ${Auth.token}` },
+      });
+
+      dialogTitle.value = "Success";
+      dialogMessage.value = "Contact info saved.";
+      showDialog.value = true;
+    } catch (err) {
+      console.error("updateContact error:", err);
+      dialogTitle.value = "Error";
+      dialogMessage.value = "Failed to save contact info.";
+      showDialog.value = true;
+    } finally {
+      isLoading.value = false;
+    }
+  };
 
 const updateWork = async () => {
   try {
