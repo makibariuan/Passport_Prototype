@@ -1948,98 +1948,121 @@ const fetchFamily = async () => {
   }
 };
 
-const fetchContact = async () => {
-  try {
-    isLoading.value = true;
-    const { data } = await axios.get(`${BACKEND_DOMAIN}/api/ContactInformation/My-Contact`, {
-      headers: { Authorization: `Bearer ${Auth.token}` },
-    });
+//FETCH CONTACT NEW
+  const fetchContact = async () => {
+    try {
+      isLoading.value = true;
 
-    contact.value.id = data.id;
-    if (!user.value.personalInfoId) {
-      user.value.personalInfoId = data.passportPersonalInformationId;
+      const { data } = await axios.get(
+        `${BACKEND_DOMAIN}/api/ContactInformation/My-Contact`,
+        {
+          headers: { Authorization: `Bearer ${Auth.token}` },
+        }
+      );
+
+      // Set contact ID and personal info
+      contact.value.id = data.id;
+      if (!user.value.personalInfoId) {
+        user.value.personalInfoId = data.passportPersonalInformationId;
+      }
+
+      // Trim all string fields
+      const country = (data.currentCountry ?? "").trim();
+      address.value.country = country;
+
+      address.value.street = (data.currentStreet ?? "").trim();
+      address.value.postal = (data.currentPostalCode ?? "").trim();
+      address.value.abroad = data.addressAbroad?.trim() || "";
+
+      if (country === "PH") {
+        // PH-specific hierarchy
+        address.value.region = (data.currentRegion ?? "").trim();
+        address.value.province = (data.currentProvince ?? "").trim();
+        address.value.municipality = (data.currentCityMunicipality ?? "").trim();
+        address.value.barangay = (data.currentBarangay ?? "").trim();
+        address.value.city = ""; // clear foreign city
+      } else {
+        // Non-PH
+        address.value.city = (data.currentCityMunicipality ?? "").trim();
+        // clear PH fields
+        address.value.region = "";
+        address.value.province = "";
+        address.value.municipality = "";
+        address.value.barangay = "";
+      }
+
+      // Mobile & Landline
+      const mob = parseMobile(data.personalMobileNumber);
+      contact.value.mobileCountry = mob.country;
+      contact.value.mobilePrefix = mob.prefix;
+      contact.value.mobileNumber = mob.number;
+
+      const land = parseLandline(data.personalLandlineNumber);
+      contact.value.landlineCountry = land.country;
+      contact.value.landlineNumber = land.number;
+    } catch (err) {
+      console.error("fetchContact error:", err);
+    } finally {
+      isLoading.value = false;
     }
+  };
 
-    address.value.street = data.currentStreet ?? "";
-    address.value.abroad = data.addressAbroad ?? "";
-    address.value.postal = data.currentPostalCode ?? "";
+  //NEW FETCH WORK
+  const fetchWork = async () => {
+    try {
+      isLoading.value = true;
 
-    // ── Set parent first, then children after nextTick ──
-    address.value.country = data.currentCountry ?? "";
-    await nextTick();
+      const { data } = await axios.get(`${BACKEND_DOMAIN}/api/WorkInformation/My-Work`, {
+        headers: { Authorization: `Bearer ${Auth.token}` },
+      });
 
-    address.value.region = data.currentRegion ?? "";
-    await nextTick();
+      work.value.id = data.id;
+      if (!user.value.personalInfoId) {
+        user.value.personalInfoId = data.passportPersonalInformationId;
+      }
 
-    address.value.province = data.currentProvince ?? "";
-    await nextTick();
+      // Basic fields
+      work.value.occupation = data.occupation ?? "";
+      work.value.employer = data.employer ?? "";
+      work.value.officeAddress = data.officeAddress ?? "";
+      work.value.postalCode = data.officePostalCode ?? "";
 
-    address.value.municipality = data.currentCityMunicipality ?? "";
-    await nextTick();
+      // Country (trimmed)
+      const country = (data.officeCountry ?? "").trim();
+      work.value.officeCountry = country;
 
-    address.value.barangay = data.currentBarangay ?? "";
+      if (country === "PH") {
+        work.value.officeRegion = (data.officeRegion ?? "").trim();
+        work.value.officeProvince = (data.officeProvince ?? "").trim();
+        work.value.officeMunicipality = (data.officeCityMunicipality ?? "").trim();
+        work.value.officeBarangay = (data.officeBarangay ?? "").trim();
+        // Clear foreign city
+        work.value.officeCity = "";
+      } else {
+        // Non-PH
+        work.value.officeCity = (data.officeCityMunicipality ?? "").trim();
+        // Clear PH-specific fields
+        work.value.officeRegion = "";
+        work.value.officeProvince = "";
+        work.value.officeMunicipality = "";
+        work.value.officeBarangay = "";
+      }
 
-    const mob = parseMobile(data.personalMobileNumber);
-    contact.value.mobileCountry = mob.country;
-    contact.value.mobilePrefix = mob.prefix;
-    contact.value.mobileNumber = mob.number;
+      // Mobile & Landline
+      const mob = parseMobile(data.officeMobileNumber);
+      work.value.workMobileCountry = mob.country;
+      work.value.workMobilePrefix = mob.prefix;
+      work.value.workMobileNumber = mob.number;
 
-    const land = parseLandline(data.personalLandlineNumber);
-    contact.value.landlineCountry = land.country;
-    contact.value.landlineNumber = land.number;
-  } catch (err) {
-    console.log("fetchContact error:", err);
-  } finally {
-    isLoading.value = false;
-  }
-};
-
-const fetchWork = async () => {
-  try {
-    isLoading.value = true;
-    const { data } = await axios.get(`${BACKEND_DOMAIN}/api/WorkInformation/My-Work`, {
-      headers: { Authorization: `Bearer ${Auth.token}` },
-    });
-
-    work.value.id = data.id;
-    if (!user.value.personalInfoId) {
-      user.value.personalInfoId = data.passportPersonalInformationId;
+      const land = parseLandline(data.officeLandlineNumber);
+      work.value.workLandlineCountry = land.country;
+      work.value.workLandlineNumber = land.number;
+    } catch (err) {
+      console.error("fetchWork error:", err);
+    } finally {
+      isLoading.value = false;
     }
-
-    work.value.occupation = data.occupation ?? "";
-    work.value.employer = data.employer ?? "";
-    work.value.officeAddress = data.officeAddress ?? "";
-    work.value.postalCode = data.officePostalCode ?? "";
-
-    // ── Set parent first, then children after nextTick ──
-    work.value.officeCountry = data.officCountry ?? ""; // note: keep your existing typo if API has it
-    await nextTick();
-
-    work.value.officeRegion = data.officeRegion ?? "";
-    await nextTick();
-
-    work.value.officeProvince = data.officeProvince ?? "";
-    await nextTick();
-
-    work.value.officeMunicipality = data.officeCityMunicipality ?? "";
-    await nextTick();
-
-    work.value.officeBarangay = data.officeBarangay ?? "";
-
-    const mob = parseMobile(data.officeMobileNumber);
-    work.value.workMobileCountry = mob.country;
-    work.value.workMobilePrefix = mob.prefix;
-    work.value.workMobileNumber = mob.number;
-
-    const land = parseLandline(data.officeLandlineNumber);
-    work.value.workLandlineCountry = land.country;
-    work.value.workLandlineNumber = land.number;
-  } catch (err) {
-    console.log("fetchWork error:", err);
-  } finally {
-    isLoading.value = false;
-  }
-};
+  };
 
 // ─────────────────────────────────────────────
 // API — PATCH
@@ -2126,50 +2149,59 @@ const updateFamily = async () => {
   }
 };
 
-const updateContact = async () => {
-  try {
-    isLoading.value = true;
-    const payload = {
-      id: contact.value.id,
-      passportPersonalInformationId: user.value.personalInfoId,
+  //UPDATE CONTACT NEW
+  const updateContact = async () => {
+    try {
+      isLoading.value = true;
 
-      // Address
-      currentStreet: address.value.street || null,
-      currentAddressAbroad: address.value.abroad || null,
-      currentCountry: address.value.country || null,
-      currentRegion: address.value.country === "PH" ? address.value.region || null : null,
-      currentProvince: address.value.country === "PH" ? address.value.province || null : null,
-      currentCityMunicipality:
-        address.value.country === "PH"
-          ? address.value.municipality || null
-          : address.value.city || null,
-      currentBarangay: address.value.country === "PH" ? address.value.barangay || null : null,
-      currentPostalCode: address.value.postal || null,
+      const payload = {
+        passportPersonalInformationId: user.value.personalInfoId,
 
-      // Contact numbers — stored as full formatted strings
-      personalMobileNumber:
-        contact.value.mobilePrefix || contact.value.mobileNumber
-          ? `${contact.value.mobileCountry} ${contact.value.mobilePrefix}${contact.value.mobileNumber}`.trim()
-          : null,
-      personalLandlineNumber: contact.value.landlineNumber
-        ? `${contact.value.landlineCountry} ${contact.value.landlineNumber}`.trim()
-        : null,
-    };
-    await axios.patch(`${BACKEND_DOMAIN}/api/ContactInformation`, payload, {
-      headers: { Authorization: `Bearer ${Auth.token}` },
-    });
-    dialogTitle.value = "Success";
-    dialogMessage.value = "Contact info saved.";
-    showDialog.value = true;
-  } catch (err) {
-    console.log("updateContact error:", err);
-    dialogTitle.value = "Error";
-    dialogMessage.value = "Failed to save contact info.";
-    showDialog.value = true;
-  } finally {
-    isLoading.value = false;
-  }
-};
+        // ── Address ──
+        currentStreet: address.value.street?.trim() || null,
+        addressAbroad: address.value.abroad?.trim() || null, // ✅ correct name
+        currentCountry: address.value.country?.trim() || null,
+
+        // PH fields only if country is PH
+        currentRegion: address.value.country === "PH" ? address.value.region?.trim() || null : null,
+        currentProvince: address.value.country === "PH" ? address.value.province?.trim() || null : null,
+        currentCityMunicipality:
+          address.value.country === "PH"
+            ? address.value.municipality?.trim() || null
+            : address.value.city?.trim() || null,
+        currentBarangay: address.value.country === "PH" ? address.value.barangay?.trim() || null : null,
+        currentPostalCode: address.value.postal?.trim() || null,
+
+        // ── Contact numbers ──
+        personalMobileNumber:
+          contact.value.mobileNumber
+            ? `${contact.value.mobileCountry}${contact.value.mobilePrefix}${contact.value.mobileNumber}`.trim()
+            : null,
+        personalLandlineNumber:
+          contact.value.landlineNumber
+            ? `${contact.value.landlineCountry}${contact.value.landlineNumber}`.trim()
+            : null,
+
+        // optional email
+        email: contact.value.email?.trim() || null,
+      };
+
+      await axios.patch(`${BACKEND_DOMAIN}/api/ContactInformation`, payload, {
+        headers: { Authorization: `Bearer ${Auth.token}` },
+      });
+
+      dialogTitle.value = "Success";
+      dialogMessage.value = "Contact info saved.";
+      showDialog.value = true;
+    } catch (err) {
+      console.error("updateContact error:", err);
+      dialogTitle.value = "Error";
+      dialogMessage.value = "Failed to save contact info.";
+      showDialog.value = true;
+    } finally {
+      isLoading.value = false;
+    }
+  };
 
 const updateWork = async () => {
   try {
