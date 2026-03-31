@@ -51,7 +51,7 @@ namespace Passport_Prototype.Server.Controllers
                         </p>
 
                         <p>
-                          To confirm your appointment, please pay the amount of <strong>₱{passportAppEmailDTO.Amount}</strong> to your selected accredited payment center using the
+                          To confirm your appointment, please pay the amount of <strong>{passportAppEmailDTO.Amount}</strong> to your selected accredited payment center using the
                           reference number below within 24 hours upon receipt of this email. Failure to do so will automatically cancel the provisional booking to give way to other passport clients.
                         </p>
 
