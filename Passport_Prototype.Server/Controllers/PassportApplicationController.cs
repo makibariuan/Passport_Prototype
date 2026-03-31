@@ -36,149 +36,171 @@ namespace Passport_Prototype.Server.Controllers
             _fileService = fileService;
             _db = db;
         }
-        
+
         [HttpPost]
         [Authorize]
         public async Task<IActionResult> CreateApplication([FromForm] CreateApplicationDTO dto)
         {
-            var userIdString = User.FindFirstValue("id");
-
-            if (!int.TryParse(userIdString, out int UserId))
-            {
-                throw new Exception("Invalid user ID in claims.");
-            }
-
-            // 1. Handle File Uploads
-            string tempPath = Path.Combine(_env.WebRootPath, "temp_uploads");
-            if (!Directory.Exists(tempPath)) Directory.CreateDirectory(tempPath);
-
-            async Task<string> SaveTempFile(IFormFile file)
-            {
-                string ext = Path.GetExtension(file.FileName);
-                string fileName = $"{Guid.NewGuid()}{ext}";
-                string fullPath = Path.Combine(tempPath, fileName);
-                using var stream = new FileStream(fullPath, FileMode.Create);
-                await file.CopyToAsync(stream);
-                return fileName;
-            }
-
-            string validIdKey = await SaveTempFile(dto.ValidId);
-            string certificateKey = await SaveTempFile(dto.Certificate);
-
-            string validIdPath = await _fileService.FinalizeUpload(validIdKey, UserId!);
-            string certificatePath = await _fileService.FinalizeUpload(certificateKey, UserId);
-
-            // 2. Generate a Shared Application Code
-            string sharedCode = GenerateApplicationCode();
-
-            // 2.5 Generate Barcode
-            var barcodeWriter = new BarcodeWriterPixelData
-            {
-                Format = BarcodeFormat.CODE_128,
-                Options = new EncodingOptions
-                {
-                    Width = 300,
-                    Height = 100,
-                    Margin = 10,
-                    PureBarcode = false
-                }
-            };
-            barcodeWriter.Options.Hints.Add(EncodeHintType.CHARACTER_SET, "UTF-8");
-
-            // Ensure folder exists
-            string barcodeFolder = Path.Combine(_env.WebRootPath, "barcodes");
-            if (!Directory.Exists(barcodeFolder))
-                Directory.CreateDirectory(barcodeFolder);
-
-            // Generate barcode image
-            var pixelData = barcodeWriter.Write(sharedCode);
-
-            using var image = new Image<Rgba32>(pixelData.Width, pixelData.Height);
-
-            // Map pixels
-            image.ProcessPixelRows(accessor =>
-            {
-                for (int y = 0; y < accessor.Height; y++)
-                {
-                    var row = accessor.GetRowSpan(y);
-                    for (int x = 0; x < accessor.Width; x++)
-                    {
-                        int idx = (y * accessor.Width + x) * 4;
-                        row[x] = new Rgba32(
-                            pixelData.Pixels[idx],
-                            pixelData.Pixels[idx + 1],
-                            pixelData.Pixels[idx + 2],
-                            pixelData.Pixels[idx + 3]
-                        );
-                    }
-                }
-            });
-
-            // Save file
-            string barcodeFileName = $"{sharedCode}.png";
-            string barcodeFullPath = Path.Combine(barcodeFolder, barcodeFileName);
-            image.Save(barcodeFullPath, new PngEncoder());
-
-            // This is what you store in DB (relative path)
-            string barcodeDbPath = $"/barcodes/{barcodeFileName}";
-
-            // 3. Create Passport Application Entity
-            var application = new Application
-            {
-                UserId = UserId,
-                PassportPersonalInformationId = (int)dto.PassportPersonalInformationId!,
-                Region = dto.Region,
-                Country = dto.Country,
-                Site = dto.Site,
-                Schedule = dto.Schedule,
-                ApplicationType = dto.ApplicationType,
-                CitizenshipBasis = dto.CitizenshipBasis,
-                isForeignPassportHolder = dto.isForeignPassportHolder,
-                isCourtesyLane = dto.isCourtesyLane,
-                DocumentType = dto.DocumentType,
-                IdDocumentIdNumber = dto.IdDocumentIdNumber,
-                IdDocumentType = dto.IdDocumentType,
-                ValidIdPath = validIdPath,
-                CertificatePath = certificatePath,
-                ProcessingType = dto.ProcessingType,
-                PaymentMethod = dto.PaymentMethod,
-                DeliveryOption = dto.DeliveryOption,
-                Amount = dto.Amount,
-                isPaid = false,
-                ApplicationStatus = 1,
-                ApplicationCode = sharedCode,
-                ApplicationBarCodePath = barcodeDbPath
-            };
-
-            // 4. Create Registry Entry
-            var registryEntry = new EnrollmentRegistryID
-            {
-                PersonID = UserId!,
-                ApplicationCode = sharedCode,
-                ApplicationType = 2, 
-
-                Status = 1, // Pending/Active
-                CreatedAt = DateTime.Now,
-                DateSchedule = dto.Schedule
-            };
-
-            // 5. Transactional Save
-            using var transaction = await _context.Database.BeginTransactionAsync();
             try
             {
-                await _context.Applications.AddAsync(application);
-                await _context.SaveChangesAsync();
+                var userIdString = User.FindFirstValue("id");
 
-                await _db.EnrollmentRegistries.AddAsync(registryEntry);
-                await _db.SaveChangesAsync();
+                if (!int.TryParse(userIdString, out int UserId))
+                    return BadRequest("Invalid user ID in claims.");
 
-                await transaction.CommitAsync();
-                return Ok(new { application, registryCode = sharedCode });
+                // ✅ FIX: Safe WebRootPath
+                string webRoot = _env.WebRootPath
+                    ?? Path.Combine(_env.ContentRootPath, "wwwroot");
+
+                string tempPath = Path.Combine(webRoot, "temp_uploads");
+                string barcodeFolder = Path.Combine(webRoot, "barcodes");
+
+                Directory.CreateDirectory(tempPath);
+                Directory.CreateDirectory(barcodeFolder);
+
+                // ✅ Validate files
+                if (dto.ValidId == null || dto.Certificate == null)
+                    return BadRequest("ValidId and Certificate are required.");
+
+                // ✅ Save temp files
+                async Task<string> SaveTempFile(IFormFile file)
+                {
+                    if (file.Length == 0)
+                        throw new Exception("Empty file uploaded.");
+
+                    string ext = Path.GetExtension(file.FileName);
+                    string fileName = $"{Guid.NewGuid()}{ext}";
+                    string fullPath = Path.Combine(tempPath, fileName);
+
+                    using var stream = new FileStream(fullPath, FileMode.Create);
+                    await file.CopyToAsync(stream);
+
+                    return fileName;
+                }
+
+                string validIdKey = await SaveTempFile(dto.ValidId);
+                string certificateKey = await SaveTempFile(dto.Certificate);
+
+                // ✅ Finalize upload (IMPORTANT: dapat fixed din sa FileService)
+                string validIdPath = await _fileService.FinalizeUpload(validIdKey, UserId);
+                string certificatePath = await _fileService.FinalizeUpload(certificateKey, UserId);
+
+                // ✅ Generate Application Code
+                string sharedCode = GenerateApplicationCode();
+
+                // ✅ Generate Barcode (SAFE)
+                string barcodeDbPath;
+                try
+                {
+                    var barcodeWriter = new BarcodeWriterPixelData
+                    {
+                        Format = BarcodeFormat.CODE_128,
+                        Options = new EncodingOptions
+                        {
+                            Width = 300,
+                            Height = 100,
+                            Margin = 10,
+                            PureBarcode = false
+                        }
+                    };
+
+                    barcodeWriter.Options.Hints.Add(EncodeHintType.CHARACTER_SET, "UTF-8");
+
+                    var pixelData = barcodeWriter.Write(sharedCode);
+
+                    using var image = new Image<Rgba32>(pixelData.Width, pixelData.Height);
+
+                    image.ProcessPixelRows(accessor =>
+                    {
+                        for (int y = 0; y < accessor.Height; y++)
+                        {
+                            var row = accessor.GetRowSpan(y);
+                            for (int x = 0; x < accessor.Width; x++)
+                            {
+                                int idx = (y * accessor.Width + x) * 4;
+                                row[x] = new Rgba32(
+                                    pixelData.Pixels[idx],
+                                    pixelData.Pixels[idx + 1],
+                                    pixelData.Pixels[idx + 2],
+                                    pixelData.Pixels[idx + 3]
+                                );
+                            }
+                        }
+                    });
+
+                    string barcodeFileName = $"{sharedCode}.png";
+                    string barcodeFullPath = Path.Combine(barcodeFolder, barcodeFileName);
+
+                    image.Save(barcodeFullPath, new PngEncoder());
+
+                    barcodeDbPath = $"/barcodes/{barcodeFileName}";
+                }
+                catch (Exception ex)
+                {
+                    return StatusCode(500, "Barcode generation failed: " + ex.Message);
+                }
+
+                // ✅ Create Application
+                var application = new Application
+                {
+                    UserId = UserId,
+                    PassportPersonalInformationId = (int)dto.PassportPersonalInformationId!,
+                    Region = dto.Region,
+                    Country = dto.Country,
+                    Site = dto.Site,
+                    Schedule = dto.Schedule,
+                    ApplicationType = dto.ApplicationType,
+                    CitizenshipBasis = dto.CitizenshipBasis,
+                    isForeignPassportHolder = dto.isForeignPassportHolder,
+                    isCourtesyLane = dto.isCourtesyLane,
+                    DocumentType = dto.DocumentType,
+                    IdDocumentIdNumber = dto.IdDocumentIdNumber,
+                    IdDocumentType = dto.IdDocumentType,
+                    ValidIdPath = validIdPath,
+                    CertificatePath = certificatePath,
+                    ProcessingType = dto.ProcessingType,
+                    PaymentMethod = dto.PaymentMethod,
+                    DeliveryOption = dto.DeliveryOption,
+                    Amount = dto.Amount,
+                    isPaid = false,
+                    ApplicationStatus = 1,
+                    ApplicationCode = sharedCode,
+                    ApplicationBarCodePath = barcodeDbPath
+                };
+
+                var registryEntry = new EnrollmentRegistryID
+                {
+                    PersonID = UserId,
+                    ApplicationCode = sharedCode,
+                    ApplicationType = 2,
+                    Status = 1,
+                    CreatedAt = DateTime.Now,
+                    DateSchedule = dto.Schedule
+                };
+
+                using var transaction = await _context.Database.BeginTransactionAsync();
+
+                try
+                {
+                    await _context.Applications.AddAsync(application);
+                    await _context.SaveChangesAsync();
+
+                    await _db.EnrollmentRegistries.AddAsync(registryEntry);
+                    await _db.SaveChangesAsync();
+
+                    await transaction.CommitAsync();
+
+                    return Ok(new { application, registryCode = sharedCode });
+                }
+                catch (Exception ex)
+                {
+                    await transaction.RollbackAsync();
+                    return StatusCode(500, "Database error: " + ex.Message);
+                }
             }
             catch (Exception ex)
             {
-                await transaction.RollbackAsync();
-                return StatusCode(500, "Error saving data to multiple registries: " + ex.Message);
+                return StatusCode(500, "Unexpected error: " + ex.ToString());
             }
         }
 
