@@ -199,7 +199,7 @@ namespace Passport_Prototype.Server.Controllers
                 from app in _context.Applications
 
                 join enrollment in _context.EnrollmentRegistries
-                  on app.ApplicationId equals enrollment.Id
+                  on app.ApplicationCode equals enrollment.ApplicationCode
 
                 select new
                 {
