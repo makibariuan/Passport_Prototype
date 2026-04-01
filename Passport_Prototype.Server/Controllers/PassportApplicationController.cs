@@ -245,10 +245,10 @@ namespace Passport_Prototype.Server.Controllers
 
                 FROM [EnrollmentRegistryID] e
 
-                LEFT JOIN [Applications] a
+                 JOIN [Applications] a
                     ON e.[ApplicationCode] = a.[ApplicationCode]
 
-                LEFT JOIN [PassportPersonalInformation] p
+                 JOIN [PassportPersonalInformation] p
                     ON p.[PassportPersonalInformationId] = a.[PassportPersonalInformationId]
             )
 
