@@ -82,7 +82,7 @@ const navItems = [
   { icon: Calendar, label: "Start an Application", path: "/application/new" },
   { icon: FileSearch, label: "Manage Existing Application", path: "/application/manage" },
   { icon: BookText, label: "Application History", path: "/application/history" },
-  { icon: CheckSquare, label: "Privacy Policy", path: "/privacy-policy" },
+  //{ icon: CheckSquare, label: "Privacy Policy", path: "/privacy-policy" },
 ];
 
 const isActive = (path) => route.path === path;
