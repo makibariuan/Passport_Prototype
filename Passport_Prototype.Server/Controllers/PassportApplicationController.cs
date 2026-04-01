@@ -187,7 +187,7 @@ namespace Passport_Prototype.Server.Controllers
         private string GenerateApplicationCode()
         {
             // Example: MKT-20251011-ABC123
-            return $"MKT-{DateTime.Now:yyyyMMdd}-{Guid.NewGuid().ToString().Substring(0, 6).ToUpper()}";
+            return $"DFA-{DateTime.Now:yyyyMMdd}-{Guid.NewGuid().ToString().Substring(0, 6).ToUpper()}";
         }
 
 
