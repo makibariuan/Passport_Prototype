@@ -763,6 +763,6 @@
   [class*="dialog"],
   [class*="modal"] {
     z-index: 9999 !important;
-    position: relative;
+/*    position: relative;*/
   }
 </style>
