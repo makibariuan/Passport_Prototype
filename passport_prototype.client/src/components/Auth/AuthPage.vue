@@ -703,7 +703,7 @@
       };
       console.log("Sending Clean Payload:", payload);
       await api.put("/Auth/complete-registration", payload);
-      alert("Registration Successful!");
+      showAlert("Registration Successful!","You can now log in using your new account.");
       router.push("/login");
     } catch (err) {
       console.error("Registration Error:", err.response?.data);
