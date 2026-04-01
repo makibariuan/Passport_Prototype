@@ -507,37 +507,13 @@
         ? `${baseUrl}${cleanPath}`
         : getFullImageUrl(cleanPath);
 
-    try {
-      // =========================
-      // 🔥 PRE-CHECK IF FILE EXISTS
-      // =========================
-      const res = await fetch(url, { method: "HEAD" });
+    viewerTitle.value = title;
+    viewerUrl.value = url;
+    viewerType.value = isPdf ? "pdf" : "image";
+    showViewer.value = true;
 
-      if (!res.ok) {
-        console.warn("⚠️ File not found or broken:", url);
-
-        // OPTIONAL: UI warning (toast/alert)
-        alert(`${title} file is not available or broken.`);
-
-        return; // ❌ stop opening viewer
-      }
-
-      // =========================
-      // OPEN VIEWER (VALID FILE)
-      // =========================
-      viewerTitle.value = title;
-      viewerUrl.value = url;
-      viewerType.value = isPdf ? "pdf" : "image";
-      showViewer.value = true;
-
-      console.log("viewerType:", viewerType.value);
-      console.log("viewerUrl:", viewerUrl.value);
-
-    } catch (err) {
-      console.error("Preview error:", err);
-
-      alert(`Unable to load ${title}. Please try again later.`);
-    }
+    console.log("viewerType:", viewerType.value);
+    console.log("viewerUrl:", viewerUrl.value);
   }
 
   /* ---------------------------
