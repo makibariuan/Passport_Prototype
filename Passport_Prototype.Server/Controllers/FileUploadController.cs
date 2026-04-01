@@ -1,5 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Passport_Prototype.Server.Services;
+using OnlineRegistration.Server.Services.Interfaces; // Make sure IFileService is in this namespace
+using Microsoft.AspNetCore.Http;
+using System.Threading.Tasks;
+
 
 namespace Passport_Prototype.Server.Controllers
 {
@@ -7,36 +10,50 @@ namespace Passport_Prototype.Server.Controllers
     [Route("api/[controller]")]
     public class FileUploadController : ControllerBase
     {
-        private readonly IFileUploadService _fileUploadService;
+        private readonly IFileService _fileService;
 
-        public FileUploadController(IFileUploadService fileUploadService)
+        public FileUploadController(IFileService fileService)
         {
-            _fileUploadService = fileUploadService;
+            _fileService = fileService;
         }
 
+        // POST: api/FileUpload/upload
         [HttpPost("upload")]
         public async Task<IActionResult> Upload(IFormFile file)
         {
+            if (file == null)
+                return BadRequest("No file provided.");
+
             try
             {
-                var fileName = await _fileUploadService.UploadFileAsync(file);
+                // Upload file to temp_uploads
+                var filePath = await _fileService.UploadFileAsync(file);
+
                 return Ok(new
                 {
                     Message = "File uploaded successfully",
-                    FileName = fileName
+                    FilePath = filePath // Returns relative path like /temp_uploads/{guid}.ext
                 });
             }
             catch (ArgumentException ex)
             {
                 return BadRequest(ex.Message);
             }
+            catch
+            {
+                return StatusCode(500, "An error occurred while uploading the file.");
+            }
         }
 
+        // DELETE: api/FileUpload/{fileName}
         [HttpDelete("{fileName}")]
-        public IActionResult Delete(string fileName)
+        public IActionResult DeleteTemp(string fileName)
         {
-            var success = _fileUploadService.DeleteFile(fileName);
-            return success ? Ok("File removed.") : NotFound("File not found.");
+            if (string.IsNullOrWhiteSpace(fileName))
+                return BadRequest("File name required.");
+
+            var success = _fileService.DeleteTempFile(fileName);
+            return success ? Ok("Temp file removed.") : NotFound("File not found in temp folder.");
         }
     }
 }

@@ -10,7 +10,6 @@ using OnlineRegistration.Server.Data;
 using OnlineRegistration.Server.Models;
 using OnlineRegistration.Server.Services;
 using OnlineRegistration.Server.Services.Interfaces;
-using Passport_Prototype.Server.Services;
 using QuestPDF.Infrastructure;
 using SeniorCitizen.Server.Data;
 using SixLabors.ImageSharp;
@@ -217,7 +216,6 @@ builder.Services.AddAuthorization(options =>
         policy.RequireClaim("userrole", "5"));
 });
 
-builder.Services.AddScoped<IFileUploadService, FileUploadService>(); // for file upload testing
 
 builder.Services.AddAuthorization();
 

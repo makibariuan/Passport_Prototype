@@ -1,6 +1,13 @@
-﻿public interface IFileService
+﻿using Microsoft.AspNetCore.Http;
+using System.Threading.Tasks;
+
+namespace OnlineRegistration.Server.Services.Interfaces
 {
-    // The PersonID is often included to create a unique, segregated folder path (e.g., /documents/personid/...)
-    Task<string> FinalizeUpload(string fileKey, int personId);
-    Task<bool> DeleteFile(string filePath);
+    public interface IFileService
+    {
+        Task<string> UploadFileAsync(IFormFile file);
+        Task<string> FinalizeUpload(string fileKey, int personId);
+        Task<bool> DeleteFile(string filePath);
+        bool DeleteTempFile(string fileName);
+    }
 }
