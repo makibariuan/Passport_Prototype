@@ -454,16 +454,20 @@
 
     let cleanPath = path.replace(/\\/g, "/");
 
+    // Remove unwanted prefixes only
     cleanPath = cleanPath
       .replace(/^image\//, "")
       .replace(/^\/image\//, "")
       .replace(/^wwwroot\//, "")
       .replace(/^\/wwwroot\//, "");
 
-    const fileName = cleanPath.split("/").pop();
-    const finalPath = `/temp_uploads/${fileName}`;
+    // ✅ If already contains PermanentPDSFiles, just use it
+    if (cleanPath.startsWith("/PermanentPDSFiles")) {
+      return `${BACKEND_DOMAIN}${cleanPath}`;
+    }
 
-    return `${BACKEND_DOMAIN}${finalPath}`;
+    // ✅ fallback (only if backend sends just filename)
+    return `${BACKEND_DOMAIN}/PermanentPDSFiles/${cleanPath}`;
   };
 
   const openFileInNewTab = (path) => {
@@ -478,7 +482,7 @@
       .replace(/^\/wwwroot\//, "");
 
     const fileName = cleanPath.split("/").pop();
-    const finalPath = `/temp_uploads/${fileName}`;
+    const finalPath = `/PermanentPDSFiles/${fileName}`;
 
     const url = `${BACKEND_DOMAIN}${finalPath}`;
 
@@ -502,7 +506,7 @@
     const isBarcode = cleanPath.includes("/barcodes/");
 
     const url = isPdf
-      ? `${baseUrl}/temp_uploads/${fileName}`
+      ? `${baseUrl}/PermanentPDSFiles/${fileName}`
       : isBarcode
         ? `${baseUrl}${cleanPath}`
         : getFullImageUrl(cleanPath);
