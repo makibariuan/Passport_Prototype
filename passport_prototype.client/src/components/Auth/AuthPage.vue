@@ -88,10 +88,10 @@
         </div>
 
         <!-- ═══════════════════════════════════════════════════
-             REGISTER OTP SLOTS
-             Uses registerOtp ref only. No >= in the template —
-             uses registerOtpSlots computed array instead.
-        ═══════════════════════════════════════════════════ -->
+           REGISTER OTP SLOTS
+           Uses registerOtp ref only. No >= in the template —
+           uses registerOtpSlots computed array instead.
+      ═══════════════════════════════════════════════════ -->
         <div class="form-field">
           <label style="padding-top: 30px">Verification Code</label>
           <div class="otp-wrapper">
@@ -105,10 +105,10 @@
                    @keydown="blockNonDigits" />
             <div class="otp-slots-container">
               <!--
-                FIX: No >= operator in template at all.
-                registerOtpSlots is a computed array of 6 booleans
-                that tells each slot whether it is filled or not.
-              -->
+              FIX: No >= operator in template at all.
+              registerOtpSlots is a computed array of 6 booleans
+              that tells each slot whether it is filled or not.
+            -->
               <div v-for="(slot, idx) in registerOtpSlots"
                    :key="idx"
                    class="otp-slot"
@@ -159,9 +159,9 @@
     </main>
 
     <!-- ═══════════════════════════════════════════════════════════
-         LOGIN OTP DIALOG — uses loginOtp ref only.
-         Completely isolated from register form above.
-    ═══════════════════════════════════════════════════════════ -->
+       LOGIN OTP DIALOG — uses loginOtp ref only.
+       Completely isolated from register form above.
+  ═══════════════════════════════════════════════════════════ -->
     <DialogBox :show="showOtpDialog" title="Login Verification" @close="closeLoginDialog">
       <div class="otp-dialog-content">
         <p>A 6-digit verification code has been sent to your email.</p>
@@ -184,6 +184,17 @@
         <p v-if="loginOtpError" class="error-text" style="color: #d9534f; margin-top: 10px">
           {{ loginOtpError }}
         </p>
+      </div>
+    </DialogBox>
+
+    <LoadingDialog :visible="registerLoading || loginLoading || resendLoading" />
+
+    <DialogBox :show="showMessageDialog"
+               :title="messageTitle"
+               @close="showMessageDialog = false">
+      <div class="dialog-message-container">
+        <p class="dialog-message-line">{{ messageBody }}</p>
+        <button @click="showMessageDialog = false" class="auth-btn-style">OK</button>
       </div>
     </DialogBox>
   </div>
@@ -283,6 +294,17 @@
     () => circumference - (countdown.value / cooldownSeconds) * circumference
   );
   let timer = null;
+
+  const showMessageDialog = ref(false);
+  const messageTitle = ref("");
+  const messageBody = ref("");
+
+  // Helper function to trigger the dialog easily
+  const showAlert = (title, message) => {
+    messageTitle.value = title;
+    messageBody.value = message;
+    showMessageDialog.value = true;
+  };
 
   // ════════════════════════════════════════════════════════════════════
   // ROOT CAUSE OF THE BUG + THE TEMPLATE PARSE ERROR
@@ -629,17 +651,16 @@
 
   // 1. Send registration verification email
   const sendVerificationCode = async () => {
-    if (!email.value) { alert("Please enter an email address."); return; }
+    if (!email.value) { showAlert("Please enter an email address."); return; }
     registerLoading.value = true;
     registerOtp.value = "";   // clear so user types a fresh code
     registerOtpError.value = "";
     isEmailVerified.value = false;
     try {
       const response = await api.post("Auth/initiate-registration", { email: email.value });
-      alert(response.data.message);
+      showAlert("Code Sent", response.data.message);
     } catch (err) {
-      console.error("Full Error Object:", err);
-      alert(err.response?.data?.message || "Failed to send code.");
+      showAlert("Error", err.response?.data?.message || "Failed to send code.");
     } finally {
       registerLoading.value = false;
     }
@@ -657,7 +678,7 @@
         verificationCode: code,        // registerOtp — never loginOtp
       });
       isEmailVerified.value = true;
-      alert("Email Verified! You can now complete your registration.");
+      showAlert("Success", "Email Verified! You can now complete your registration.");
     } catch (err) {
       registerOtpError.value = err.response?.data?.message || "Invalid or expired code.";
       isEmailVerified.value = false;
@@ -682,11 +703,11 @@
       };
       console.log("Sending Clean Payload:", payload);
       await api.put("/Auth/complete-registration", payload);
-      alert("Registration Successful!");
+      showAlert("Registration Successful!","You can now log in using your new account.");
       router.push("/login");
     } catch (err) {
       console.error("Registration Error:", err.response?.data);
-      alert(err.response?.data?.message || "Registration failed.");
+      showAlert("Registration Failed", err.response?.data?.message || "Registration failed.");
     } finally {
       registerLoading.value = false;
     }
@@ -706,7 +727,7 @@
       console.log("Login API Success, showing dialog...");
       showOtpDialog.value = true;
     } catch (err) {
-      alert(err.response?.data?.message || "Login failed.");
+      showAlert("Login Failed", err.response?.data?.message || "Login failed.");
     } finally {
       loginLoading.value = false;
     }
@@ -724,7 +745,7 @@
       });
       auth.login({ token: response.data.token, user: response.data.user });
       closeLoginDialog();
-      alert("Login Successful!");
+      showAlert("Success", "Login Successful!");
       const role = parseInt(auth.userRole);
       if (role === 1) router.push("/dashboard-admin");
       else if (role === 4) router.push("/applicationassessment");

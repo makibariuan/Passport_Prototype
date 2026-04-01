@@ -913,8 +913,8 @@
                     </p>
 
                     <!-- ─────────────────────────────────────
-                         SELECTION VIEW (before I Agree)
-                    ───────────────────────────────────── -->
+                       SELECTION VIEW (before I Agree)
+                  ───────────────────────────────────── -->
                     <template v-if="!showPaymentStatus">
                       <!-- Processing Type -->
                       <div class="payment-group">
@@ -1039,8 +1039,8 @@
                     </template>
 
                     <!-- ─────────────────────────────────────
-                         STATUS VIEW (after I Agree on modal)
-                    ───────────────────────────────────── -->
+                       STATUS VIEW (after I Agree on modal)
+                  ───────────────────────────────────── -->
                     <template v-else>
                       <p class="status-intro">This mode of payment is requesting for:</p>
 
@@ -1367,17 +1367,42 @@
         </div>
       </div>
     </teleport>
+
+    <LoadingDialog :visible="loading || isSubmitting" />
+
+    <DialogBox :show="showMessageDialog"
+               :title="messageTitle"
+               @close="showMessageDialog = false">
+      <div class="dialog-message-container">
+        <p class="dialog-message-line">{{ messageBody }}</p>
+        <button @click="showMessageDialog = false" class="auth-btn-style">OK</button>
+      </div>
+    </DialogBox>
   </div>
 </template>
 
 <script setup>
   import LeftMenu from "@/components/LeftMenu.vue";
+  import LoadingDialog from "@/components/LoadingDialog.vue";
+  import DialogBox from "@/components/DialogBox.vue";
   import { ref, computed, onMounted } from "vue";
   import axios from "axios";
   import { useAuthStore } from "../stores/auth";
   import { BACKEND_DOMAIN } from "@/configs/config";
 
   const Auth = useAuthStore();
+
+  // New states for the custom UI
+  const showMessageDialog = ref(false);
+  const messageTitle = ref("");
+  const messageBody = ref("");
+  const isSubmitting = ref(false); // New loading state for this page
+
+  const showAlert = (title, message) => {
+    messageTitle.value = title;
+    messageBody.value = message;
+    showMessageDialog.value = true;
+  };
 
   // ── Pre-step state ──────────────────────────────────────────────────
   const preStep = ref("terms");
@@ -1700,11 +1725,11 @@
 
   const validateFile = (file) => {
     if (file.size > MAX_FILE_SIZE) {
-      alert(`File exceeds 5MB.`);
+      showAlert("File Too Large", "The file exceeds the 5MB limit.");
       return false;
     }
     if (!SUPPORTED_TYPES.includes(file.type)) {
-      alert("Unsupported format. Use jpeg, jpg, png, bmp, or pdf.");
+      showAlert("Invalid Format", "Unsupported format. Please use JPEG, PNG, or PDF.");
       return false;
     }
     return true;
@@ -1868,6 +1893,7 @@
 
   const proceedWithProfile = async () => {
     if (!selectedProfile.value) return;
+    isSubmitting.value = true;
 
     try {
       const res = await axios.get(`${BACKEND_DOMAIN}/api/PassportProfile/${selectedProfile.value}`, {
@@ -1940,11 +1966,15 @@
       preStep.value = "appointmentNotice";
     } catch (err) {
       console.error("Failed to fetch profile:", err);
-      alert("Failed to load profile data. Please try again.");
+      showAlert("Data Error", "Failed to load profile data. Please try again.");
+    } finally {
+      isSubmitting.value = false; // Stop loading
     }
   };
 
   const submit = async () => {
+    isSubmitting.value = true;
+
     try {
       console.log("selectedDate:", selectedDate.value);
       console.log("selectedTime:", selectedTime.value);
@@ -1992,7 +2022,7 @@
       console.log("Certificate file:", certReq?.file);
 
       if (!validIdReq?.file || !certReq?.file) {
-        alert("Please upload all required documents before submitting.");
+        showAlert("Missing Documents", "Please upload all required documents before submitting.");
         return;
       }
       formData.append("ValidId", validIdReq.file);
@@ -2036,7 +2066,9 @@
         console.warn("Email notification failed:", emailErr);
       }
 
-      alert("Application submitted successfully!");
+      isSubmitting.value = false;
+
+      showAlert("Success", "Application submitted successfully!");
       console.log("Response:", res.data);
     } catch (err) {
       if (err?.response) {
@@ -2049,13 +2081,12 @@
           const msg = Object.entries(errors)
             .map(([field, messages]) => `${field}: ${messages.join(", ")}`)
             .join("\n");
-          alert(`Validation errors:\n${msg}`);
+          showAlert("Validation Error", msg);
         } else {
-          alert(err.response.data?.message ?? err.response.data?.title ?? "Submission failed.");
+          showAlert("Submission Failed", err.response.data?.message || "Something went wrong.");
         }
       } else {
-        console.error("Runtime error:", err.message, err.stack);
-        alert(`Runtime error: ${err.message}`);
+        showAlert("System Error", `A runtime error occurred: ${err.message}`);
       }
     }
   };
