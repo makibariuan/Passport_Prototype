@@ -11,6 +11,8 @@ using SixLabors.ImageSharp.PixelFormats;
 using System.Security.Claims;
 using ZXing;
 using ZXing.Common;
+using OnlineRegistration.Server.Services.Interfaces; // Make sure IFileService is in this namespace
+
 
 namespace Passport_Prototype.Server.Controllers
 {

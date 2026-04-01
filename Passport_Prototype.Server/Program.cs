@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -9,28 +10,29 @@ using OnlineRegistration.Server.Data;
 using OnlineRegistration.Server.Models;
 using OnlineRegistration.Server.Services;
 using OnlineRegistration.Server.Services.Interfaces;
+using QuestPDF.Infrastructure;
+using SeniorCitizen.Server.Data;
 using SixLabors.ImageSharp;
 using System.IdentityModel.Tokens.Jwt;
 using System.Net;
 using System.Net.Mail;
+using System.Reflection;
 using System.Security.Claims;
 using System.Text;
-using QuestPDF.Infrastructure;
-using System.Reflection;
-using SeniorCitizen.Server.Data;
-using Microsoft.AspNetCore.HttpOverrides;
 
 QuestPDF.Settings.License = LicenseType.Community;
 
+// Original Directory settings
+//var builder = WebApplication.CreateBuilder(new WebApplicationOptions
+//{
+//    Args = args,
+//    ContentRootPath = AppContext.BaseDirectory,
+//    WebRootPath = "wwwroot" // Explicitly tell it to look for this folder
+//});
 
-var builder = WebApplication.CreateBuilder(new WebApplicationOptions
-{
-    Args = args,
-    ContentRootPath = AppContext.BaseDirectory,
-    WebRootPath = "wwwroot" // Explicitly tell it to look for this folder
-});
-
-
+// Directory placement fix
+var builder = WebApplication.CreateBuilder(args); // uses default project root
+builder.WebHost.UseWebRoot("wwwroot"); // explicitly sets WebRootPath
 
 // ------------------ Services ------------------
 builder.Services.Configure<ForwardedHeadersOptions>(options =>
