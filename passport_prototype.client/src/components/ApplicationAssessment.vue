@@ -67,12 +67,12 @@
   ========================= -->
           <label class="pass-label">VALID ID</label>
 
-          <img v-if="isImage(selectedApp.validIdPath)"
+          <img v-if="isImage(selectedApp.validIdPath) && !brokenImages.has(selectedApp.validIdPath)"
                :src="getFullImageUrl(selectedApp.validIdPath)"
                class="pass-id-image"
                alt="Valid ID"
                @click="previewFile(selectedApp.validIdPath, 'Valid ID')"
-               @error="onImageError" />
+               @error="onImageError($event, selectedApp.validIdPath)" />
 
           <div v-else-if="isPdf(selectedApp.validIdPath)"
                class="pass-pdf-box"
@@ -90,12 +90,12 @@
   ========================= -->
           <label class="pass-label">CERTIFICATE</label>
 
-          <img v-if="isImage(selectedApp.certificatePath)"
+          <img v-if="isImage(selectedApp.certificatePath) && !brokenImages.has(selectedApp.certificatePath)"
                :src="getFullImageUrl(selectedApp.certificatePath)"
                class="pass-id-image"
                alt="Certificate"
                @click="previewFile(selectedApp.certificatePath, 'Certificate')"
-               @error="onImageError" />
+               @error="onImageError($event, selectedApp.certificatePath)" />
 
           <div v-else-if="isPdf(selectedApp.certificatePath)"
                class="pass-pdf-box"
@@ -113,13 +113,12 @@
 
           <label class="pass-label">APPLICATION BARCODE</label>
 
-          <img v-if="isImage(selectedApp.applicationBarCodePath)"
+          <img v-if="isImage(selectedApp.applicationBarCodePath) && !brokenImages.has(selectedApp.applicationBarCodePath)"
                :src="getBarCodeImageUrl(selectedApp.applicationBarCodePath)"
                class="pass-id-image"
                alt="Barcode"
                @click="previewFile(selectedApp.applicationBarCodePath, 'Barcode')"
-               @error="onImageError" />
-
+               @error="onImageError($event, selectedApp.applicationBarCodePath)" />
 
 
           <div v-else class="pass-no-file">
@@ -161,23 +160,23 @@
 
           <div class="info-item">
             <label>Citizen Type</label>
-            <p>{{ selectedApp.raw.citizenType || 'N/A' }}</p>
+            <p>{{ selectedApp.raw.applicationCitizenshipBasis || 'N/A' }}</p>
           </div>
 
           <div class="info-item full-width">
             <label>Country / Site</label>
-            <p>{{ selectedApp.raw.country || 'N/A' }} — {{ selectedApp.raw.site || 'N/A' }}</p>
+            <p>{{ selectedApp.raw.country || 'N/A' }} — {{ selectedApp.raw.applicationSite || 'N/A' }}</p>
           </div>
 
           <div class="info-item">
             <label>Courtesy Lane</label>
-            <p>{{ selectedApp.isCourtesyLane ? 'YES' : 'NO' }}</p>
+            <p>{{ selectedApp.applicationCourtesy ? 'YES' : 'NO' }}</p>
           </div>
 
           <div class="info-item">
             <label>Payment Status</label>
             <p :class="selectedApp.isPaid ? 'status-approved' : 'status-rejected'">
-              {{ selectedApp.isPaid ? 'PAID' : 'UNPAID' }}
+              {{ selectedApp.applicationPaid ? 'PAID' : 'UNPAID' }}
             </p>
           </div>
         </div>
@@ -263,6 +262,9 @@
   const showViewer = ref(false);
   const viewerType = ref(""); // "image" | "pdf"
   const viewerUrl = ref("");
+  const brokenImages = ref(new Set());
+
+
 
   const getFileName = (path) => {
     if (!path) return null;
@@ -291,7 +293,7 @@
      OPEN DETAILS
   ----------------------------*/
   const openDetails = (item) => {
-    console.log(item);
+    console.log("Item Selected : " + item);
     selectedApp.value = item;
     showDetails.value = true;
   };
@@ -316,9 +318,17 @@
   /* ---------------------------
      IMAGE FALLBACK
   ----------------------------*/
-  const onImageError = (e) => {
-    e.target.src = placeholderImg;
-  };
+  //const onImageError = (e) => {
+  //  e.target.src = placeholderImg;
+  //};
+
+  function onImageError(e, path) {
+    console.warn("Image failed:", path);
+
+    if (path) {
+      brokenImages.value.add(path);
+    }
+  }
 
   const isImage = (path) => {
     console.log("isImage called with:", path); // 👈 ADD THIS
@@ -383,21 +393,20 @@
 
       tableData.value = response.data.map((item) => {
         const fullName =
-          [item.firstName, item.middleName, item.lastName]
+          [item.passportFirstName, item.passportMiddleName, item.passportLastName]
             .filter(Boolean)
             .join(" ") || "N/A";
 
         return {
           id: item.enrollmentId,
-          number: item.enrollmentAccessCode,
+          number: item.applicationCode,
           type: item.appType,
-          date: formatDate(item.schedule),
+          date: formatDate(item.applicationSchedule),
           name: fullName,
           status: item.applicationStatus,
           validIdPath: item.validIdPath,
           certificatePath: item.certificatePath,
           applicationBarCodePath: item.applicationBarCodePath,
-
           raw: item,
         };
       });
@@ -487,34 +496,47 @@
     const fileName = getFileName(filePath);
     const isPdf = isPdfFile(filePath);
 
-    viewerTitle.value = title;
+    const baseUrl = "https://localhost:5000";
+    const cleanPath = filePath.replace(/\\/g, "/");
+
+    const isBarcode = cleanPath.includes("/barcodes/");
+
+    const url = isPdf
+      ? `${baseUrl}/temp_uploads/${fileName}`
+      : isBarcode
+        ? `${baseUrl}${cleanPath}`
+        : getFullImageUrl(cleanPath);
 
     try {
-      const baseUrl = "https://localhost:5000";
-      const cleanPath = filePath.replace(/\\/g, "/");
+      // =========================
+      // 🔥 PRE-CHECK IF FILE EXISTS
+      // =========================
+      const res = await fetch(url, { method: "HEAD" });
+
+      if (!res.ok) {
+        console.warn("⚠️ File not found or broken:", url);
+
+        // OPTIONAL: UI warning (toast/alert)
+        alert(`${title} file is not available or broken.`);
+
+        return; // ❌ stop opening viewer
+      }
 
       // =========================
-      // NEW: detect barcode
+      // OPEN VIEWER (VALID FILE)
       // =========================
-      const isBarcode = cleanPath.includes("/barcodes/");
-
-      viewerUrl.value = isPdf
-        ? `${baseUrl}/temp_uploads/${fileName}`
-        : isBarcode
-          ? `${baseUrl}${cleanPath}`   // ✅ FIX for barcode
-          : getFullImageUrl(cleanPath);
-
+      viewerTitle.value = title;
+      viewerUrl.value = url;
       viewerType.value = isPdf ? "pdf" : "image";
       showViewer.value = true;
 
-      // =========================
-      // DEBUG LOGS
-      // =========================
       console.log("viewerType:", viewerType.value);
       console.log("viewerUrl:", viewerUrl.value);
 
     } catch (err) {
       console.error("Preview error:", err);
+
+      alert(`Unable to load ${title}. Please try again later.`);
     }
   }
 

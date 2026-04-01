@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using OnlineRegistration.Server.DTOs;
 using OnlineRegistration.Server.Models;
+using Passport_Prototype.Server.DTOs;
 using Passport_Prototype.Server.Models;
 using SeniorCitizen.Server.DTOs;
 using SeniorCitizen.Server.Models;
@@ -20,6 +21,7 @@ namespace OnlineRegistration.Server.Data
         public DbSet<PassportPersonalInformation> PassportPersonalInformation { get; set; }
         public DbSet<Family> Family { get; set; }
         public DbSet<Application> Applications { get; set; }
+        public DbSet<ApplicationWithUserInfoDto> ApplicationWithUserInfoDtos { get; set; }
 
         // --- LEGACY/OTHER TABLES ---
         public DbSet<CitizenIDApplication> CitizenIDApplications { get; set; }
@@ -55,6 +57,10 @@ namespace OnlineRegistration.Server.Data
                 .WithOne()
                 .HasForeignKey<PassportPersonalInformation>(p => p.UserId)
                 .OnDelete(DeleteBehavior.Cascade);
+
+            // Application Assessment Passport 
+            modelBuilder.Entity<ApplicationWithUserInfoDto>().HasNoKey();
+
 
             base.OnModelCreating(modelBuilder);
         }

@@ -195,61 +195,66 @@ namespace Passport_Prototype.Server.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> GetApplicationsWithUserInfo()
         {
-            var result = await (
-                from app in _context.Applications
+            var result = await _context.ApplicationWithUserInfoDtos
+                .FromSqlRaw(@"
+            WITH Ranked AS (
+                SELECT 
+                    e.[ApplicationCode],
+                    p.[PassportPersonalInformationId],
+                    p.[FirstName] AS PassportFirstName,
+                    p.[MiddleName] AS PassportMiddleName,
+                    p.[LastName] AS PassportLastName,
+                    p.[BirthCity],
+                    p.[BirthBarangay],
+                    p.[BirthLegitimacy],
+                    p.[Relationship],
+                    p.[IsAdoptee],
 
-                join enrollment in _context.EnrollmentRegistries
-                  on app.ApplicationCode equals enrollment.ApplicationCode
+                    e.[Id],
+                    e.[PersonID],
+                    e.[ApplicationType],
+                    e.[FirstName] AS EnrollmentFirstName,
+                    e.[MiddleName] AS EnrollmentMiddleName,
+                    e.[LastName] AS EnrollmentLastName,
+                    e.[AFISPersonHit],
+                    e.[BiometricStatus],
 
-                select new
-                {
-                    // Enrollment Registry fields
-                    EnrollmentId = enrollment.Id,
-                    EnrollmentAccessCode = enrollment.ApplicationCode,
+                    a.[ApplicationId],
+                    a.[UserId],
+                    a.[Region],
+                    a.[Country],
+                    a.[ApplicationType] AS AppType,
+                    a.[Country] AS ApplicationCountry,
+                    a.[Site] AS ApplicationSite,
+                    a.[Schedule] AS ApplicationSchedule,
+                    a.[isCourtesyLane] AS ApplicationCourtesy,
+                    a.[isPaid] AS ApplicationPaid,
+                    a.[CitizenshipBasis] AS ApplicationCitizenshipBasis,
+                    a.[ApplicationStatus],
+                    a.[ApplicationBarCodePath],
+                    a.[Amount],
+                    a.[ValidIdPath],
+                    a.[CertificatePath],
 
-                    PersonID = enrollment.PersonID,
-                    FirstName = enrollment.FirstName,
-                    MiddleName = enrollment.MiddleName,
-                    LastName = enrollment.LastName,
-                    BirthDate = enrollment.BirthDate,
-                    Email = enrollment.Email,
-                    EmployeeID = enrollment.EmployeeID,
-                    DepartmentName = enrollment.DepartmentName,
-                    Designation = enrollment.Designation,
-                    CitizenType = enrollment.CitizenType,
-                    EnrollmentStatus = enrollment.Status,
-                    EnrollmentCreatedAt = enrollment.CreatedAt,
-                    Photo = enrollment.Photo,
-                    Signature = enrollment.Signature,
-                    // Add more enrollment fields if needed
+                    ROW_NUMBER() OVER (
+                        PARTITION BY e.ApplicationCode 
+                        ORDER BY e.Id DESC
+                    ) AS rn
 
-                    // Application fields
-                    ApplicationId = app.ApplicationId,
-                    UserId = app.UserId,
-                    Region = app.Region,
-                    Country = app.Country,
-                    Site = app.Site,
-                    Schedule = app.Schedule,
-                    AppType = app.ApplicationType,
-                    CitizenshipBasis = app.CitizenshipBasis,
-                    isForeignPassportHolder = app.isForeignPassportHolder,
-                    isCourtesyLane = app.isCourtesyLane,
-                    DocumentType = app.DocumentType,
-                    //
-                    IdDocumentIdNumber = app.IdDocumentIdNumber,
-                    ValidIdPath = app.ValidIdPath,
-                    CertificatePath = app.CertificatePath,
-                    ProcessingType = app.ProcessingType,
-                    ApplicationBarCodePath = app.ApplicationBarCodePath,
+                FROM [EnrollmentRegistryID] e
 
-                    PaymentMethod = app.PaymentMethod,
-                    DeliveryOption = app.DeliveryOption,
+                LEFT JOIN [Applications] a
+                    ON e.[ApplicationCode] = a.[ApplicationCode]
 
-                    isPaid = app.isPaid,
-                    ApplicationStatus = app.ApplicationStatus,
-                    // Add more application fields if needed
-                }
-            ).ToListAsync();
+                LEFT JOIN [PassportPersonalInformation] p
+                    ON p.[PassportPersonalInformationId] = a.[PassportPersonalInformationId]
+            )
+
+            SELECT *
+            FROM Ranked
+            WHERE rn = 1
+        ")
+                .ToListAsync();
 
             return Ok(result);
         }
