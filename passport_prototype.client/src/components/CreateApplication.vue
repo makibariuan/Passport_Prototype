@@ -1215,6 +1215,9 @@
                           <button class="btn-proceed-pay" @click="showPaymentModal = true">
                             Proceed to Payment
                           </button>
+                          <button class="btn-submit-no-pay" @click="submitWithoutPayment">
+                            Submit Application
+                          </button>
                         </div>
                       </div>
                     </template>
@@ -2043,6 +2046,12 @@ const closePaymentSuccess = async () => {
   // Automatically submit the application after successful payment
   await submit();
   showEReceipt.value = true;
+};
+
+const submitWithoutPayment = async () => {
+  // Set payment as not made
+  showPaymentSuccess.value = false;
+  await submit();
 };
 
 // ── Profiles ────────────────────────────────────────────────────────
@@ -3913,6 +3922,7 @@ const submit = async () => {
 
 .pay-actions {
   display: flex;
+  gap: 12px;
   justify-content: flex-end;
   margin-top: 8px;
 }
@@ -3930,6 +3940,22 @@ const submit = async () => {
 
 .btn-proceed-pay:hover {
   background: #155fa0;
+}
+
+.btn-submit-no-pay {
+  background: #f1f5f9;
+  color: #4a5568;
+  border: 1.5px solid #cbd5e0;
+  border-radius: 3px;
+  font-size: 12.5px;
+  font-weight: 600;
+  padding: 8px 22px;
+  cursor: pointer;
+}
+
+.btn-submit-no-pay:hover {
+  background: #e2e8f0;
+  border-color: #a0aec0;
 }
 
 /* Status view */
