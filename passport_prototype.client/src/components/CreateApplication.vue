@@ -1297,14 +1297,6 @@
             <button v-if="currentStep < tabs.length - 1" class="btn btn-next" @click="nextStep">
               Next →
             </button>
-            <button
-              v-else
-              class="btn btn-submit"
-              :disabled="!appForm.declarationChecked || !appForm.certifyChecked"
-              @click="submit"
-            >
-              Submit Application
-            </button>
           </div>
         </div>
       </template>
@@ -2046,8 +2038,10 @@ const agreePaymentModal = () => {
   showPaymentStatus.value = true;
 };
 
-const closePaymentSuccess = () => {
+const closePaymentSuccess = async () => {
   showPaymentSuccess.value = false;
+  // Automatically submit the application after successful payment
+  await submit();
   showEReceipt.value = true;
 };
 
