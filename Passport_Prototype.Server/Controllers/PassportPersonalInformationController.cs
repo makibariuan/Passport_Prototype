@@ -103,24 +103,6 @@ public class PassportPersonalInformationsController : ControllerBase
         passportPersonalInformation.BirthCity = dto.BirthCity;
         passportPersonalInformation.BirthBarangay = dto.BirthBarangay;
 
-        // Current Address
-        passportPersonalInformation.CurrentCountry = dto.CurrentCountry;
-        passportPersonalInformation.CurrentRegion = dto.CurrentRegion;
-        passportPersonalInformation.CurrentProvince = dto.CurrentProvince;
-        passportPersonalInformation.CurrentCity = dto.CurrentCity;
-        passportPersonalInformation.CurrentBarangay = dto.CurrentBarangay;
-        passportPersonalInformation.CurrentStreet = dto.CurrentStreet;
-        passportPersonalInformation.CurrentUnit = dto.CurrentUnit;
-
-        // Permanent Address
-        passportPersonalInformation.PermanentCountry = dto.PermanentCountry;
-        passportPersonalInformation.PermanentRegion = dto.PermanentRegion;
-        passportPersonalInformation.PermanentProvince = dto.PermanentProvince;
-        passportPersonalInformation.PermanentCity = dto.PermanentCity;
-        passportPersonalInformation.PermanentBarangay = dto.PermanentBarangay;
-        passportPersonalInformation.PermanentStreet = dto.PermanentStreet;
-        passportPersonalInformation.PermanentUnit = dto.PermanentUnit;
-
         passportPersonalInformation.IsAdoptee = dto.IsAdoptee ?? false;
 
         await _context.SaveChangesAsync();

@@ -109,6 +109,8 @@ namespace Passport_Prototype.Server.Controllers
                 entity = new ContactInformation
                 {
                     PassportPersonalInformationId = dto.PassportPersonalInformationId,
+
+                    // Current Address
                     CurrentStreet = dto.CurrentStreet,
                     CurrentRegion = dto.CurrentRegion,
                     CurrentProvince = dto.CurrentProvince,
@@ -116,6 +118,17 @@ namespace Passport_Prototype.Server.Controllers
                     CurrentBarangay = dto.CurrentBarangay,
                     CurrentPostalCode = dto.CurrentPostalCode,
                     CurrentCountry = dto.CurrentCountry,
+
+                    // Permanent Address (NEW)
+                    PermanentStreet = dto.PermanentStreet,
+                    PermanentRegion = dto.PermanentRegion,
+                    PermanentProvince = dto.PermanentProvince,
+                    PermanentCityMunicipality = dto.PermanentCityMunicipality,
+                    PermanentBarangay = dto.PermanentBarangay,
+                    PermanentPostalCode = dto.PermanentPostalCode,
+                    PermanentCountry = dto.PermanentCountry,
+
+                    // Other
                     AddressAbroad = dto.AddressAbroad,
                     PersonalMobileNumber = dto.PersonalMobileNumber,
                     PersonalLandlineNumber = dto.PersonalLandlineNumber,
@@ -129,6 +142,7 @@ namespace Passport_Prototype.Server.Controllers
             }
             else
             {
+                // Current Address
                 entity.CurrentStreet = dto.CurrentStreet;
                 entity.CurrentRegion = dto.CurrentRegion;
                 entity.CurrentProvince = dto.CurrentProvince;
@@ -136,6 +150,17 @@ namespace Passport_Prototype.Server.Controllers
                 entity.CurrentBarangay = dto.CurrentBarangay;
                 entity.CurrentPostalCode = dto.CurrentPostalCode;
                 entity.CurrentCountry = dto.CurrentCountry;
+
+                // Permanent Address (NEW)
+                entity.PermanentStreet = dto.PermanentStreet;
+                entity.PermanentRegion = dto.PermanentRegion;
+                entity.PermanentProvince = dto.PermanentProvince;
+                entity.PermanentCityMunicipality = dto.PermanentCityMunicipality;
+                entity.PermanentBarangay = dto.PermanentBarangay;
+                entity.PermanentPostalCode = dto.PermanentPostalCode;
+                entity.PermanentCountry = dto.PermanentCountry;
+
+                // Other
                 entity.AddressAbroad = dto.AddressAbroad;
                 entity.PersonalMobileNumber = dto.PersonalMobileNumber;
                 entity.PersonalLandlineNumber = dto.PersonalLandlineNumber;

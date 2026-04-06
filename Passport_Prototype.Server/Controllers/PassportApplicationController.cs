@@ -38,7 +38,7 @@ namespace Passport_Prototype.Server.Controllers
             _fileService = fileService;
             _db = db;
         }
-        
+
         [HttpPost]
         [Authorize]
         public async Task<IActionResult> CreateApplication([FromForm] CreateApplicationDTO dto)
@@ -157,7 +157,7 @@ namespace Passport_Prototype.Server.Controllers
             {
                 PersonID = UserId!,
                 ApplicationCode = sharedCode,
-                ApplicationType = 2, 
+                ApplicationType = 2,
 
                 Status = 1, // Pending/Active
                 CreatedAt = DateTime.Now,
@@ -279,7 +279,7 @@ namespace Passport_Prototype.Server.Controllers
                 select new
                 {
                     applicationId = app.ApplicationId,
-                    site = app.Site ?? "",  
+                    site = app.Site ?? "",
                     status = (int?)app.ApplicationStatus,
                     barcodePath = app.ApplicationBarCodePath ?? "",
                     barcode = app.ApplicationBarCodePath ?? "",
@@ -327,6 +327,26 @@ namespace Passport_Prototype.Server.Controllers
 
             return Ok(application);
         }
-    }
 
+        [HttpGet("Address/{PersponalInformationId}")]
+        public async Task<IActionResult> GetApplicationAddress(int PersponalInformationId)
+        {
+            var address = await _context.ContactInformation
+                .Where(c => c.PassportPersonalInformationId == PersponalInformationId)
+                .Select(c => new
+                {
+                    currentStreet = c.CurrentStreet,
+                    currentRegion = c.CurrentRegion,
+                    currentProvince = c.CurrentProvince,
+                    currentCityMunicipality = c.CurrentCityMunicipality,
+                    currentBarangay = c.CurrentBarangay,
+                    currentPostalCode = c.CurrentPostalCode,
+                    currentCountry = c.CurrentCountry
+                })
+                .FirstOrDefaultAsync();
+            if (address == null)
+                return NotFound();
+            return Ok(address);
+        }
+    }
 }
