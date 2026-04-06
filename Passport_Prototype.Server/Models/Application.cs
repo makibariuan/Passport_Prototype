@@ -52,5 +52,14 @@ namespace Passport_Prototype.Server.Models
         public int ApplicationStatus { get; set; }
 
         public string? ApplicationBarCodePath { get; set; }
+
+        // Delivery Address
+        public string? DeliveryStreet { get; set; }
+        public string? DeliveryRegion { get; set; }
+        public string? DeliveryProvince { get; set; }
+        public string? DeliveryCityMunicipality { get; set; }
+        public string? DeliveryBarangay { get; set; }
+        public string? DeliveryPostalCode { get; set; }
+        public string? DeliveryCountry { get; set; }
     }
 }
