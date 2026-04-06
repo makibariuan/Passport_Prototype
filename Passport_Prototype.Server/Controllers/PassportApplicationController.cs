@@ -327,26 +327,5 @@ namespace Passport_Prototype.Server.Controllers
 
             return Ok(application);
         }
-
-        [HttpGet("Address/{PersponalInformationId}")]
-        public async Task<IActionResult> GetApplicationAddress(int PersponalInformationId)
-        {
-            var address = await _context.ContactInformation
-                .Where(c => c.PassportPersonalInformationId == PersponalInformationId)
-                .Select(c => new
-                {
-                    currentStreet = c.CurrentStreet,
-                    currentRegion = c.CurrentRegion,
-                    currentProvince = c.CurrentProvince,
-                    currentCityMunicipality = c.CurrentCityMunicipality,
-                    currentBarangay = c.CurrentBarangay,
-                    currentPostalCode = c.CurrentPostalCode,
-                    currentCountry = c.CurrentCountry
-                })
-                .FirstOrDefaultAsync();
-            if (address == null)
-                return NotFound();
-            return Ok(address);
-        }
     }
 }
