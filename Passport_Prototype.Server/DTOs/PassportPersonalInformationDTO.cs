@@ -92,6 +92,34 @@ namespace Passport_Prototype.Server.DTOs
 
         public string? BirthBarangay { get; set; }
 
+        public string? CurrentCountry { get; set; }
+
+        public string? CurrentRegion { get; set; }
+
+        public string? CurrentProvince { get; set; }
+
+        public string? CurrentCity { get; set; }
+
+        public string? CurrentBarangay { get; set; }
+
+        public string? CurrentStreet { get; set; }
+
+        public string? CurrentUnit { get; set; }
+
+        public string? PermanentCountry { get; set; }
+
+        public string? PermanentRegion { get; set; }
+
+        public string? PermanentProvince { get; set; }
+
+        public string? PermanentCity { get; set; }
+
+        public string? PermanentBarangay { get; set; }
+
+        public string? PermanentStreet { get; set; }
+
+        public string? PermanentUnit { get; set; }
+
         public bool? IsAdoptee { get; set; }
     }
 }
