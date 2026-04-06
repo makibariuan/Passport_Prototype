@@ -39,6 +39,8 @@ namespace Passport_Prototype.Server.DTOs
 
         public string DeliveryOption { get; set; } = null!;
 
+        public string? AddressSource { get; set; }
+
         public int Amount { get; set; } = 0;
 
         public bool isPaid { get; set; }

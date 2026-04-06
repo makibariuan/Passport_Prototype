@@ -124,6 +124,47 @@ namespace Passport_Prototype.Server.Controllers
             // This is what you store in DB (relative path)
             string barcodeDbPath = $"/barcodes/{barcodeFileName}";
 
+            // Delivery Address
+            var contact = await _context.ContactInformation
+    .FirstOrDefaultAsync(c => c.PassportPersonalInformationId == dto.PassportPersonalInformationId);
+
+            var work = await _context.WorkInformation
+                .FirstOrDefaultAsync(w => w.PassportPersonalInformationId == dto.PassportPersonalInformationId);
+
+            // Default values
+            string? street = null, region = null, province = null, city = null, barangay = null, postal = null, country = null;
+
+            if (dto.AddressSource == "Current" && contact != null)
+            {
+                street = contact.CurrentStreet;
+                region = contact.CurrentRegion;
+                province = contact.CurrentProvince;
+                city = contact.CurrentCityMunicipality;
+                barangay = contact.CurrentBarangay;
+                postal = contact.CurrentPostalCode;
+                country = contact.CurrentCountry;
+            }
+            else if (dto.AddressSource == "Permanent" && contact != null)
+            {
+                street = contact.PermanentStreet;
+                region = contact.PermanentRegion;
+                province = contact.PermanentProvince;
+                city = contact.PermanentCityMunicipality;
+                barangay = contact.PermanentBarangay;
+                postal = contact.PermanentPostalCode;
+                country = contact.PermanentCountry;
+            }
+            else if (dto.AddressSource == "Work" && work != null)
+            {
+                street = work.OfficeAddress;
+                region = work.OfficeRegion;
+                province = work.OfficeProvince;
+                city = work.OfficeCityMunicipality;
+                barangay = work.OfficeBarangay;
+                postal = work.OfficePostalCode;
+                country = work.OfficeCountry;
+            }
+
             // 3. Create Passport Application Entity
             var application = new Application
             {
@@ -149,7 +190,15 @@ namespace Passport_Prototype.Server.Controllers
                 isPaid = false,
                 ApplicationStatus = 1,
                 ApplicationCode = sharedCode,
-                ApplicationBarCodePath = barcodeDbPath
+                ApplicationBarCodePath = barcodeDbPath,
+
+                DeliveryStreet = street,
+                DeliveryRegion = region,
+                DeliveryProvince = province,
+                DeliveryCityMunicipality = city,
+                DeliveryBarangay = barangay,
+                DeliveryPostalCode = postal,
+                DeliveryCountry = country
             };
 
             // 4. Create Registry Entry
@@ -326,6 +375,73 @@ namespace Passport_Prototype.Server.Controllers
                 return NotFound();
 
             return Ok(application);
+        }
+
+        [HttpGet("Addresses/{personalInformationId}")]
+        public async Task<IActionResult> GetApplicationAddresses(int personalInformationId)
+        {
+            var addresses = new List<object>();
+
+            // Contact Information
+            var contact = await _context.ContactInformation
+                .Where(c => c.PassportPersonalInformationId == personalInformationId)
+                .FirstOrDefaultAsync();
+
+            if (contact != null)
+            {
+                addresses.Add(new
+                {
+                    type = "Current",
+                    street = contact.CurrentStreet,
+                    region = contact.CurrentRegion,
+                    province = contact.CurrentProvince,
+                    cityMunicipality = contact.CurrentCityMunicipality,
+                    barangay = contact.CurrentBarangay,
+                    postalCode = contact.CurrentPostalCode,
+                    country = contact.CurrentCountry
+                });
+
+                addresses.Add(new
+                {
+                    type = "Permanent",
+                    street = contact.PermanentStreet,
+                    region = contact.PermanentRegion,
+                    province = contact.PermanentProvince,
+                    cityMunicipality = contact.PermanentCityMunicipality,
+                    barangay = contact.PermanentBarangay,
+                    postalCode = contact.PermanentPostalCode,
+                    country = contact.PermanentCountry
+                });
+            }
+
+            // Work Information
+            var work = await _context.WorkInformation
+                .Where(w => w.PassportPersonalInformationId == personalInformationId)
+                .FirstOrDefaultAsync();
+
+            if (work != null)
+            {
+                addresses.Add(new
+                {
+                    type = "Work",
+                    street = work.OfficeAddress,
+                    region = work.OfficeRegion,
+                    province = work.OfficeProvince,
+                    cityMunicipality = work.OfficeCityMunicipality,
+                    barangay = work.OfficeBarangay,
+                    postalCode = work.OfficePostalCode,
+                    country = work.OfficeCountry,
+                    occupation = work.Occupation,
+                    employer = work.Employer,
+                    officeMobileNumber = work.OfficeMobileNumber,
+                    officeLandlineNumber = work.OfficeLandlineNumber
+                });
+            }
+
+            if (!addresses.Any())
+                return NotFound();
+
+            return Ok(addresses);
         }
     }
 }
