@@ -1233,16 +1233,17 @@
                         <label class="pds-label"
                           >Relationship<span class="required-star">*</span></label
                         >
+                        <!-- AFTER -->
                         <select v-model="emergency.relationship" class="pds-input">
                           <option value="">— Select Relationship —</option>
-                          <option>Spouse</option>
-                          <option>Parent</option>
-                          <option>Sibling</option>
-                          <option>Child</option>
-                          <option>Relative</option>
-                          <option>Friend</option>
-                          <option>Guardian</option>
-                          <option>Other</option>
+                          <option value="Spouse">Spouse</option>
+                          <option value="Parent">Parent</option>
+                          <option value="Sibling">Sibling</option>
+                          <option value="Child">Child</option>
+                          <option value="Relative">Relative</option>
+                          <option value="Friend">Friend</option>
+                          <option value="Guardian">Guardian</option>
+                          <option value="Other">Other</option>
                         </select>
                       </div>
                     </div>
