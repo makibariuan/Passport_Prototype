@@ -5,7 +5,7 @@
 
     <div class="dashboard-content">
 
-      <h2 class="page-title">Employee ID Managements</h2>
+      <h2 class="page-title">Adjudication</h2>
 
       <div class="data-section-card">
         <div class="tab-content">
@@ -73,7 +73,7 @@
                 <div class="content-card">
                   <div class="header">
                     <div>
-                      <h2 class="sub-title">Biometric Adjudication</h2>
+                      <!--<h2 class="sub-title">Adjudication</h2>-->
                       <p class="sub">Review and resolve biometric profile conflicts.</p>
                     </div>
                     <div class="search-group">

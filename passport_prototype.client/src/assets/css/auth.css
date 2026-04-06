@@ -346,3 +346,58 @@ input {
   justify-content: center;
   align-items: center;
 }
+
+/* Container for First Name and Suffix */
+.name-suffix-row {
+  display: flex;
+  gap: 15px; /* Space between the two inputs */
+  width: 100%;
+}
+
+/* First name takes up most of the space */
+.first-name-field {
+  flex: 3;
+}
+
+/* Suffix takes up less space */
+.suffix-field {
+  flex: 1;
+}
+
+  /* Ensure labels don't wrap strangely */
+  .suffix-field label {
+    white-space: nowrap;
+  }
+
+/* Keep the existing form-field margin but ensure the row itself handles bottom spacing */
+.name-suffix-row .form-field {
+  margin-bottom: 20px;
+}
+
+.password-rules-container {
+  grid-column: 1; /* Force to left column */
+  padding-right: 10px;
+}
+
+.password-rules {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  color: #333333;
+}
+
+  .password-rules li {
+    margin-bottom: 5px;
+    font-size: 0.8em;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+.valid {
+  color: #388e3c;
+}
+
+.invalid {
+  color: #d32f2f;
+}

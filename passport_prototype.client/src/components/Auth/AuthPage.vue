@@ -32,10 +32,12 @@
         <h2 class="info-title">Passport Online Registration &amp; Application System</h2>
         <p class="info-disclaimer">
           It is advisable NOT to purchase outbound travel tickets until your passports are actually
-          in your possession...
+          in your possession. Department of Foreign Affairs will not be responsible for any rebooking charges,
+          loss of income, and other financial compensation and/or personal losses arising from the applicant's
+          trabel arrangements made while the passport has not been released.
         </p>
         <div class="contact-info">
-          <span><i class="fas fa-phone"></i> +632 8234 3488</span>
+          <span><i class="fas fa-phone"></i> +632 8234 3488</span><br>
           <span><i class="fas fa-envelope"></i> info@passport.gov.ph</span>
         </div>
       </section>
@@ -51,23 +53,21 @@
           </div>
         </div>
 
-        <div class="form-field">
-          <label>First Name</label>
-          <input v-model="firstName" type="text" placeholder="First Name" autocomplete="given-name" />
+        <div class="name-suffix-row">
+          <div class="form-field first-name-field">
+            <label>Given Name</label>
+            <input v-model="firstName" type="text" placeholder="First Name" autocomplete="given-name" />
+          </div>
+
+          <div class="form-field suffix-field">
+            <label>Suffix (If applicable)</label>
+            <input v-model="suffix" type="text" placeholder="e.g. Jr., III" autocomplete="honorific-suffix" />
+          </div>
         </div>
 
         <div class="form-field">
-          <label>Middle Name</label>
-          <div class="toggle-btns">
-            <button :class="{ active: hasMiddleName }" @click="hasMiddleName = true">Yes</button>
-            <button :class="{ active: !hasMiddleName }" @click="hasMiddleName = false">No</button>
-          </div>
-          <input v-if="hasMiddleName"
-                 v-model="middleName"
-                 type="text"
-                 placeholder="Middle Name"
-                 autocomplete="additional-name"
-                 style="margin-top: 8px" />
+          <label>Middle Name (If applicable)</label>
+          <input v-model="middleName" type="text" placeholder="Middle Name" autocomplete="additional-name" />
         </div>
 
         <div class="form-field">
@@ -76,22 +76,20 @@
         </div>
 
         <div class="form-field">
-          <label>Suffix</label>
-          <input type="text" placeholder="Suffix" autocomplete="honorific-suffix" />
-        </div>
-
-        <div class="input-with-action">
-          <input v-model="email" type="email" placeholder="Email Address" autocomplete="email" />
-          <button @click="sendVerificationCode" class="action-btn" :disabled="registerLoading">
-            {{ registerLoading ? "Sending..." : "Send verification code" }}
-          </button>
+          <label>Email Address</label>
+          <div class="input-with-action">
+            <input v-model="email" type="email" placeholder="Email Address" autocomplete="email" />
+            <button @click="sendVerificationCode" class="action-btn" :disabled="registerLoading">
+              {{ registerLoading ? "Sending..." : "Send verification code" }}
+            </button>
+          </div>
         </div>
 
         <!-- ═══════════════════════════════════════════════════
-           REGISTER OTP SLOTS
-           Uses registerOtp ref only. No >= in the template —
-           uses registerOtpSlots computed array instead.
-      ═══════════════════════════════════════════════════ -->
+       REGISTER OTP SLOTS
+       Uses registerOtp ref only. No >= in the template —
+       uses registerOtpSlots computed array instead.
+  ═══════════════════════════════════════════════════ -->
         <div class="form-field">
           <label style="padding-top: 30px">Verification Code</label>
           <div class="otp-wrapper">
@@ -105,10 +103,10 @@
                    @keydown="blockNonDigits" />
             <div class="otp-slots-container">
               <!--
-              FIX: No >= operator in template at all.
-              registerOtpSlots is a computed array of 6 booleans
-              that tells each slot whether it is filled or not.
-            -->
+          FIX: No >= operator in template at all.
+          registerOtpSlots is a computed array of 6 booleans
+          that tells each slot whether it is filled or not.
+        -->
               <div v-for="(slot, idx) in registerOtpSlots"
                    :key="idx"
                    class="otp-slot"
@@ -136,8 +134,19 @@
         </div>
 
         <div class="form-field">
-          <label>Repeat Password</label>
+          <label>Confirm Password</label>
           <input v-model="confirmPassword" type="password" placeholder="Repeat Password" autocomplete="new-password" />
+        </div>
+
+        <div class="password-rules-container">
+          <label>Your Password Must Have:</label>
+          <ul class="password-rules">
+            <li><i :class="['fa', hasUppercase ? 'fa-check-circle valid' : 'fa-times-circle invalid']"></i> One uppercase letter</li>
+            <li><i :class="['fa', hasLowercase ? 'fa-check-circle valid' : 'fa-times-circle invalid']"></i> One lowercase letter</li>
+            <li><i :class="['fa', hasNumber ? 'fa-check-circle valid' : 'fa-times-circle invalid']"></i> At least one number</li>
+            <li><i :class="['fa', noSpaces ? 'fa-check-circle valid' : 'fa-times-circle invalid']"></i> No spaces</li>
+            <li><i :class="['fa', minLength ? 'fa-check-circle valid' : 'fa-times-circle invalid']"></i> 8 or more characters</li>
+          </ul>
         </div>
 
         <div class="captcha-placeholder">
