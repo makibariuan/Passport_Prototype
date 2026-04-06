@@ -225,9 +225,127 @@
             <transition name="fade-slide" mode="out-in">
               <div :key="currentStep" class="form-wrapper">
                 <!-- ═══════════════════════════════════════════════════ -->
-                <!-- TAB 0 — Site Location & Schedule                   -->
+                <!-- TAB 0 — Documentary Requirements                   -->
                 <!-- ═══════════════════════════════════════════════════ -->
                 <div v-if="currentStep === 0">
+                  <div class="pds-section">
+                    <p class="appt-title">
+                      Appointment for
+                      <span class="hname">
+                        {{
+                          [appForm.firstName, appForm.middleName, appForm.lastName]
+                            .filter(Boolean)
+                            .join(" ")
+                            .toUpperCase()
+                        }}
+                      </span>
+                    </p>
+
+                    <div class="file-notice">
+                      File size limit is 5MB. Supported formats: jpeg, png, bmp, pdf
+                    </div>
+
+                    <p class="section-label">Core requirements<span class="required">*</span></p>
+
+                    <div v-for="req in requirements" :key="req.id" class="req-item">
+                      <label class="req-item__label"
+                        >{{ req.label }}<span class="required">*</span></label
+                      >
+                      <div class="upload-zone">
+                        <button class="browse-btn" @click.stop="triggerFileInput(req.id)">
+                          + Browse
+                        </button>
+                      </div>
+                      <div v-if="req.file" class="file-display">
+                        <svg
+                          width="14"
+                          height="14"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="#888"
+                          stroke-width="2"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          style="flex-shrink: 0"
+                        >
+                          <path
+                            d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"
+                          />
+                        </svg>
+                        <span class="file-name">{{ req.file.name }}</span>
+                        <button class="remove-btn" @click.stop="removeFile(req.id)">
+                          <svg
+                            width="14"
+                            height="14"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="2.5"
+                          >
+                            <line x1="18" y1="6" x2="6" y2="18" />
+                            <line x1="6" y1="6" x2="18" y2="18" />
+                          </svg>
+                        </button>
+                      </div>
+                      <input
+                        :ref="(el) => setFileInputRef(req.id, el)"
+                        type="file"
+                        accept=".jpeg,.jpg,.png,.bmp,.pdf"
+                        class="hidden-input"
+                        @change="onFileChange(req.id, $event)"
+                      />
+                      <hr class="divider" />
+                    </div>
+                  </div>
+
+                  <!-- Conflict Detection Modal -->
+                  <teleport to="body">
+                    <div v-if="showConflictModal" class="modal-overlay" @click.self="closeModal">
+                      <div class="modal-box">
+                        <div class="modal-banner">
+                          System found possible conflicts. Please confirm if the attachment is
+                          valid.
+                        </div>
+                        <div class="modal-body">
+                          <table class="conflict-table">
+                            <thead>
+                              <tr>
+                                <th>Field</th>
+                                <th>Value</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              <tr v-for="row in conflictRows" :key="row.field">
+                                <td class="field-name">{{ row.field }}</td>
+                                <td>{{ row.value }}</td>
+                              </tr>
+                            </tbody>
+                          </table>
+                          <div class="id-preview-wrap">
+                            <img
+                              v-if="pendingFilePreviewUrl"
+                              :src="pendingFilePreviewUrl"
+                              class="id-preview-img"
+                              alt="Uploaded ID"
+                            />
+                            <div v-else class="id-preview-placeholder">Preview not available</div>
+                          </div>
+                        </div>
+                        <div class="modal-actions">
+                          <button class="btn-confirm" @click="confirmAttachment">
+                            Confirm Attachment
+                          </button>
+                          <button class="btn-reupload" @click="uploadAgain">Upload again</button>
+                        </div>
+                      </div>
+                    </div>
+                  </teleport>
+                </div>
+
+                <!-- ═══════════════════════════════════════════════════ -->
+                <!-- TAB 1 — Site Location & Schedule                   -->
+                <!-- ═══════════════════════════════════════════════════ -->
+                <div v-else-if="currentStep === 1">
                   <!-- ── Site Location ── -->
                   <div class="pds-section">
                     <div class="pds-section-header">
@@ -396,125 +514,7 @@
                 </div>
 
                 <!-- ═══════════════════════════════════════════════════ -->
-                <!-- TAB 4 — Documentary Requirements                   -->
-                <!-- ═══════════════════════════════════════════════════ -->
-                <div v-else-if="currentStep === 1">
-                  <div class="pds-section">
-                    <p class="appt-title">
-                      Appointment for
-                      <span class="hname">
-                        {{
-                          [appForm.firstName, appForm.middleName, appForm.lastName]
-                            .filter(Boolean)
-                            .join(" ")
-                            .toUpperCase()
-                        }}
-                      </span>
-                    </p>
-
-                    <div class="file-notice">
-                      File size limit is 5MB. Supported formats: jpeg, png, bmp, pdf
-                    </div>
-
-                    <p class="section-label">Core requirements<span class="required">*</span></p>
-
-                    <div v-for="req in requirements" :key="req.id" class="req-item">
-                      <label class="req-item__label"
-                        >{{ req.label }}<span class="required">*</span></label
-                      >
-                      <div class="upload-zone">
-                        <button class="browse-btn" @click.stop="triggerFileInput(req.id)">
-                          + Browse
-                        </button>
-                      </div>
-                      <div v-if="req.file" class="file-display">
-                        <svg
-                          width="14"
-                          height="14"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          stroke="#888"
-                          stroke-width="2"
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                          style="flex-shrink: 0"
-                        >
-                          <path
-                            d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"
-                          />
-                        </svg>
-                        <span class="file-name">{{ req.file.name }}</span>
-                        <button class="remove-btn" @click.stop="removeFile(req.id)">
-                          <svg
-                            width="14"
-                            height="14"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="currentColor"
-                            stroke-width="2.5"
-                          >
-                            <line x1="18" y1="6" x2="6" y2="18" />
-                            <line x1="6" y1="6" x2="18" y2="18" />
-                          </svg>
-                        </button>
-                      </div>
-                      <input
-                        :ref="(el) => setFileInputRef(req.id, el)"
-                        type="file"
-                        accept=".jpeg,.jpg,.png,.bmp,.pdf"
-                        class="hidden-input"
-                        @change="onFileChange(req.id, $event)"
-                      />
-                      <hr class="divider" />
-                    </div>
-                  </div>
-
-                  <!-- Conflict Detection Modal -->
-                  <teleport to="body">
-                    <div v-if="showConflictModal" class="modal-overlay" @click.self="closeModal">
-                      <div class="modal-box">
-                        <div class="modal-banner">
-                          System found possible conflicts. Please confirm if the attachment is
-                          valid.
-                        </div>
-                        <div class="modal-body">
-                          <table class="conflict-table">
-                            <thead>
-                              <tr>
-                                <th>Field</th>
-                                <th>Value</th>
-                              </tr>
-                            </thead>
-                            <tbody>
-                              <tr v-for="row in conflictRows" :key="row.field">
-                                <td class="field-name">{{ row.field }}</td>
-                                <td>{{ row.value }}</td>
-                              </tr>
-                            </tbody>
-                          </table>
-                          <div class="id-preview-wrap">
-                            <img
-                              v-if="pendingFilePreviewUrl"
-                              :src="pendingFilePreviewUrl"
-                              class="id-preview-img"
-                              alt="Uploaded ID"
-                            />
-                            <div v-else class="id-preview-placeholder">Preview not available</div>
-                          </div>
-                        </div>
-                        <div class="modal-actions">
-                          <button class="btn-confirm" @click="confirmAttachment">
-                            Confirm Attachment
-                          </button>
-                          <button class="btn-reupload" @click="uploadAgain">Upload again</button>
-                        </div>
-                      </div>
-                    </div>
-                  </teleport>
-                </div>
-
-                <!-- ═══════════════════════════════════════════════════ -->
-                <!-- TAB 1 — Application Type                           -->
+                <!-- TAB 2 — Application Type                           -->
                 <!-- ═══════════════════════════════════════════════════ -->
                 <div v-else-if="currentStep === 2">
                   <div class="apptype-schedule-bar">
