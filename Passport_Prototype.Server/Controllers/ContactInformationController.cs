@@ -38,6 +38,9 @@ namespace Passport_Prototype.Server.Controllers
                 AddressAbroad = dto.AddressAbroad,
                 PersonalMobileNumber = dto.PersonalMobileNumber,
                 PersonalLandlineNumber = dto.PersonalLandlineNumber,
+                EmergencyContactName = dto.EmergencyContactName,
+                EmergencyContactNumber = dto.EmergencyContactNumber,
+                EmergencyContactRelationship = dto.EmergencyContactRelationship,
                 Email = dto.Email
             };
 
@@ -116,6 +119,9 @@ namespace Passport_Prototype.Server.Controllers
                     AddressAbroad = dto.AddressAbroad,
                     PersonalMobileNumber = dto.PersonalMobileNumber,
                     PersonalLandlineNumber = dto.PersonalLandlineNumber,
+                    EmergencyContactName = dto.EmergencyContactName,
+                    EmergencyContactNumber = dto.EmergencyContactNumber,
+                    EmergencyContactRelationship = dto.EmergencyContactRelationship,
                     Email = dto.Email
                 };
 
@@ -133,6 +139,9 @@ namespace Passport_Prototype.Server.Controllers
                 entity.AddressAbroad = dto.AddressAbroad;
                 entity.PersonalMobileNumber = dto.PersonalMobileNumber;
                 entity.PersonalLandlineNumber = dto.PersonalLandlineNumber;
+                entity.EmergencyContactName = dto.EmergencyContactName;
+                entity.EmergencyContactNumber = dto.EmergencyContactNumber;
+                entity.EmergencyContactRelationship = dto.EmergencyContactRelationship;
                 entity.Email = dto.Email;
             }
 

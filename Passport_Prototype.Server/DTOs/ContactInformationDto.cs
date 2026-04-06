@@ -26,6 +26,12 @@ namespace Passport_Prototype.Server.DTOs
 
         public string PersonalLandlineNumber { get; set; } = string.Empty;
 
+        public string? EmergencyContactName { get; set; }
+
+        public string? EmergencyContactNumber { get; set; }
+
+        public string? EmergencyContactRelationship { get; set; }
+
         public string? Email { get; set; }
     }
 }

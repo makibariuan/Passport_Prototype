@@ -17,6 +17,9 @@ namespace Passport_Prototype.Server.Models
         public string? AddressAbroad { get; set; }
         public required string PersonalMobileNumber { get; set; }
         public required string PersonalLandlineNumber { get; set; }
+        public string? EmergencyContactName { get; set; }
+        public string? EmergencyContactNumber { get; set; }
+        public string? EmergencyContactRelationship { get; set; }
         public string? Email {  get; set; }
     }
 }
