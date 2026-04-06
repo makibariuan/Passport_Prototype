@@ -386,7 +386,7 @@
   const fetchApplications = async () => {
     try {
       const response = await axios.get(
-        "https://localhost:5000/api/Application/GetApplicationsWithUserInfo"
+        "https://passport.npo-pssic.com:91/api/Application/GetApplicationsWithUserInfo"
       );
 
       console.log("API Response:", response.data);
@@ -500,7 +500,7 @@
     const fileName = getFileName(filePath);
     const isPdf = isPdfFile(filePath);
 
-    const baseUrl = "https://localhost:5000";
+    const baseUrl = "https://passport.npo-pssic.com:91";
     const cleanPath = filePath.replace(/\\/g, "/");
 
     const isBarcode = cleanPath.includes("/barcodes/");
