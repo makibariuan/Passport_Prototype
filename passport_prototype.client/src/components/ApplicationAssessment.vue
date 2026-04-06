@@ -505,11 +505,22 @@
 
     const isBarcode = cleanPath.includes("/barcodes/");
 
-    const url = isPdf
-      ? `${baseUrl}/PermanentPDSFiles/${fileName}`
-      : isBarcode
-        ? `${baseUrl}${cleanPath}`
-        : getFullImageUrl(cleanPath);
+    // const url = isPdf
+    //   ? `${baseUrl}/PermanentPDSFiles/${fileName}`
+    //   : isBarcode
+    //     ? `${baseUrl}${cleanPath}`
+    //     : getFullImageUrl(cleanPath);
+
+     let url = "";
+
+      if (isPdf) {
+        // ✅ USE FULL PATH, not just filename
+        url = `${baseUrl}${cleanPath.startsWith("/") ? "" : "/"}${cleanPath}`;
+      } else if (isBarcode) {
+        url = `${baseUrl}${cleanPath}`;
+      } else {
+        url = getFullImageUrl(cleanPath);
+      }
 
     viewerTitle.value = title;
     viewerUrl.value = url;
