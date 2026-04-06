@@ -97,6 +97,7 @@ namespace Passport_Prototype.Server.Controllers
 
             using var image = new Image<Rgba32>(pixelData.Width, pixelData.Height);
 
+
             // Map pixels
             image.ProcessPixelRows(accessor =>
             {
@@ -123,6 +124,74 @@ namespace Passport_Prototype.Server.Controllers
 
             // This is what you store in DB (relative path)
             string barcodeDbPath = $"/barcodes/{barcodeFileName}";
+
+            // ==============================
+            // QR CODE GENERATION ONLY
+            // ==============================
+
+            // Ensure folder exists
+            string qrFolder = Path.Combine(_env.WebRootPath, "qrcodes");
+            if (!Directory.Exists(qrFolder))
+                Directory.CreateDirectory(qrFolder);
+
+            // Content for QR (you can change this)
+            //string qrContent = sharedCode;
+            // Example (recommended):
+            //string qrContent = $"https://yourdomain.com/application/{sharedCode}";
+            string qrContent = $"https://passport.npo-pssic.com:91/application-assessment";
+
+            // Create QR writer
+            var qrWriter = new BarcodeWriterPixelData
+            {
+                Format = BarcodeFormat.QR_CODE,
+                Options = new EncodingOptions
+                {
+                    Width = 300,
+                    Height = 300,
+                    Margin = 1
+                }
+            };
+
+            qrWriter.Options.Hints.Add(EncodeHintType.CHARACTER_SET, "UTF-8");
+
+            // Generate QR pixel data
+            var qrPixelData = qrWriter.Write(qrContent);
+
+            // Convert pixel data to image
+            using var qrImage = new Image<Rgba32>(qrPixelData.Width, qrPixelData.Height);
+
+            qrImage.ProcessPixelRows(accessor =>
+            {
+                for (int y = 0; y < accessor.Height; y++)
+                {
+                    var row = accessor.GetRowSpan(y);
+
+                    for (int x = 0; x < accessor.Width; x++)
+                    {
+                        int idx = (y * accessor.Width + x) * 4;
+
+                        row[x] = new Rgba32(
+                            qrPixelData.Pixels[idx],
+                            qrPixelData.Pixels[idx + 1],
+                            qrPixelData.Pixels[idx + 2],
+                            qrPixelData.Pixels[idx + 3]
+                        );
+                    }
+                }
+            });
+
+            // Save QR image
+            string qrFileName = $"{sharedCode}_qr.png";
+            string qrFullPath = Path.Combine(qrFolder, qrFileName);
+
+            qrImage.Save(qrFullPath, new PngEncoder());
+
+            // Path to store in DB
+            string qrDbPath = $"/qrcodes/{qrFileName}";
+
+            // ==============================
+            // QR CODE GENERATION ONLY
+            // ==============================
 
             // 3. Create Passport Application Entity
             var application = new Application
