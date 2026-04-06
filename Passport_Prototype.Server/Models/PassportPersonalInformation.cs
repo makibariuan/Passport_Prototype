@@ -55,48 +55,6 @@ namespace Passport_Prototype.Server.Models
         [MaxLength(100)]
         public string? BirthBarangay { get; set; }
 
-        [MaxLength(100)]
-        public string? CurrentCountry { get; set; }
-
-        [MaxLength(100)]
-        public string? CurrentRegion { get; set; }
-
-        [MaxLength(100)]
-        public string? CurrentProvince { get; set; }
-
-        [MaxLength(100)]
-        public string? CurrentCity { get; set; }
-
-        [MaxLength(100)]
-        public string? CurrentBarangay { get; set; }
-
-        [MaxLength(100)]
-        public string? CurrentStreet { get; set; }
-
-        [MaxLength(100)]
-        public string? CurrentUnit { get; set; }
-
-        [MaxLength(100)]
-        public string? PermanentCountry { get; set; }
-
-        [MaxLength(100)]
-        public string? PermanentRegion { get; set; }
-
-        [MaxLength(100)]
-        public string? PermanentProvince { get; set; }
-
-        [MaxLength(100)]
-        public string? PermanentCity { get; set; }
-
-        [MaxLength(100)]
-        public string? PermanentBarangay { get; set; }
-
-        [MaxLength(100)]
-        public string? PermanentStreet { get; set; }
-
-        [MaxLength(100)]
-        public string? PermanentUnit { get; set; }
-
         public string? Relationship { get; set; }
 
         public bool? IsAdoptee { get; set; }
