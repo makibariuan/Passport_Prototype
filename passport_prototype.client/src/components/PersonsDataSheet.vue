@@ -2106,11 +2106,25 @@ const handleTabClick = (tab) => {
 
 // ── KEY FIX: confirmSaveAndSwitch calls saveWithReset ──
 const confirmSaveAndSwitch = async () => {
-  showUnsavedDialog.value = false;
-  await saveWithReset();
-  if (pendingTab.value) {
-    activeTab.value = pendingTab.value;
-    pendingTab.value = null;
+  console.log("[DEBUG] confirmSaveAndSwitch started");
+  try {
+    // First, perform the save (this will reset isDirty to false)
+    await saveWithReset();
+    console.log("[DEBUG] Save completed, isDirty should now be FALSE");
+
+    // THEN close the modal (after save is complete)
+    showUnsavedDialog.value = false;
+    console.log("[DEBUG] Modal closed after save");
+
+    // Finally, switch tabs if needed
+    if (pendingTab.value) {
+      activeTab.value = pendingTab.value;
+      pendingTab.value = null;
+      console.log("[DEBUG] Switched to pending tab:", activeTab.value);
+    }
+  } catch (error) {
+    console.error("[DEBUG] Error during save:", error);
+    // Don't close modal on error - user can try again
   }
 };
 
@@ -2302,24 +2316,50 @@ const updateWork = async () => {
 // ─────────────────────────────────────────────
 // SAVE DISPATCHER  ← KEY FIX: uses return
 // ─────────────────────────────────────────────
-const save = () => {
+const save = async () => {
+  console.log("[DEBUG] save() called. Current tab:", activeTab.value);
   showValidationErrors.value = true;
   if (!selectedProfileId.value) {
+    console.error("[DEBUG] save() failed: No profile selected");
     dialogTitle.value = "Warning";
     dialogMessage.value = "Please select a relationship profile first.";
     showDialog.value = true;
     return;
   }
-  if (activeTab.value === "Personal") return updatePersonal();
-  else if (activeTab.value === "Family") return updateFamily();
-  else if (activeTab.value === "Contact") return updateContact();
-  else if (activeTab.value === "Work") return updateWork();
+
+  try {
+    if (activeTab.value === "Personal") {
+      console.log("[DEBUG] Saving Personal tab...");
+      return await updatePersonal();
+    } else if (activeTab.value === "Family") {
+      console.log("[DEBUG] Saving Family tab...");
+      return await updateFamily();
+    } else if (activeTab.value === "Contact") {
+      console.log("[DEBUG] Saving Contact tab...");
+      return await updateContact();
+    } else if (activeTab.value === "Work") {
+      console.log("[DEBUG] Saving Work tab...");
+      return await updateWork();
+    }
+  } catch (error) {
+    console.error("[DEBUG] save() error:", error);
+    throw error;
+  }
 };
 
 // ── KEY FIX: saveWithReset added (was missing) ──
 const saveWithReset = async () => {
-  await save();
-  isDirty.value = false;
+  console.log("[DEBUG] saveWithReset started, calling save()...");
+  try {
+    await save();
+    console.log("[DEBUG] save() completed successfully");
+    isDirty.value = false;
+    console.log("[DEBUG] isDirty RESET to FALSE in saveWithReset");
+  } catch (error) {
+    console.error("[DEBUG] save() failed in saveWithReset:", error);
+    // Don't reset isDirty on error - keep it true so user knows there's unsaved data
+    throw error; // Re-throw so caller knows it failed
+  }
 };
 
 // ─────────────────────────────────────────────
