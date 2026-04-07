@@ -954,35 +954,11 @@
                           <span class="phone-type-badge mobile">📱 Mobile</span>
                         </div>
                         <div class="phone-input-row">
-                          <select class="phone-country-select" v-model="contact.mobileCountry">
-                            <option value="+63">🇵🇭 +63</option>
-                            <option value="+1">🇺🇸 +1</option>
-                            <option value="+44">🇬🇧 +44</option>
-                            <option value="+61">🇦🇺 +61</option>
-                            <option value="+81">🇯🇵 +81</option>
-                            <option value="+82">🇰🇷 +82</option>
-                            <option value="+65">🇸🇬 +65</option>
-                          </select>
                           <input
-                            class="pds-input phone-segment"
-                            placeholder="906"
-                            v-model="contact.mobilePrefix"
-                            maxlength="4"
-                          />
-                          <span class="phone-dash">—</span>
-                          <input
-                            class="pds-input phone-main"
-                            placeholder="1234567"
+                            class="pds-input phone-full"
+                            placeholder="e.g. 09061234567"
                             v-model="contact.mobileNumber"
-                            maxlength="8"
                           />
-                        </div>
-                        <div
-                          class="phone-preview"
-                          v-if="contact.mobilePrefix || contact.mobileNumber"
-                        >
-                          {{ contact.mobileCountry }} {{ contact.mobilePrefix
-                          }}{{ contact.mobileNumber }}
                         </div>
                       </div>
 
@@ -992,21 +968,11 @@
                           <span class="phone-type-badge landline">☎️ Landline</span>
                         </div>
                         <div class="phone-input-row">
-                          <select class="phone-country-select" v-model="contact.landlineCountry">
-                            <option value="+63">🇵🇭 +63</option>
-                            <option value="+1">🇺🇸 +1</option>
-                            <option value="+44">🇬🇧 +44</option>
-                            <option value="+61">🇦🇺 +61</option>
-                            <option value="+81">🇯🇵 +81</option>
-                          </select>
                           <input
-                            class="pds-input phone-main"
-                            placeholder="02-8123-4567"
+                            class="pds-input phone-full"
+                            placeholder="e.g. 8123-4567"
                             v-model="contact.landlineNumber"
                           />
-                        </div>
-                        <div class="phone-preview" v-if="contact.landlineNumber">
-                          {{ contact.landlineCountry }} {{ contact.landlineNumber }}
                         </div>
                       </div>
                     </div>
@@ -1277,35 +1243,11 @@
                           <span class="phone-type-badge mobile">📱 Work Mobile</span>
                         </div>
                         <div class="phone-input-row">
-                          <select class="phone-country-select" v-model="work.workMobileCountry">
-                            <option value="+63">🇵🇭 +63</option>
-                            <option value="+1">🇺🇸 +1</option>
-                            <option value="+44">🇬🇧 +44</option>
-                            <option value="+61">🇦🇺 +61</option>
-                            <option value="+81">🇯🇵 +81</option>
-                            <option value="+82">🇰🇷 +82</option>
-                            <option value="+65">🇸🇬 +65</option>
-                          </select>
                           <input
-                            class="pds-input phone-segment"
-                            placeholder="906"
-                            v-model="work.workMobilePrefix"
-                            maxlength="4"
-                          />
-                          <span class="phone-dash">—</span>
-                          <input
-                            class="pds-input phone-main"
-                            placeholder="1234567"
+                            class="pds-input phone-full"
+                            placeholder="e.g. 09061234567"
                             v-model="work.workMobileNumber"
-                            maxlength="8"
                           />
-                        </div>
-                        <div
-                          class="phone-preview"
-                          v-if="work.workMobilePrefix || work.workMobileNumber"
-                        >
-                          {{ work.workMobileCountry }} {{ work.workMobilePrefix
-                          }}{{ work.workMobileNumber }}
                         </div>
                       </div>
 
@@ -1315,20 +1257,11 @@
                           <span class="phone-type-badge landline">☎️ Office Landline</span>
                         </div>
                         <div class="phone-input-row">
-                          <select class="phone-country-select" v-model="work.workLandlineCountry">
-                            <option value="+63">🇵🇭 +63</option>
-                            <option value="+1">🇺🇸 +1</option>
-                            <option value="+44">🇬🇧 +44</option>
-                            <option value="+61">🇦🇺 +61</option>
-                          </select>
                           <input
-                            class="pds-input phone-main"
-                            placeholder="02-8123-4567"
+                            class="pds-input phone-full"
+                            placeholder="e.g. 8123-4567"
                             v-model="work.workLandlineNumber"
                           />
-                        </div>
-                        <div class="phone-preview" v-if="work.workLandlineNumber">
-                          {{ work.workLandlineCountry }} {{ work.workLandlineNumber }}
                         </div>
                       </div>
                     </div>
@@ -1492,10 +1425,7 @@ const hasPSABirthCert = ref(false);
 // ─────────────────────────────────────────────
 const contact = ref({
   id: null,
-  mobileCountry: "+63",
-  mobilePrefix: "",
   mobileNumber: "",
-  landlineCountry: "+63",
   landlineNumber: "",
   region: "",
   province: "",
@@ -1532,10 +1462,7 @@ const work = ref({
   officeBarangay: "",
   officeCity: "",
   postalCode: "",
-  workMobileCountry: "+63",
-  workMobilePrefix: "",
   workMobileNumber: "",
-  workLandlineCountry: "+63",
   workLandlineNumber: "",
 });
 
@@ -1850,66 +1777,59 @@ const fetchRelationship = async () => {
   }
 };
 
-  //new fetchcontact
-  const fetchContact = async () => {
-    try {
-      isLoading.value = true;
+//new fetchcontact
+const fetchContact = async () => {
+  try {
+    isLoading.value = true;
 
-      const { data } = await axios.get(
-        `${BACKEND_DOMAIN}/api/ContactInformation/${selectedProfileId.value}`,
-        {
-          headers: { Authorization: `Bearer ${Auth.token}` },
-        },
-      );
+    const { data } = await axios.get(
+      `${BACKEND_DOMAIN}/api/ContactInformation/${selectedProfileId.value}`,
+      {
+        headers: { Authorization: `Bearer ${Auth.token}` },
+      },
+    );
 
-      contact.value.id = data.id;
+    contact.value.id = data.id;
 
-      // Fallback personalInfoId
-      if (!user.value.personalInfoId) {
-        user.value.personalInfoId = selectedProfileId.value;
-      }
-
-      // Trim strings
-      const country = (data.currentCountry ?? "").trim();
-      address.value.country = country;
-
-      address.value.street = (data.currentStreet ?? "").trim();
-      address.value.abroad = (data.addressAbroad ?? "").trim(); // ✅ correct field
-      address.value.postal = (data.currentPostalCode ?? "").trim();
-
-      if (country === "PH") {
-        // PH-specific hierarchy
-        address.value.region = (data.currentRegion ?? "").trim();
-        address.value.province = (data.currentProvince ?? "").trim();
-        address.value.municipality = (data.currentCityMunicipality ?? "").trim();
-        address.value.barangay = (data.currentBarangay ?? "").trim();
-        address.value.city = ""; // clear foreign city
-      } else {
-        // Non-PH
-        address.value.city = (data.currentCityMunicipality ?? "").trim();
-        // clear PH-specific fields
-        address.value.region = "";
-        address.value.province = "";
-        address.value.municipality = "";
-        address.value.barangay = "";
-      }
-
-      // Parse mobile and landline
-      const mob = parseMobile(data.personalMobileNumber);
-      contact.value.mobileCountry = mob.country;
-      contact.value.mobilePrefix = mob.prefix;
-      contact.value.mobileNumber = mob.number;
-
-      const land = parseLandline(data.personalLandlineNumber);
-      contact.value.landlineCountry = land.country;
-      contact.value.landlineNumber = land.number;
-
-    } catch (err) {
-      console.error("fetchContact error:", err);
-    } finally {
-      isLoading.value = false;
+    // Fallback personalInfoId
+    if (!user.value.personalInfoId) {
+      user.value.personalInfoId = selectedProfileId.value;
     }
-  };
+
+    // Trim strings
+    const country = (data.currentCountry ?? "").trim();
+    address.value.country = country;
+
+    address.value.street = (data.currentStreet ?? "").trim();
+    address.value.abroad = (data.addressAbroad ?? "").trim(); // ✅ correct field
+    address.value.postal = (data.currentPostalCode ?? "").trim();
+
+    if (country === "PH") {
+      // PH-specific hierarchy
+      address.value.region = (data.currentRegion ?? "").trim();
+      address.value.province = (data.currentProvince ?? "").trim();
+      address.value.municipality = (data.currentCityMunicipality ?? "").trim();
+      address.value.barangay = (data.currentBarangay ?? "").trim();
+      address.value.city = ""; // clear foreign city
+    } else {
+      // Non-PH
+      address.value.city = (data.currentCityMunicipality ?? "").trim();
+      // clear PH-specific fields
+      address.value.region = "";
+      address.value.province = "";
+      address.value.municipality = "";
+      address.value.barangay = "";
+    }
+
+    // Phone numbers
+    contact.value.mobileNumber = data.personalMobileNumber ?? "";
+    contact.value.landlineNumber = data.personalLandlineNumber ?? "";
+  } catch (err) {
+    console.error("fetchContact error:", err);
+  } finally {
+    isLoading.value = false;
+  }
+};
 
 // ─────────────────────────────────────────────
 // API — FETCH PERSONAL  (uses selectedProfileId)
@@ -1995,100 +1915,67 @@ const fetchFamily = async () => {
   }
 };
 
-const parseMobile = (str) => {
-  if (!str) return { country: "+63", prefix: "", number: "" };
-  const trimmed = str.trim();
-  const spaceIdx = trimmed.indexOf(" ");
-  if (spaceIdx === -1) return { country: "+63", prefix: "", number: trimmed };
-  const country = trimmed.slice(0, spaceIdx);
-  const digits = trimmed.slice(spaceIdx + 1).replace(/\s/g, "");
-  return { country, prefix: digits.slice(0, 3), number: digits.slice(3) };
-};
-
-/**
- * Parse a stored landline string like "+63 028123456" back into parts.
- */
-const parseLandline = (str) => {
-  if (!str) return { country: "+63", number: "" };
-  const trimmed = str.trim();
-  const spaceIdx = trimmed.indexOf(" ");
-  if (spaceIdx === -1) return { country: "+63", number: trimmed };
-  return { country: trimmed.slice(0, spaceIdx), number: trimmed.slice(spaceIdx + 1).trim() };
-};
-
 // ─────────────────────────────────────────────
 // API — FETCH CONTACT  (uses selectedProfileId)
 // ─────────────────────────────────────────────
 
+//NEW FETCH WORK
+const fetchWork = async () => {
+  try {
+    isLoading.value = true;
 
+    const { data } = await axios.get(
+      `${BACKEND_DOMAIN}/api/WorkInformation/${selectedProfileId.value}`,
+      {
+        headers: { Authorization: `Bearer ${Auth.token}` },
+      },
+    );
 
+    // Set basic IDs
+    work.value.id = data.id;
 
-
-
-  //NEW FETCH WORK
-  const fetchWork = async () => {
-    try {
-      isLoading.value = true;
-
-      const { data } = await axios.get(
-        `${BACKEND_DOMAIN}/api/WorkInformation/${selectedProfileId.value}`,
-        {
-          headers: { Authorization: `Bearer ${Auth.token}` },
-        },
-      );
-
-      // Set basic IDs
-      work.value.id = data.id;
-
-      // Fallback personalInfoId
-      if (!user.value.personalInfoId) {
-        user.value.personalInfoId = selectedProfileId.value;
-      }
-
-      // Basic fields
-      work.value.occupation = data.occupation ?? "";
-      work.value.employer = data.employer ?? "";
-      work.value.officeAddress = data.officeAddress ?? "";
-      work.value.postalCode = data.officePostalCode ?? "";
-
-      // Trim country and set hierarchy
-      const country = (data.officeCountry ?? "").trim();
-      work.value.officeCountry = country;
-
-      if (country === "PH") {
-        // PH-specific fields
-        work.value.officeRegion = (data.officeRegion ?? "").trim();
-        work.value.officeProvince = (data.officeProvince ?? "").trim();
-        work.value.officeMunicipality = (data.officeCityMunicipality ?? "").trim();
-        work.value.officeBarangay = (data.officeBarangay ?? "").trim();
-        // Clear foreign city
-        work.value.officeCity = "";
-      } else {
-        // Non-PH
-        work.value.officeCity = (data.officeCityMunicipality ?? "").trim();
-        // Clear PH-specific fields
-        work.value.officeRegion = "";
-        work.value.officeProvince = "";
-        work.value.officeMunicipality = "";
-        work.value.officeBarangay = "";
-      }
-
-      // Mobile & Landline
-      const mob = parseMobile(data.officeMobileNumber);
-      work.value.workMobileCountry = mob.country;
-      work.value.workMobilePrefix = mob.prefix;
-      work.value.workMobileNumber = mob.number;
-
-      const land = parseLandline(data.officeLandlineNumber);
-      work.value.workLandlineCountry = land.country;
-      work.value.workLandlineNumber = land.number;
-
-    } catch (err) {
-      console.error("fetchWork error:", err);
-    } finally {
-      isLoading.value = false;
+    // Fallback personalInfoId
+    if (!user.value.personalInfoId) {
+      user.value.personalInfoId = selectedProfileId.value;
     }
-  };
+
+    // Basic fields
+    work.value.occupation = data.occupation ?? "";
+    work.value.employer = data.employer ?? "";
+    work.value.officeAddress = data.officeAddress ?? "";
+    work.value.postalCode = data.officePostalCode ?? "";
+
+    // Trim country and set hierarchy
+    const country = (data.officeCountry ?? "").trim();
+    work.value.officeCountry = country;
+
+    if (country === "PH") {
+      // PH-specific fields
+      work.value.officeRegion = (data.officeRegion ?? "").trim();
+      work.value.officeProvince = (data.officeProvince ?? "").trim();
+      work.value.officeMunicipality = (data.officeCityMunicipality ?? "").trim();
+      work.value.officeBarangay = (data.officeBarangay ?? "").trim();
+      // Clear foreign city
+      work.value.officeCity = "";
+    } else {
+      // Non-PH
+      work.value.officeCity = (data.officeCityMunicipality ?? "").trim();
+      // Clear PH-specific fields
+      work.value.officeRegion = "";
+      work.value.officeProvince = "";
+      work.value.officeMunicipality = "";
+      work.value.officeBarangay = "";
+    }
+
+    // Mobile & Landline
+    work.value.workMobileNumber = data.officeMobileNumber ?? "";
+    work.value.workLandlineNumber = data.officeLandlineNumber ?? "";
+  } catch (err) {
+    console.error("fetchWork error:", err);
+  } finally {
+    isLoading.value = false;
+  }
+};
 
 // ─────────────────────────────────────────────
 // API — PATCH PERSONAL
@@ -2176,57 +2063,55 @@ const updateFamily = async () => {
   }
 };
 
-  //new update contact
-  const updateContact = async () => {
-    try {
-      isLoading.value = true;
+//new update contact
+const updateContact = async () => {
+  try {
+    isLoading.value = true;
 
-      // Prepare payload to match backend DTO
-      const payload = {
-        passportPersonalInformationId: selectedProfileId.value, // always required
+    // Prepare payload to match backend DTO
+    const payload = {
+      passportPersonalInformationId: selectedProfileId.value, // always required
 
-        // ── Address fields ──
-        currentStreet: address.value.street?.trim() || null,
-        addressAbroad: address.value.abroad?.trim() || null, // ✅ use correct field name
-        currentCountry: address.value.country?.trim() || null,
-        currentRegion: address.value.country === "PH" ? address.value.region?.trim() || null : null,
-        currentProvince: address.value.country === "PH" ? address.value.province?.trim() || null : null,
-        currentCityMunicipality:
-          address.value.country === "PH"
-            ? address.value.municipality?.trim() || null
-            : address.value.city?.trim() || null,
-        currentBarangay: address.value.country === "PH" ? address.value.barangay?.trim() || null : null,
-        currentPostalCode: address.value.postal?.trim() || null,
+      // ── Address fields ──
+      currentStreet: address.value.street?.trim() || null,
+      addressAbroad: address.value.abroad?.trim() || null, // ✅ use correct field name
+      currentCountry: address.value.country?.trim() || null,
+      currentRegion: address.value.country === "PH" ? address.value.region?.trim() || null : null,
+      currentProvince:
+        address.value.country === "PH" ? address.value.province?.trim() || null : null,
+      currentCityMunicipality:
+        address.value.country === "PH"
+          ? address.value.municipality?.trim() || null
+          : address.value.city?.trim() || null,
+      currentBarangay:
+        address.value.country === "PH" ? address.value.barangay?.trim() || null : null,
+      currentPostalCode: address.value.postal?.trim() || null,
 
-        // ── Contact numbers ──
-        personalMobileNumber: contact.value.mobileNumber
-          ? `${contact.value.mobileCountry || ""}${contact.value.mobilePrefix || ""}${contact.value.mobileNumber}`.trim()
-          : null,
-        personalLandlineNumber: contact.value.landlineNumber
-          ? `${contact.value.landlineCountry || ""}${contact.value.landlineNumber}`.trim()
-          : null,
+      // ── Contact numbers ──
+      personalMobileNumber: contact.value.mobileNumber?.trim() || null,
+      personalLandlineNumber: contact.value.landlineNumber?.trim() || null,
 
-        // Optional email
-        email: contact.value.email?.trim() || null,
-      };
+      // Optional email
+      email: contact.value.email?.trim() || null,
+    };
 
-      // Send PATCH request
-      await axios.patch(`${BACKEND_DOMAIN}/api/ContactInformation`, payload, {
-        headers: { Authorization: `Bearer ${Auth.token}` },
-      });
+    // Send PATCH request
+    await axios.patch(`${BACKEND_DOMAIN}/api/ContactInformation`, payload, {
+      headers: { Authorization: `Bearer ${Auth.token}` },
+    });
 
-      dialogTitle.value = "Success";
-      dialogMessage.value = "Contact info saved.";
-      showDialog.value = true;
-    } catch (err) {
-      console.error("updateContact error:", err);
-      dialogTitle.value = "Error";
-      dialogMessage.value = "Failed to save contact info.";
-      showDialog.value = true;
-    } finally {
-      isLoading.value = false;
-    }
-  };
+    dialogTitle.value = "Success";
+    dialogMessage.value = "Contact info saved.";
+    showDialog.value = true;
+  } catch (err) {
+    console.error("updateContact error:", err);
+    dialogTitle.value = "Error";
+    dialogMessage.value = "Failed to save contact info.";
+    showDialog.value = true;
+  } finally {
+    isLoading.value = false;
+  }
+};
 
 const updateWork = async () => {
   try {
@@ -2252,13 +2137,8 @@ const updateWork = async () => {
       officePostalCode: work.value.postalCode || null,
 
       // Work contact numbers
-      officeMobileNumber:
-        work.value.workMobilePrefix || work.value.workMobileNumber
-          ? `${work.value.workMobileCountry} ${work.value.workMobilePrefix}${work.value.workMobileNumber}`.trim()
-          : null,
-      officeLandlineNumber: work.value.workLandlineNumber
-        ? `${work.value.workLandlineCountry} ${work.value.workLandlineNumber}`.trim()
-        : null,
+      officeMobileNumber: work.value.workMobileNumber?.trim() || null,
+      officeLandlineNumber: work.value.workLandlineNumber?.trim() || null,
     };
     await axios.patch(`${BACKEND_DOMAIN}/api/WorkInformation`, payload, {
       headers: { Authorization: `Bearer ${Auth.token}` },
@@ -2972,6 +2852,11 @@ const saveNewRelationship = async () => {
 }
 .phone-main {
   flex: 1;
+  padding: 8px 10px !important;
+  height: 38px;
+}
+.phone-full {
+  width: 100%;
   padding: 8px 10px !important;
   height: 38px;
 }

@@ -1137,35 +1137,11 @@
                           <span class="phone-type-badge mobile">📱 Mobile</span>
                         </div>
                         <div class="phone-input-row">
-                          <select class="phone-country-select" v-model="contact.mobileCountry">
-                            <option value="+63">🇵🇭 +63</option>
-                            <option value="+1">🇺🇸 +1</option>
-                            <option value="+44">🇬🇧 +44</option>
-                            <option value="+61">🇦🇺 +61</option>
-                            <option value="+81">🇯🇵 +81</option>
-                            <option value="+82">🇰🇷 +82</option>
-                            <option value="+65">🇸🇬 +65</option>
-                          </select>
                           <input
-                            class="pds-input phone-segment"
-                            placeholder="906"
-                            v-model="contact.mobilePrefix"
-                            maxlength="4"
-                          />
-                          <span class="phone-dash">—</span>
-                          <input
-                            class="pds-input phone-main"
-                            placeholder="1234567"
+                            class="pds-input phone-full"
+                            placeholder="e.g. 09061234567"
                             v-model="contact.mobileNumber"
-                            maxlength="8"
                           />
-                        </div>
-                        <div
-                          class="phone-preview"
-                          v-if="contact.mobilePrefix || contact.mobileNumber"
-                        >
-                          {{ contact.mobileCountry }} {{ contact.mobilePrefix
-                          }}{{ contact.mobileNumber }}
                         </div>
                       </div>
                       <div class="phone-card">
@@ -1173,21 +1149,11 @@
                           <span class="phone-type-badge landline">☎️ Landline</span>
                         </div>
                         <div class="phone-input-row">
-                          <select class="phone-country-select" v-model="contact.landlineCountry">
-                            <option value="+63">🇵🇭 +63</option>
-                            <option value="+1">🇺🇸 +1</option>
-                            <option value="+44">🇬🇧 +44</option>
-                            <option value="+61">🇦🇺 +61</option>
-                            <option value="+81">🇯🇵 +81</option>
-                          </select>
                           <input
-                            class="pds-input phone-main"
-                            placeholder="02-8123-4567"
+                            class="pds-input phone-full"
+                            placeholder="e.g. 8123-4567"
                             v-model="contact.landlineNumber"
                           />
-                        </div>
-                        <div class="phone-preview" v-if="contact.landlineNumber">
-                          {{ contact.landlineCountry }} {{ contact.landlineNumber }}
                         </div>
                       </div>
                     </div>
@@ -1254,35 +1220,11 @@
                           <span class="phone-type-badge mobile">📱 Mobile</span>
                         </div>
                         <div class="phone-input-row">
-                          <select class="phone-country-select" v-model="emergency.mobileCountry">
-                            <option value="+63">🇵🇭 +63</option>
-                            <option value="+1">🇺🇸 +1</option>
-                            <option value="+44">🇬🇧 +44</option>
-                            <option value="+61">🇦🇺 +61</option>
-                            <option value="+81">🇯🇵 +81</option>
-                            <option value="+82">🇰🇷 +82</option>
-                            <option value="+65">🇸🇬 +65</option>
-                          </select>
                           <input
-                            class="pds-input phone-segment"
-                            placeholder="906"
-                            v-model="emergency.mobilePrefix"
-                            maxlength="4"
-                          />
-                          <span class="phone-dash">—</span>
-                          <input
-                            class="pds-input phone-main"
-                            placeholder="1234567"
+                            class="pds-input phone-full"
+                            placeholder="e.g. 09061234567"
                             v-model="emergency.mobileNumber"
-                            maxlength="8"
                           />
-                        </div>
-                        <div
-                          class="phone-preview"
-                          v-if="emergency.mobilePrefix || emergency.mobileNumber"
-                        >
-                          {{ emergency.mobileCountry }} {{ emergency.mobilePrefix
-                          }}{{ emergency.mobileNumber }}
                         </div>
                       </div>
                       <div class="phone-card">
@@ -1290,20 +1232,11 @@
                           <span class="phone-type-badge landline">☎️ Landline</span>
                         </div>
                         <div class="phone-input-row">
-                          <select class="phone-country-select" v-model="emergency.landlineCountry">
-                            <option value="+63">🇵🇭 +63</option>
-                            <option value="+1">🇺🇸 +1</option>
-                            <option value="+44">🇬🇧 +44</option>
-                            <option value="+61">🇦🇺 +61</option>
-                          </select>
                           <input
-                            class="pds-input phone-main"
-                            placeholder="02-8123-4567"
+                            class="pds-input phone-full"
+                            placeholder="e.g. 8123-4567"
                             v-model="emergency.landlineNumber"
                           />
-                        </div>
-                        <div class="phone-preview" v-if="emergency.landlineNumber">
-                          {{ emergency.landlineCountry }} {{ emergency.landlineNumber }}
                         </div>
                       </div>
                     </div>
@@ -1555,35 +1488,11 @@
                           <span class="phone-type-badge mobile">📱 Work Mobile</span>
                         </div>
                         <div class="phone-input-row">
-                          <select class="phone-country-select" v-model="work.workMobileCountry">
-                            <option value="+63">🇵🇭 +63</option>
-                            <option value="+1">🇺🇸 +1</option>
-                            <option value="+44">🇬🇧 +44</option>
-                            <option value="+61">🇦🇺 +61</option>
-                            <option value="+81">🇯🇵 +81</option>
-                            <option value="+82">🇰🇷 +82</option>
-                            <option value="+65">🇸🇬 +65</option>
-                          </select>
                           <input
-                            class="pds-input phone-segment"
-                            placeholder="906"
-                            v-model="work.workMobilePrefix"
-                            maxlength="4"
-                          />
-                          <span class="phone-dash">—</span>
-                          <input
-                            class="pds-input phone-main"
-                            placeholder="1234567"
+                            class="pds-input phone-full"
+                            placeholder="e.g. 09061234567"
                             v-model="work.workMobileNumber"
-                            maxlength="8"
                           />
-                        </div>
-                        <div
-                          class="phone-preview"
-                          v-if="work.workMobilePrefix || work.workMobileNumber"
-                        >
-                          {{ work.workMobileCountry }} {{ work.workMobilePrefix
-                          }}{{ work.workMobileNumber }}
                         </div>
                       </div>
                       <div class="phone-card">
@@ -1591,20 +1500,11 @@
                           <span class="phone-type-badge landline">☎️ Office Landline</span>
                         </div>
                         <div class="phone-input-row">
-                          <select class="phone-country-select" v-model="work.workLandlineCountry">
-                            <option value="+63">🇵🇭 +63</option>
-                            <option value="+1">🇺🇸 +1</option>
-                            <option value="+44">🇬🇧 +44</option>
-                            <option value="+61">🇦🇺 +61</option>
-                          </select>
                           <input
-                            class="pds-input phone-main"
-                            placeholder="02-8123-4567"
+                            class="pds-input phone-full"
+                            placeholder="e.g. 8123-4567"
                             v-model="work.workLandlineNumber"
                           />
-                        </div>
-                        <div class="phone-preview" v-if="work.workLandlineNumber">
-                          {{ work.workLandlineCountry }} {{ work.workLandlineNumber }}
                         </div>
                       </div>
                     </div>
@@ -1761,10 +1661,7 @@ const hasPSABirthCert = ref(false);
 // ─────────────────────────────────────────────
 const contact = ref({
   id: null,
-  mobileCountry: "+63",
-  mobilePrefix: "",
   mobileNumber: "",
-  landlineCountry: "+63",
   landlineNumber: "",
 });
 
@@ -1834,10 +1731,7 @@ const syncPermanentToCurrent = () => {
 const emergency = ref({
   name: "",
   relationship: "",
-  mobileCountry: "+63",
-  mobilePrefix: "",
   mobileNumber: "",
-  landlineCountry: "+63",
   landlineNumber: "",
 });
 
@@ -1856,10 +1750,7 @@ const work = ref({
   officeBarangay: "",
   officeCity: "",
   postalCode: "",
-  workMobileCountry: "+63",
-  workMobilePrefix: "",
   workMobileNumber: "",
-  workLandlineCountry: "+63",
   workLandlineNumber: "",
 });
 
@@ -2188,27 +2079,6 @@ const officeLocationSummary = computed(() => {
 });
 
 // ─────────────────────────────────────────────
-// PHONE PARSING HELPERS
-// ─────────────────────────────────────────────
-const parseMobile = (str) => {
-  if (!str) return { country: "+63", prefix: "", number: "" };
-  const trimmed = str.trim();
-  const spaceIdx = trimmed.indexOf(" ");
-  if (spaceIdx === -1) return { country: "+63", prefix: "", number: trimmed };
-  const country = trimmed.slice(0, spaceIdx);
-  const digits = trimmed.slice(spaceIdx + 1).replace(/\s/g, "");
-  return { country, prefix: digits.slice(0, 3), number: digits.slice(3) };
-};
-
-const parseLandline = (str) => {
-  if (!str) return { country: "+63", number: "" };
-  const trimmed = str.trim();
-  const spaceIdx = trimmed.indexOf(" ");
-  if (spaceIdx === -1) return { country: "+63", number: trimmed };
-  return { country: trimmed.slice(0, spaceIdx), number: trimmed.slice(spaceIdx + 1).trim() };
-};
-
-// ─────────────────────────────────────────────
 // UNSAVED CHANGES GUARD
 // ─────────────────────────────────────────────
 const isDirty = ref(false);
@@ -2401,24 +2271,14 @@ const fetchContact = async () => {
     }
 
     // ── Phone Numbers ──
-    const mob = parseMobile(data.personalMobileNumber);
-    contact.value.mobileCountry = mob.country;
-    contact.value.mobilePrefix = mob.prefix;
-    contact.value.mobileNumber = mob.number;
-    const land = parseLandline(data.personalLandlineNumber);
-    contact.value.landlineCountry = land.country;
-    contact.value.landlineNumber = land.number;
+    contact.value.mobileNumber = data.personalMobileNumber ?? "";
+    contact.value.landlineNumber = data.personalLandlineNumber ?? "";
 
     // ── Emergency Contact ──
     emergency.value.name = data.emergencyContactName ?? "";
     emergency.value.relationship = data.emergencyContactRelationship ?? "";
-    const emerMob = parseMobile(data.emergencyContactMobile);
-    emergency.value.mobileCountry = emerMob.country;
-    emergency.value.mobilePrefix = emerMob.prefix;
-    emergency.value.mobileNumber = emerMob.number;
-    const emerLand = parseLandline(data.emergencyContactLandline);
-    emergency.value.landlineCountry = emerLand.country;
-    emergency.value.landlineNumber = emerLand.number;
+    emergency.value.mobileNumber = data.emergencyContactMobile ?? "";
+    emergency.value.landlineNumber = data.emergencyContactLandline ?? "";
   } catch (err) {
     console.error("fetchContact error:", err);
   } finally {
@@ -2453,13 +2313,8 @@ const fetchWork = async () => {
       work.value.officeMunicipality = "";
       work.value.officeBarangay = "";
     }
-    const mob = parseMobile(data.officeMobileNumber);
-    work.value.workMobileCountry = mob.country;
-    work.value.workMobilePrefix = mob.prefix;
-    work.value.workMobileNumber = mob.number;
-    const land = parseLandline(data.officeLandlineNumber);
-    work.value.workLandlineCountry = land.country;
-    work.value.workLandlineNumber = land.number;
+    work.value.workMobileNumber = data.officeMobileNumber ?? "";
+    work.value.workLandlineNumber = data.officeLandlineNumber ?? "";
   } catch (err) {
     console.error("fetchWork error:", err);
   } finally {
@@ -2610,22 +2465,14 @@ const updateContact = async () => {
       permanentBarangay: permBarangay?.trim() || null,
       permanentPostalCode: permPostal?.trim() || null,
       // Phone Numbers
-      personalMobileNumber: contact.value.mobileNumber
-        ? `${contact.value.mobileCountry}${contact.value.mobilePrefix}${contact.value.mobileNumber}`.trim()
-        : null,
-      personalLandlineNumber: contact.value.landlineNumber
-        ? `${contact.value.landlineCountry}${contact.value.landlineNumber}`.trim()
-        : null,
+      personalMobileNumber: contact.value.mobileNumber?.trim() || null,
+      personalLandlineNumber: contact.value.landlineNumber?.trim() || null,
       email: contact.value.email?.trim() || null,
       // Emergency Contact
       emergencyContactName: emergency.value.name?.trim() || null,
       emergencyContactRelationship: emergency.value.relationship || null,
-      emergencyContactMobile: emergency.value.mobileNumber
-        ? `${emergency.value.mobileCountry}${emergency.value.mobilePrefix}${emergency.value.mobileNumber}`.trim()
-        : null,
-      emergencyContactLandline: emergency.value.landlineNumber
-        ? `${emergency.value.landlineCountry}${emergency.value.landlineNumber}`.trim()
-        : null,
+      emergencyContactMobile: emergency.value.mobileNumber?.trim() || null,
+      emergencyContactLandline: emergency.value.landlineNumber?.trim() || null,
     };
     await axios.patch(`${BACKEND_DOMAIN}/api/ContactInformation`, payload, {
       headers: { Authorization: `Bearer ${Auth.token}` },
@@ -2661,13 +2508,8 @@ const updateWork = async () => {
           : work.value.officeCity || null,
       officeBarangay: work.value.officeCountry === "PH" ? work.value.officeBarangay || null : null,
       officePostalCode: work.value.postalCode || null,
-      officeMobileNumber:
-        work.value.workMobilePrefix || work.value.workMobileNumber
-          ? `${work.value.workMobileCountry} ${work.value.workMobilePrefix}${work.value.workMobileNumber}`.trim()
-          : null,
-      officeLandlineNumber: work.value.workLandlineNumber
-        ? `${work.value.workLandlineCountry} ${work.value.workLandlineNumber}`.trim()
-        : null,
+      officeMobileNumber: work.value.workMobileNumber?.trim() || null,
+      officeLandlineNumber: work.value.workLandlineNumber?.trim() || null,
     };
     await axios.patch(`${BACKEND_DOMAIN}/api/WorkInformation`, payload, {
       headers: { Authorization: `Bearer ${Auth.token}` },
@@ -3326,6 +3168,11 @@ onMounted(async () => {
 }
 .phone-main {
   flex: 1;
+  padding: 8px 10px !important;
+  height: 38px;
+}
+.phone-full {
+  width: 100%;
   padding: 8px 10px !important;
   height: 38px;
 }
