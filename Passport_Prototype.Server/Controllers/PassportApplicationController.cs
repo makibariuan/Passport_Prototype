@@ -330,6 +330,21 @@ namespace Passport_Prototype.Server.Controllers
             return Ok(result);
         }
 
+
+        [HttpGet("Get_specific_user_applicationinformation")]
+        [AllowAnonymous]
+        public async Task<IActionResult> GetApplicationsWithUserInfo([FromQuery] string applicationCode)
+        {
+            var result = await _context.ApplicationWithUserInfoDtos
+                .FromSqlRaw("EXEC GetSpecificUserApplicationInformation @p0", applicationCode)
+                .ToListAsync();
+
+            return Ok(result);
+        }
+
+
+
+
         [HttpGet("My-Applications")]
         [Authorize]
         public async Task<IActionResult> GetMyApplications()

@@ -23,6 +23,8 @@ import ApplicationHistory from "@/components/ApplicationHistory.vue";
 import ManageExistingApplication from "@/components/ManageExistingApplication.vue";
 import PrivacyPolicy from "@/components/PrivacyPolicy.vue";
 import UserAdjudication from "@/components/UserAdjudication.vue";
+import Application_verification from "@/components/Application_verification.vue";
+
 /*
   DEV MODE — auth guard disabled, navigate freely to any route.
   To re-enable auth, uncomment the beforeEach block at the bottom.
@@ -115,6 +117,46 @@ const routes = [
   },
 
   { path: "/user-adjudication", name: "UserAdjudication", component: UserAdjudication },
+
+  // ── Application Verification ──────────────────────────────────────
+  // { path: "/application-verification", name: "ApplicationVerification", component: Application_verification },
+
+
+  {
+    path: "/application-verification/:code",
+    name: "ApplicationVerification",
+    component: Application_verification,
+    beforeEnter: async (to) => {
+      try {
+        const res = await fetch(
+          `/api/Application/Get_specific_user_applicationinformation?applicationCode=${to.params.code}`
+        );
+
+        if (!res.ok) {
+          return "/";
+        }
+
+        const data = await res.json();
+        const app = Array.isArray(data) ? data[0] : data;
+
+        // 🚨 block unpaid applications
+        if (!app || app.applicationPaid === false) {
+          return "/";
+        }
+
+        // allow navigation
+        return true;
+
+      } catch (err) {
+        console.error(err);
+        return "/";
+      }
+    }
+  }
+
+
+
+
 ];
 
 const router = createRouter({
