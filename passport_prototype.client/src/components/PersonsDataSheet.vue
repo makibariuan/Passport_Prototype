@@ -10,7 +10,6 @@
 
   <div class="app-layout">
     <LeftMenu class="leftMenu" />
-    <Header title="Family Profile" class="header" />
 
     <div class="dashboard-content">
       <h2 class="page-title">Family Profile</h2>
@@ -53,9 +52,10 @@
             v-for="tab in ['Personal', 'Family', 'Contact', 'Work']"
             :key="tab"
             :class="['tab-btn', { active: activeTab === tab }]"
-            @click="activeTab = tab"
+            @click="handleTabClick(tab)"
           >
             {{ tab }}
+            <span v-if="isDirty && activeTab === tab" class="dirty-dot"></span>
           </button>
         </div>
       </div>
@@ -977,7 +977,89 @@
                       </div>
                     </div>
                   </div>
-                  <!-- /SECTION: Phone Numbers -->
+
+                  <!-- SECTION: Emergency Contact -->
+                  <div class="pds-section">
+                    <div class="pds-section-header">
+                      <div class="section-icon-wrap emergency">
+                        <svg
+                          width="18"
+                          height="18"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                          stroke-width="2"
+                        >
+                          <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"
+                          />
+                        </svg>
+                      </div>
+                      <div>
+                        <h3 class="pds-section-title">Emergency Contact</h3>
+                        <p class="pds-section-sub">Person to contact in case of emergency</p>
+                      </div>
+                    </div>
+
+                    <div class="pds-field-grid" style="margin-bottom: 20px">
+                      <div class="pds-field required">
+                        <label class="pds-label"
+                          >Full Name<span class="required-star">*</span></label
+                        >
+                        <input
+                          v-model="emergency.name"
+                          class="pds-input"
+                          placeholder="e.g. Maria Dela Cruz"
+                        />
+                      </div>
+                      <div class="pds-field required">
+                        <label class="pds-label"
+                          >Relationship<span class="required-star">*</span></label
+                        >
+                        <select v-model="emergency.relationship" class="pds-input">
+                          <option value="">— Select Relationship —</option>
+                          <option value="Spouse">Spouse</option>
+                          <option value="Parent">Parent</option>
+                          <option value="Sibling">Sibling</option>
+                          <option value="Child">Child</option>
+                          <option value="Relative">Relative</option>
+                          <option value="Friend">Friend</option>
+                          <option value="Guardian">Guardian</option>
+                          <option value="Other">Other</option>
+                        </select>
+                      </div>
+                    </div>
+
+                    <div class="contact-phone-grid">
+                      <div class="phone-card">
+                        <div class="phone-card-label">
+                          <span class="phone-type-badge mobile">📱 Mobile</span>
+                        </div>
+                        <div class="phone-input-row">
+                          <input
+                            class="pds-input phone-full"
+                            placeholder="e.g. 09061234567"
+                            v-model="emergency.mobileNumber"
+                          />
+                        </div>
+                      </div>
+                      <div class="phone-card">
+                        <div class="phone-card-label">
+                          <span class="phone-type-badge landline">☎️ Landline</span>
+                        </div>
+                        <div class="phone-input-row">
+                          <input
+                            class="pds-input phone-full"
+                            placeholder="e.g. 8123-4567"
+                            v-model="emergency.landlineNumber"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <!-- /SECTION: Emergency Contact -->
 
                   <!-- Save -->
                   <div class="button-group-row">
@@ -1339,6 +1421,56 @@
       </div>
     </div>
   </teleport>
+
+  <!-- ═══════════════════════════════════════════ -->
+  <!-- UNSAVED CHANGES DIALOG                     -->
+  <!-- ═══════════════════════════════════════════ -->
+  <teleport to="body">
+    <transition name="fade-slide">
+      <div v-if="showUnsavedDialog" class="unsaved-overlay" @click.self="cancelSwitch">
+        <div class="unsaved-dialog">
+          <div class="unsaved-dialog-icon">
+            <svg
+              width="28"
+              height="28"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"
+              />
+            </svg>
+          </div>
+          <h3 class="unsaved-dialog-title">Unsaved Changes</h3>
+          <p class="unsaved-dialog-msg">
+            You have unsaved changes in the <strong>{{ activeTab }}</strong> tab. What would you
+            like to do before switching?
+          </p>
+          <div class="unsaved-dialog-actions">
+            <button class="unsaved-btn stay" @click="cancelSwitch">Stay Here</button>
+            <button class="unsaved-btn discard" @click="discardAndSwitch">Discard Changes</button>
+            <button class="unsaved-btn save" @click="confirmSaveAndSwitch">
+              <svg
+                width="14"
+                height="14"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                stroke-width="2.5"
+              >
+                <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+              </svg>
+              Save Progress
+            </button>
+          </div>
+        </div>
+      </div>
+    </transition>
+  </teleport>
 </template>
 
 <script setup>
@@ -1363,32 +1495,33 @@ const showValidationErrors = ref(false);
 
 // ─────────────────────────────────────────────
 // RELATIONSHIP STATE
-// profiles  → array returned by /Profiles
-// selectedProfileId → the id of the chosen profile
-//   (used as the {id} segment in every other endpoint)
 // ─────────────────────────────────────────────
-const profiles = ref([]); // [{ id, accountRelationship }, ...]
+const profiles = ref([]);
 const selectedProfileId = ref(null);
+
+// ─────────────────────────────────────────────
+// UNSAVED CHANGES GUARD
+// ─────────────────────────────────────────────
+const isDirty = ref(false);
+const dataLoaded = ref(false);
+const pendingTab = ref(null);
+const showUnsavedDialog = ref(false);
 
 watch(selectedProfileId, async (newId) => {
   if (!newId) return;
+  dataLoaded.value = false;
+  isDirty.value = false;
   await fetchPersonal();
   await fetchFamily();
   await fetchContact();
   await fetchWork();
-
-  console.log("Done fetching");
-});
-
-watch(selectedProfileId, async (newId, oldId) => {
-  console.log("changed:", oldId, "→", newId);
+  dataLoaded.value = true;
 });
 
 // ─────────────────────────────────────────────
 // USER / PERSONAL
 // ─────────────────────────────────────────────
 const user = ref({
-  // Personal
   lastName: "",
   firstName: "",
   middleName: "",
@@ -1401,14 +1534,12 @@ const user = ref({
   isAdoptee: false,
   placeOfBirth: "",
   personalInfoId: null,
-  // Family — father
   fatherId: null,
   fatherSurname: "",
   fatherFirstName: "",
   fatherMiddleName: "",
   fatherNameExtension: "",
   fatherCitizenship: "",
-  // Family — mother
   motherId: null,
   motherSurname: "",
   motherFirstName: "",
@@ -1427,11 +1558,6 @@ const contact = ref({
   id: null,
   mobileNumber: "",
   landlineNumber: "",
-  region: "",
-  province: "",
-  city: "",
-  barangay: "",
-  postalCode: "",
   email: "",
 });
 
@@ -1473,6 +1599,16 @@ const fatherLifeStatus = ref("alive");
 const motherLifeStatus = ref("alive");
 const fatherHasMiddleName = ref(true);
 const motherHasMiddleName = ref(true);
+
+// ─────────────────────────────────────────────
+// EMERGENCY CONTACT
+// ─────────────────────────────────────────────
+const emergency = ref({
+  name: "",
+  relationship: "",
+  mobileNumber: "",
+  landlineNumber: "",
+});
 
 // ─────────────────────────────────────────────
 // REFERENCE DATA
@@ -1644,7 +1780,6 @@ const filteredCities = computed(() =>
   phCities.filter((c) => c.provinceCode === birthProvince.value),
 );
 const filteredBarangays = computed(() => phBarangays.filter((b) => b.cityCode === birthCity.value));
-
 const filteredAddressProvinces = computed(() =>
   phProvinces.filter((p) => p.regionCode === address.value.region),
 );
@@ -1654,7 +1789,6 @@ const filteredAddressCities = computed(() =>
 const filteredAddressBarangays = computed(() =>
   phBarangays.filter((b) => b.cityCode === address.value.municipality),
 );
-
 const filteredOfficeProvinces = computed(() =>
   phProvinces.filter((p) => p.regionCode === work.value.officeRegion),
 );
@@ -1686,7 +1820,6 @@ const fatherCitizenshipFlag = computed(
 const motherCitizenshipFlag = computed(
   () => nationalities.find((n) => n.name === user.value.motherCitizenship)?.flag ?? "🌐",
 );
-
 const validProfiles = computed(() => profiles.value.filter((p) => p.relationship));
 
 // ─────────────────────────────────────────────
@@ -1748,17 +1881,13 @@ const officeLocationSummary = computed(() => {
 
 // ─────────────────────────────────────────────
 // API — FETCH RELATIONSHIPS
-// Populates the dropdown; auto-selects the first profile.
 // ─────────────────────────────────────────────
-// ─── fetchRelationship ───
 const fetchRelationship = async () => {
   try {
     isLoading.value = true;
     const { data } = await axios.get(`${BACKEND_DOMAIN}/api/PassportProfile/Profiles`, {
       headers: { Authorization: `Bearer ${Auth.token}` },
     });
-
-    // Map accountRelationship → relationship so the template renders it
     profiles.value = Array.isArray(data)
       ? data.map((p) => ({
           id: p.passportPersonalInformationId,
@@ -1766,7 +1895,6 @@ const fetchRelationship = async () => {
           fullName: p.fullName,
         }))
       : [];
-
     if (profiles.value.length > 0) {
       selectedProfileId.value = profiles.value[1].id;
     }
@@ -1777,62 +1905,8 @@ const fetchRelationship = async () => {
   }
 };
 
-//new fetchcontact
-const fetchContact = async () => {
-  try {
-    isLoading.value = true;
-
-    const { data } = await axios.get(
-      `${BACKEND_DOMAIN}/api/ContactInformation/${selectedProfileId.value}`,
-      {
-        headers: { Authorization: `Bearer ${Auth.token}` },
-      },
-    );
-
-    contact.value.id = data.id;
-
-    // Fallback personalInfoId
-    if (!user.value.personalInfoId) {
-      user.value.personalInfoId = selectedProfileId.value;
-    }
-
-    // Trim strings
-    const country = (data.currentCountry ?? "").trim();
-    address.value.country = country;
-
-    address.value.street = (data.currentStreet ?? "").trim();
-    address.value.abroad = (data.addressAbroad ?? "").trim(); // ✅ correct field
-    address.value.postal = (data.currentPostalCode ?? "").trim();
-
-    if (country === "PH") {
-      // PH-specific hierarchy
-      address.value.region = (data.currentRegion ?? "").trim();
-      address.value.province = (data.currentProvince ?? "").trim();
-      address.value.municipality = (data.currentCityMunicipality ?? "").trim();
-      address.value.barangay = (data.currentBarangay ?? "").trim();
-      address.value.city = ""; // clear foreign city
-    } else {
-      // Non-PH
-      address.value.city = (data.currentCityMunicipality ?? "").trim();
-      // clear PH-specific fields
-      address.value.region = "";
-      address.value.province = "";
-      address.value.municipality = "";
-      address.value.barangay = "";
-    }
-
-    // Phone numbers
-    contact.value.mobileNumber = data.personalMobileNumber ?? "";
-    contact.value.landlineNumber = data.personalLandlineNumber ?? "";
-  } catch (err) {
-    console.error("fetchContact error:", err);
-  } finally {
-    isLoading.value = false;
-  }
-};
-
 // ─────────────────────────────────────────────
-// API — FETCH PERSONAL  (uses selectedProfileId)
+// API — FETCH PERSONAL
 // ─────────────────────────────────────────────
 const fetchPersonal = async () => {
   if (!selectedProfileId.value) return;
@@ -1842,7 +1916,6 @@ const fetchPersonal = async () => {
       `${BACKEND_DOMAIN}/api/PassportPersonalInformations/${selectedProfileId.value}`,
       { headers: { Authorization: `Bearer ${Auth.token}` } },
     );
-
     user.value.lastName = data.lastName ?? "";
     user.value.firstName = data.firstName ?? "";
     user.value.middleName = data.middleName ?? "";
@@ -1856,10 +1929,8 @@ const fetchPersonal = async () => {
     user.value.birthLegitimacy = data.birthLegitimacy ?? "";
     user.value.isAdoptee = data.isAdoptee ?? false;
     user.value.placeOfBirth = data.placeOfBirth ?? "";
-
     hasMiddleName.value = !!data.middleName;
     hasPSABirthCert.value = data.hasPSABirthcert ?? false;
-
     birthCountry.value = data.birthCountry ?? "PH";
     birthRegion.value = data.birthRegion ?? "";
     birthProvince.value = data.birthProvince ?? "";
@@ -1873,7 +1944,7 @@ const fetchPersonal = async () => {
 };
 
 // ─────────────────────────────────────────────
-// API — FETCH FAMILY  (uses selectedProfileId)
+// API — FETCH FAMILY
 // ─────────────────────────────────────────────
 const fetchFamily = async () => {
   if (!selectedProfileId.value) return;
@@ -1882,11 +1953,8 @@ const fetchFamily = async () => {
     const { data } = await axios.get(`${BACKEND_DOMAIN}/api/Families/${selectedProfileId.value}`, {
       headers: { Authorization: `Bearer ${Auth.token}` },
     });
-
     const father = data.find((f) => f.relationship === "Father");
     const mother = data.find((f) => f.relationship === "Mother");
-
-    // Father
     user.value.fatherId = father?.familyId ?? null;
     user.value.fatherSurname = father?.lastName ?? "";
     user.value.fatherFirstName = father?.firstName ?? "";
@@ -1895,8 +1963,6 @@ const fetchFamily = async () => {
     user.value.fatherCitizenship = father?.citizenship ?? "";
     fatherLifeStatus.value = father ? (father.isAlive ? "alive" : "deceased") : "alive";
     fatherHasMiddleName.value = !!father?.middleName;
-
-    // Mother
     user.value.motherId = mother?.familyId ?? null;
     user.value.motherSurname = mother?.lastName ?? "";
     user.value.motherFirstName = mother?.firstName ?? "";
@@ -1905,7 +1971,6 @@ const fetchFamily = async () => {
     user.value.motherCitizenship = mother?.citizenship ?? "";
     motherLifeStatus.value = mother ? (mother.isAlive ? "alive" : "deceased") : "alive";
     motherHasMiddleName.value = !!mother?.middleName;
-
     user.value.personalInfoId =
       father?.passportPersonalInformationId || mother?.passportPersonalInformationId || null;
   } catch (err) {
@@ -1916,58 +1981,79 @@ const fetchFamily = async () => {
 };
 
 // ─────────────────────────────────────────────
-// API — FETCH CONTACT  (uses selectedProfileId)
+// API — FETCH CONTACT
 // ─────────────────────────────────────────────
+const fetchContact = async () => {
+  try {
+    isLoading.value = true;
+    const { data } = await axios.get(
+      `${BACKEND_DOMAIN}/api/ContactInformation/${selectedProfileId.value}`,
+      { headers: { Authorization: `Bearer ${Auth.token}` } },
+    );
+    contact.value.id = data.id;
+    if (!user.value.personalInfoId) user.value.personalInfoId = selectedProfileId.value;
+    const country = (data.currentCountry ?? "").trim();
+    address.value.country = country;
+    address.value.street = (data.currentStreet ?? "").trim();
+    address.value.abroad = (data.addressAbroad ?? "").trim();
+    address.value.postal = (data.currentPostalCode ?? "").trim();
+    if (country === "PH") {
+      address.value.region = (data.currentRegion ?? "").trim();
+      address.value.province = (data.currentProvince ?? "").trim();
+      address.value.municipality = (data.currentCityMunicipality ?? "").trim();
+      address.value.barangay = (data.currentBarangay ?? "").trim();
+      address.value.city = "";
+    } else {
+      address.value.city = (data.currentCityMunicipality ?? "").trim();
+      address.value.region = "";
+      address.value.province = "";
+      address.value.municipality = "";
+      address.value.barangay = "";
+    }
+    contact.value.mobileNumber = data.personalMobileNumber ?? "";
+    contact.value.landlineNumber = data.personalLandlineNumber ?? "";
+    emergency.value.name = data.emergencyContactName ?? "";
+    emergency.value.relationship = data.emergencyContactRelationship ?? "";
+    emergency.value.mobileNumber = data.emergencyContactMobile ?? "";
+    emergency.value.landlineNumber = data.emergencyContactLandline ?? "";
+  } catch (err) {
+    console.error("fetchContact error:", err);
+  } finally {
+    isLoading.value = false;
+  }
+};
 
-//NEW FETCH WORK
+// ─────────────────────────────────────────────
+// API — FETCH WORK
+// ─────────────────────────────────────────────
 const fetchWork = async () => {
   try {
     isLoading.value = true;
-
     const { data } = await axios.get(
       `${BACKEND_DOMAIN}/api/WorkInformation/${selectedProfileId.value}`,
-      {
-        headers: { Authorization: `Bearer ${Auth.token}` },
-      },
+      { headers: { Authorization: `Bearer ${Auth.token}` } },
     );
-
-    // Set basic IDs
     work.value.id = data.id;
-
-    // Fallback personalInfoId
-    if (!user.value.personalInfoId) {
-      user.value.personalInfoId = selectedProfileId.value;
-    }
-
-    // Basic fields
+    if (!user.value.personalInfoId) user.value.personalInfoId = selectedProfileId.value;
     work.value.occupation = data.occupation ?? "";
     work.value.employer = data.employer ?? "";
     work.value.officeAddress = data.officeAddress ?? "";
     work.value.postalCode = data.officePostalCode ?? "";
-
-    // Trim country and set hierarchy
     const country = (data.officeCountry ?? "").trim();
     work.value.officeCountry = country;
-
     if (country === "PH") {
-      // PH-specific fields
       work.value.officeRegion = (data.officeRegion ?? "").trim();
       work.value.officeProvince = (data.officeProvince ?? "").trim();
       work.value.officeMunicipality = (data.officeCityMunicipality ?? "").trim();
       work.value.officeBarangay = (data.officeBarangay ?? "").trim();
-      // Clear foreign city
       work.value.officeCity = "";
     } else {
-      // Non-PH
       work.value.officeCity = (data.officeCityMunicipality ?? "").trim();
-      // Clear PH-specific fields
       work.value.officeRegion = "";
       work.value.officeProvince = "";
       work.value.officeMunicipality = "";
       work.value.officeBarangay = "";
     }
-
-    // Mobile & Landline
     work.value.workMobileNumber = data.officeMobileNumber ?? "";
     work.value.workLandlineNumber = data.officeLandlineNumber ?? "";
   } catch (err) {
@@ -1975,6 +2061,71 @@ const fetchWork = async () => {
   } finally {
     isLoading.value = false;
   }
+};
+
+// ─────────────────────────────────────────────
+// DEEP WATCHER — dirty flag
+// ─────────────────────────────────────────────
+watch(
+  [
+    user,
+    address,
+    contact,
+    work,
+    emergency,
+    hasMiddleName,
+    hasPSABirthCert,
+    birthCountry,
+    birthRegion,
+    birthProvince,
+    birthCity,
+    birthBarangay,
+    fatherLifeStatus,
+    motherLifeStatus,
+    fatherHasMiddleName,
+    motherHasMiddleName,
+  ],
+  () => {
+    if (dataLoaded.value) isDirty.value = true;
+  },
+  { deep: true },
+);
+
+// ─────────────────────────────────────────────
+// TAB SWITCHING WITH UNSAVED GUARD
+// ─────────────────────────────────────────────
+const handleTabClick = (tab) => {
+  if (tab === activeTab.value) return;
+  if (isDirty.value) {
+    pendingTab.value = tab;
+    showUnsavedDialog.value = true;
+  } else {
+    activeTab.value = tab;
+  }
+};
+
+// ── KEY FIX: confirmSaveAndSwitch calls saveWithReset ──
+const confirmSaveAndSwitch = async () => {
+  showUnsavedDialog.value = false;
+  await saveWithReset();
+  if (pendingTab.value) {
+    activeTab.value = pendingTab.value;
+    pendingTab.value = null;
+  }
+};
+
+const discardAndSwitch = () => {
+  showUnsavedDialog.value = false;
+  isDirty.value = false;
+  if (pendingTab.value) {
+    activeTab.value = pendingTab.value;
+    pendingTab.value = null;
+  }
+};
+
+const cancelSwitch = () => {
+  showUnsavedDialog.value = false;
+  pendingTab.value = null;
 };
 
 // ─────────────────────────────────────────────
@@ -2063,18 +2214,16 @@ const updateFamily = async () => {
   }
 };
 
-//new update contact
+// ─────────────────────────────────────────────
+// API — PATCH CONTACT
+// ─────────────────────────────────────────────
 const updateContact = async () => {
   try {
     isLoading.value = true;
-
-    // Prepare payload to match backend DTO
     const payload = {
-      passportPersonalInformationId: selectedProfileId.value, // always required
-
-      // ── Address fields ──
+      passportPersonalInformationId: selectedProfileId.value,
       currentStreet: address.value.street?.trim() || null,
-      addressAbroad: address.value.abroad?.trim() || null, // ✅ use correct field name
+      addressAbroad: address.value.abroad?.trim() || null,
       currentCountry: address.value.country?.trim() || null,
       currentRegion: address.value.country === "PH" ? address.value.region?.trim() || null : null,
       currentProvince:
@@ -2086,20 +2235,17 @@ const updateContact = async () => {
       currentBarangay:
         address.value.country === "PH" ? address.value.barangay?.trim() || null : null,
       currentPostalCode: address.value.postal?.trim() || null,
-
-      // ── Contact numbers ──
       personalMobileNumber: contact.value.mobileNumber?.trim() || null,
       personalLandlineNumber: contact.value.landlineNumber?.trim() || null,
-
-      // Optional email
+      emergencyContactName: emergency.value.name?.trim() || null,
+      emergencyContactRelationship: emergency.value.relationship || null,
+      emergencyContactMobile: emergency.value.mobileNumber?.trim() || null,
+      emergencyContactLandline: emergency.value.landlineNumber?.trim() || null,
       email: contact.value.email?.trim() || null,
     };
-
-    // Send PATCH request
     await axios.patch(`${BACKEND_DOMAIN}/api/ContactInformation`, payload, {
       headers: { Authorization: `Bearer ${Auth.token}` },
     });
-
     dialogTitle.value = "Success";
     dialogMessage.value = "Contact info saved.";
     showDialog.value = true;
@@ -2113,19 +2259,18 @@ const updateContact = async () => {
   }
 };
 
+// ─────────────────────────────────────────────
+// API — PATCH WORK
+// ─────────────────────────────────────────────
 const updateWork = async () => {
   try {
     isLoading.value = true;
     const payload = {
       id: work.value.id,
       passportPersonalInformationId: selectedProfileId.value,
-
-      // Job details
       occupation: work.value.occupation || null,
-      employer: work.value.employer || null, // ✅ was missing
+      employer: work.value.employer || null,
       officeAddress: work.value.officeAddress || null,
-
-      // Office location
       officeCountry: work.value.officeCountry || null,
       officeRegion: work.value.officeCountry === "PH" ? work.value.officeRegion || null : null,
       officeProvince: work.value.officeCountry === "PH" ? work.value.officeProvince || null : null,
@@ -2135,8 +2280,6 @@ const updateWork = async () => {
           : work.value.officeCity || null,
       officeBarangay: work.value.officeCountry === "PH" ? work.value.officeBarangay || null : null,
       officePostalCode: work.value.postalCode || null,
-
-      // Work contact numbers
       officeMobileNumber: work.value.workMobileNumber?.trim() || null,
       officeLandlineNumber: work.value.workLandlineNumber?.trim() || null,
     };
@@ -2157,22 +2300,26 @@ const updateWork = async () => {
 };
 
 // ─────────────────────────────────────────────
-// SAVE DISPATCHER
+// SAVE DISPATCHER  ← KEY FIX: uses return
 // ─────────────────────────────────────────────
 const save = () => {
   showValidationErrors.value = true;
-
   if (!selectedProfileId.value) {
     dialogTitle.value = "Warning";
     dialogMessage.value = "Please select a relationship profile first.";
     showDialog.value = true;
     return;
   }
+  if (activeTab.value === "Personal") return updatePersonal();
+  else if (activeTab.value === "Family") return updateFamily();
+  else if (activeTab.value === "Contact") return updateContact();
+  else if (activeTab.value === "Work") return updateWork();
+};
 
-  if (activeTab.value === "Personal") updatePersonal();
-  else if (activeTab.value === "Family") updateFamily();
-  else if (activeTab.value === "Contact") updateContact();
-  else if (activeTab.value === "Work") updateWork();
+// ── KEY FIX: saveWithReset added (was missing) ──
+const saveWithReset = async () => {
+  await save();
+  isDirty.value = false;
 };
 
 // ─────────────────────────────────────────────
@@ -2184,14 +2331,14 @@ const handleCloseDialog = () => {
 
 // ─────────────────────────────────────────────
 // LIFECYCLE
-// 1. Fetch relationships → populates dropdown + auto-selects first
-// 2. Then fetch all section data for that selected profile
 // ─────────────────────────────────────────────
 onMounted(async () => {
   await fetchRelationship();
 });
 
-// ── Add Relationship Modal ──────────────────────────────────────────
+// ─────────────────────────────────────────────
+// ADD RELATIONSHIP MODAL
+// ─────────────────────────────────────────────
 const showAddRelModal = ref(false);
 const newRelationshipName = ref("");
 const addRelError = ref("");
@@ -2208,7 +2355,6 @@ const saveNewRelationship = async () => {
     addRelError.value = "Please enter a relationship.";
     return;
   }
-
   try {
     isLoading.value = true;
     await axios.post(
@@ -2216,9 +2362,8 @@ const saveNewRelationship = async () => {
       { relationship: val },
       { headers: { Authorization: `Bearer ${Auth.token}` } },
     );
-
     closeAddRelModal();
-    await fetchRelationship(); // refetch so the new relationship appears in the dropdown
+    await fetchRelationship();
   } catch (err) {
     console.error("Failed to add relationship:", err);
     addRelError.value = err?.response?.data?.message ?? "Failed to save. Please try again.";
@@ -2998,6 +3143,105 @@ const saveNewRelationship = async () => {
 }
 .btn-rel-save:hover {
   background: #04134a;
+}
+
+.dirty-dot {
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  background: #e53935;
+  border-radius: 50%;
+}
+
+.section-icon-wrap.emergency {
+  background: #fef2f2;
+  color: #dc2626;
+}
+
+.unsaved-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(19, 34, 56, 0.85);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  backdrop-filter: blur(4px);
+}
+.unsaved-dialog {
+  background: #fff;
+  border-radius: 14px;
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.28);
+  border: 1px solid #e2e8f0;
+  padding: 32px;
+  width: 90%;
+  max-width: 440px;
+}
+.unsaved-dialog-icon {
+  width: 52px;
+  height: 52px;
+  border-radius: 14px;
+  background: #fff7ed;
+  color: #d97706;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 18px;
+}
+.unsaved-dialog-title {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: #06195e;
+  margin: 0 0 10px;
+}
+.unsaved-dialog-msg {
+  color: #4b5563;
+  font-size: 0.93rem;
+  line-height: 1.65;
+  margin: 0 0 24px;
+}
+.unsaved-dialog-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+}
+.unsaved-btn {
+  padding: 10px 18px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.87rem;
+  cursor: pointer;
+  transition: all 0.18s;
+  border: 1.5px solid transparent;
+}
+.unsaved-btn.stay {
+  background: #f8fafc;
+  color: #4a5568;
+  border-color: #d1d9e6;
+}
+.unsaved-btn.stay:hover {
+  background: #f1f5f9;
+  border-color: #94a3b8;
+}
+.unsaved-btn.discard {
+  background: #fff5f5;
+  color: #c53030;
+  border-color: #fc8181;
+}
+.unsaved-btn.discard:hover {
+  background: #fed7d7;
+}
+.unsaved-btn.save {
+  background: #06195e;
+  color: #fff;
+  border-color: #06195e;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+.unsaved-btn.save:hover {
+  background: #0a2472;
 }
 
 /* ═══════════════════════════════════════════
